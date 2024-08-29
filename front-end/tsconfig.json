@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "lib": ["es5", "dom", "es2015.promise"],
+    "jsx": "react-jsx",
+    "baseUrl": "src",
+    "paths": {
+      "@components/*": ["./components/*"],
+      "@ui/*": ["./components/common/ui/*"],
+      "@pages/*": ["./components/pages/*"],
+      "@hooks/*": ["./hooks/*"],
+      "@api/*": ["./api/*"],
+      "@utils/*": ["./utils/*"],
+      "@routing/*": ["./routing/*"],
+      "@styles/*": ["./styles/*"],
+      "@themes/*": ["./themes/*"],
+      "@assets/*": ["./assets/*"],
+      "@redux/*": ["./redux/*"]
+    },
+    "resolveJsonModule": true,
+    "skipLibCheck": true
+  },
+  "include": ["src", "eslint.config.mjs"],
+  "exclude": [
+    "node_modules",
+    "./node_modules",
+    "./node_modules/*",
+    "./node_modules/@types/node/index.d.ts"
+  ]
+}

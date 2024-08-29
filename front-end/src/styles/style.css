@@ -1,0 +1,152 @@
+:root {
+  --main-bg-color: #e3f2fd;
+  --main-text-color: #000000;
+  --main-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+* {
+  box-sizing: inherit;
+}
+
+#submit {
+  width: 25%;
+  margin-left: auto;
+  background-color: var(--main-bg-color);
+  color: var(--main-text-color);
+  padding: 8px 24px;
+  border-radius: 5px;
+  font-size: large;
+  font-weight: 900;
+  outline: none;
+  border: none;
+  box-shadow: 5px 5px 5px #bdbdbd;
+  border: 1px solid var(--main-text-color);
+  font-family: var(--main-font-family);
+}
+
+#submit:hover {
+  cursor: pointer;
+}
+
+#error-page {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
+#home-page {
+  position: relative;
+  height: 100%;
+}
+
+#home-main {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn {
+  background-color: var(--main-bg-color);
+  color: var(--main-text-color);
+  font-size: 24px;
+  font-family: var(--main-font-family);
+  font-weight: bold;
+  margin-top: 8px;
+  padding: 8px 32px;
+  outline: none;
+  border: 0px;
+  border-radius: 5px;
+  box-shadow: 5px 5px 5px rgb(177, 184, 175);
+}
+
+.btn:hover {
+  background-color: rgb(75, 185, 45);
+  color: white;
+  cursor: pointer;
+}
+
+.mg-right-2rem {
+  margin-right: 2rem;
+}
+
+.auth-btns {
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  background-color: var(--main-bg-color);
+  padding: 2rem 0;
+  text-align: center;
+  margin: 0;
+  width: 100%;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  background-color: var(--main-bg-color);
+  padding: 5rem 0;
+  text-align: center;
+  margin: 0;
+  width: 100%;
+}
+
+.user-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 600px;
+}
+
+.input-field {
+  display: block;
+  padding: 8px 16px;
+  font-family: var(--main-font-family);
+  font-size: large;
+  margin-bottom: 32px;
+}
+
+.input-field:focus {
+  border-width: 2px;
+  border-style: solid;
+  border-color: green;
+  outline: none;
+}
+
+.error {
+  border: 2px solid red;
+  box-shadow: 5px 5px 5px rgb(245, 193, 193);
+}
+
+.svg-img {
+  width: 200px;
+  height: 200px;
+}
