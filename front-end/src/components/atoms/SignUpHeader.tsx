@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import { routes } from "@routing/routes";
 import { appConstants } from "constants/app-constants";
 import { useNavigate } from "react-router-dom";
+import ThemeButton from "./ThemeButton";
 
 export default function SignUpHeader({ isSignInPage }) {
   const appName = appConstants.appName;
@@ -15,7 +16,13 @@ export default function SignUpHeader({ isSignInPage }) {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar>
+      <AppBar
+        sx={{
+          backgroundColor: "background.default",
+          color: "text.primary",
+          textAlign: "center",
+        }}
+      >
         <Toolbar>
           <IconButton
             size="large"
@@ -26,7 +33,11 @@ export default function SignUpHeader({ isSignInPage }) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ flexGrow: 1, fontWeight: "bold" }}
+          >
             {appName}
           </Typography>
           <Button
@@ -37,6 +48,7 @@ export default function SignUpHeader({ isSignInPage }) {
           >
             {isSignInPage ? "Sign Up" : "Sign In"}
           </Button>
+          <ThemeButton />
         </Toolbar>
       </AppBar>
     </Box>

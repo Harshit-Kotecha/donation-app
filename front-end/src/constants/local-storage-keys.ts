@@ -1,3 +1,3 @@
 export const localStorageKeys = {
-  mode: "mode",
+  themeMode: "themeMode",
 };

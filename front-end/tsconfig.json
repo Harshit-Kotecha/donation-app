@@ -17,7 +17,8 @@
       "@redux/*": ["./redux/*"]
     },
     "resolveJsonModule": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "outDir": "dist"
   },
   "include": ["src", "eslint.config.mjs"],
   "exclude": [

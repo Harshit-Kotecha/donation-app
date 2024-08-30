@@ -4,7 +4,6 @@ import { get } from "services/network/api-service";
 export default function useDonations() {
   const [isLoading, setIsLoading] = useState(false);
   const [donations, setDonations] = useState(null);
-  const a = "fa";
 
   useEffect(() => {
     const fetchData = async () => {

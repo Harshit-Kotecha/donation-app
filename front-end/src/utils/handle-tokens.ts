@@ -12,9 +12,9 @@ export function getCookie(name: string): string {
 }
 
 export const setAccessTokenInCookie = (token: string) => {
-  var now = new Date();
-  var time = now.getTime();
-  var expireTime = time + 1000 * 36000;
+  const now = new Date();
+  const time = now.getTime();
+  const expireTime = time + 1000 * 36000;
   now.setTime(expireTime);
   document.cookie = `${
     cookiesKeys.accessToken

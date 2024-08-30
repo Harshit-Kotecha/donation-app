@@ -1,6 +1,6 @@
+import { isUserLoggedIn } from "@utils/handle-tokens";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { isUserLoggedIn } from "@utils/handle-tokens";
 
 export default function ProtectedRoute({ element }) {
   const isLoggedIn = isUserLoggedIn();
@@ -10,9 +10,7 @@ export default function ProtectedRoute({ element }) {
     if (!isLoggedIn) {
       navigate("/signup");
     }
-  }, []);
-
-  console.log(isLoggedIn, " ------- isLogin ");
+  }, [isLoggedIn]);
 
   if (!isLoggedIn) return null;
 

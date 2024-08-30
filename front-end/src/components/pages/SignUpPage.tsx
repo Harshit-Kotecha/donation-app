@@ -1,28 +1,22 @@
 import SignUpHeader from "@components/atoms/SignUpHeader";
+import useAppTheme from "@hooks/useTheme";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import MuiCard from "@mui/material/Card";
-import CssBaseline from "@mui/material/CssBaseline";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
-import {
-  createTheme,
-  PaletteMode,
-  styled,
-  ThemeProvider,
-} from "@mui/material/styles";
+import { styled, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { routes } from "@routing/routes";
-import { firebaseErrorCodes } from "constants/firebase-error-codes";
 import { setAccessTokenInCookie, setCookie } from "@utils/handle-tokens";
+import { firebaseErrorCodes } from "constants/firebase-error-codes";
 import { auth } from "firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import getSignUpTheme from "themes/getSignUpTheme";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -43,12 +37,13 @@ const Card = styled(MuiCard)(({ theme }) => ({
 }));
 
 const SignUpContainer = styled(Stack)(({ theme }) => ({
+  width: "100vw",
   height: "auto",
   backgroundImage:
     "radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))",
   backgroundRepeat: "no-repeat",
   [theme.breakpoints.up("sm")]: {
-    height: "100dvh",
+    height: "100%",
   },
   ...theme.applyStyles("dark", {
     backgroundImage:
@@ -57,10 +52,6 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function SignUpPage() {
-  const [mode, setMode] = React.useState<PaletteMode>("light");
-  const [showCustomTheme, setShowCustomTheme] = React.useState(true);
-  const defaultTheme = createTheme({ palette: { mode } });
-  const SignUpTheme = createTheme(getSignUpTheme(mode));
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
   const [passwordError, setPasswordError] = React.useState(false);
@@ -72,31 +63,6 @@ export default function SignUpPage() {
   const [nameErrorMessage, setNameErrorMessage] = React.useState("");
 
   const navigate = useNavigate();
-
-  // This code only runs on the client side, to determine the system color preference
-  React.useEffect(() => {
-    // Check if there is a preferred mode in localStorage
-    const savedMode = localStorage.getItem("themeMode") as PaletteMode | null;
-    if (savedMode) {
-      setMode(savedMode);
-    } else {
-      // If no preference is found, it uses system preference
-      const systemPrefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-      setMode(systemPrefersDark ? "dark" : "light");
-    }
-  }, []);
-
-  const toggleColorMode = () => {
-    const newMode = mode === "dark" ? "light" : "dark";
-    setMode(newMode);
-    localStorage.setItem("themeMode", newMode); // Save the selected mode to localStorage
-  };
-
-  const toggleCustomTheme = () => {
-    setShowCustomTheme((prev) => !prev);
-  };
 
   const validateInputs = () => {
     const email = document.getElementById("email") as HTMLInputElement;
@@ -186,20 +152,17 @@ export default function SignUpPage() {
     }
   };
 
+  const theme = useAppTheme();
+
   return (
-    <ThemeProvider theme={showCustomTheme ? SignUpTheme : defaultTheme}>
-      <CssBaseline />
-      <SignUpContainer
-        direction="column"
-        justifyContent="space-between"
-        width="100vw"
-      >
+    <ThemeProvider theme={theme}>
+      {/* <CssBaseline /> */}
+      <SignUpContainer direction="column" justifyContent="space-between">
         <SignUpHeader isSignInPage={false} />
         <Stack
           sx={{
             justifyContent: "center",
-            height: "100dvh",
-            p: 2,
+            height: "100%",
           }}
         >
           <Card variant="outlined">

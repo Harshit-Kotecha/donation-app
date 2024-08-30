@@ -2,12 +2,13 @@ import { PaletteMode } from "@mui/material";
 import { createSlice } from "@reduxjs/toolkit";
 import { localStorageKeys } from "constants/local-storage-keys";
 
-interface ThemeState {
+export interface ThemeState {
   mode: PaletteMode;
 }
 
 const initialState: ThemeState = {
-  mode: localStorage.getItem(localStorageKeys.mode) as PaletteMode,
+  mode: (localStorage.getItem(localStorageKeys.themeMode) ||
+    "dark") as PaletteMode,
 };
 
 export const themeSlice = createSlice({
@@ -16,7 +17,7 @@ export const themeSlice = createSlice({
   reducers: {
     toggleTheme: (state) => {
       const newMode = state.mode === "dark" ? "light" : "dark";
-      localStorage.setItem(localStorageKeys.mode, newMode);
+      localStorage.setItem(localStorageKeys.themeMode, newMode);
       state.mode = newMode;
     },
   },

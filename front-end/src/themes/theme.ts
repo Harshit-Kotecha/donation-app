@@ -1,7 +1,6 @@
 import { Theme, ThemeOptions } from "@mui/material";
 import { alpha, createTheme, PaletteMode } from "@mui/material/styles";
 import type {} from "@mui/material/themeCssVarsAugmentation";
-import { localStorageKeys } from "constants/local-storage-keys";
 declare module "@mui/material/styles/createPalette" {
   interface ColorRange {
     50: string;
@@ -141,6 +140,14 @@ const getDesignTokens = (mode: PaletteMode) => ({
         paper: gray[900],
       }),
     },
+    backgroundImage: {
+      default:
+        "radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))",
+      ...(mode === "dark" && {
+        default:
+          "radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))",
+      }),
+    },
     text: {
       primary: gray[800],
       secondary: gray[600],
@@ -214,8 +221,7 @@ const getTheme = (mode: PaletteMode): ThemeOptions => {
     ...getDesignTokens(mode),
   };
 };
-export default function appTheme(): Theme {
-  const mode = localStorage.getItem(localStorageKeys.mode) as PaletteMode;
+export default function appTheme(mode: PaletteMode): Theme {
   const theme = createTheme(getTheme(mode));
   return theme;
 }

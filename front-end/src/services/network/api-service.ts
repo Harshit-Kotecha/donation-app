@@ -1,6 +1,4 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { getCookie } from "@utils/handle-tokens";
-import { cookiesKeys } from "constants/cookies-keys";
 
 const client = axios.create({
   baseURL: "http://localhost:8080",
@@ -33,7 +31,7 @@ client.interceptors.response.use(
 
 interface IGetApi {
   url: string;
-  queryParams?: any; // Can it be: AxiosRequestConfig;
+  queryParams?: AxiosRequestConfig; // Can it be: AxiosRequestConfig;
 }
 
 export const get = async ({ url, queryParams = {} }: IGetApi) => {
@@ -48,21 +46,22 @@ export const get = async ({ url, queryParams = {} }: IGetApi) => {
       throw Error(response.statusText);
     }
   } catch (error) {
-    throw error;
+    console.error(error);
   }
 };
 
-interface IPostApi {
-  url: string;
-  data: any;
-  queryParams: any; // Can it be: AxiosRequestConfig;
+export interface DefaultResponse<T> {
+  data?: T;
 }
 
-export const post = async ({ url, data, queryParams = {} }: IPostApi) => {
+interface IPostApi extends IGetApi {
+  payload?: string;
+  callbackfun: (data) => void;
+}
+
+export const post = async ({ url, payload, queryParams = {} }: IPostApi) => {
   try {
-    const response = await client.post(url, {
-      params: queryParams,
-    });
+    const response = await client.post(url, { payload, params: queryParams });
 
     if (isRequestSuccess(response.status)) {
       return response.data;
@@ -70,7 +69,7 @@ export const post = async ({ url, data, queryParams = {} }: IPostApi) => {
       throw Error(response.statusText);
     }
   } catch (error) {
-    throw error;
+    console.error(error);
   }
 };
 

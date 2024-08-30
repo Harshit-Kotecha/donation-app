@@ -1,24 +1,15 @@
-import * as React from "react";
-import {
-  styled,
-  alpha,
-  createTheme,
-  ThemeProvider,
-} from "@mui/material/styles";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import InputBase from "@mui/material/InputBase";
+import ThemeButton from "@components/atoms/ThemeButton";
+import useAppTheme from "@hooks/useTheme";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import InputBase from "@mui/material/InputBase";
+import { alpha, styled, ThemeProvider } from "@mui/material/styles";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
 import { appConstants } from "constants/app-constants";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@redux/store";
-import { toggleTheme } from "@redux/themeSlice";
-import ThemeButton from "@components/atoms/ThemeButton";
-import appTheme from "@themes/theme";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -64,13 +55,13 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function SearchAppBar() {
   const appName = appConstants.appName;
-  const theme = appTheme();
+  const theme = useAppTheme();
 
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ flexGrow: 1 }}>
         <AppBar
-          sx={{ backgroundColor: "background.default" }}
+          sx={{ backgroundColor: "background.default", textAlign: "center" }}
           position="static"
         >
           <Toolbar>

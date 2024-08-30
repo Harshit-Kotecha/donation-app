@@ -1,3 +1,4 @@
+import SignUpHeader from "@components/atoms/SignUpHeader";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import MuiCard from "@mui/material/Card";
@@ -14,15 +15,14 @@ import {
 } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { firebaseErrorCodes } from "constants/firebase-error-codes";
+import { routes } from "@routing/routes";
 import { setAccessTokenInCookie } from "@utils/handle-tokens";
+import { firebaseErrorCodes } from "constants/firebase-error-codes";
 import { auth } from "firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import getSignUpTheme from "themes/getSignUpTheme";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { routes } from "@routing/routes";
-import SignUpHeader from "@components/atoms/SignUpHeader";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -58,7 +58,6 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
 
 export default function SignInPage() {
   const [mode, setMode] = React.useState<PaletteMode>("light");
-  const [showCustomTheme, setShowCustomTheme] = React.useState(true);
   const defaultTheme = createTheme({ palette: { mode } });
   const SignUpTheme = createTheme(getSignUpTheme(mode));
   const [emailError, setEmailError] = React.useState(false);
@@ -82,16 +81,6 @@ export default function SignInPage() {
       setMode(systemPrefersDark ? "dark" : "light");
     }
   }, []);
-
-  const toggleColorMode = () => {
-    const newMode = mode === "dark" ? "light" : "dark";
-    setMode(newMode);
-    localStorage.setItem("themeMode", newMode); // Save the selected mode to localStorage
-  };
-
-  const toggleCustomTheme = () => {
-    setShowCustomTheme((prev) => !prev);
-  };
 
   const validateInputs = () => {
     const email = document.getElementById("email") as HTMLInputElement;
@@ -155,7 +144,7 @@ export default function SignInPage() {
   };
 
   return (
-    <ThemeProvider theme={showCustomTheme ? SignUpTheme : defaultTheme}>
+    <ThemeProvider theme={SignUpTheme || defaultTheme}>
       <CssBaseline />
       <SignUpContainer
         direction="column"
