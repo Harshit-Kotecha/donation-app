@@ -19,7 +19,9 @@
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "target": "ES2020",
+    "moduleResolution": "node"
   },
   "include": ["src", "eslint.config.mjs"],
   "exclude": [
