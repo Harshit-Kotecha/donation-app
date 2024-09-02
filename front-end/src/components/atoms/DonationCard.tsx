@@ -1,62 +1,60 @@
-import { ThemeProvider } from "@emotion/react";
-import useAppTheme from "@hooks/useTheme";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import ShareIcon from "@mui/icons-material/Share";
-import Avatar from "@mui/material/Avatar";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import CardHeader from "@mui/material/CardHeader";
-import CardMedia from "@mui/material/CardMedia";
-import Collapse from "@mui/material/Collapse";
-import IconButton, { IconButtonProps } from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import { red } from "@mui/material/colors";
-import { styled } from "@mui/material/styles";
-import * as React from "react";
-import img from "../../assets/donation.jpg";
+import { ThemeProvider } from '@emotion/react';
+import useAppTheme from '@hooks/useTheme';
+import { Donation, DonationStatus } from '@interfaces/donation';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import { Button, Chip, Tooltip } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import CardMedia from '@mui/material/CardMedia';
+import Collapse from '@mui/material/Collapse';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import { red } from '@mui/material/colors';
+import { routes } from '@routing/routes';
+import { useNavigate } from 'react-router-dom';
+import img from '../../assets/donation.jpg';
 
-interface ExpandMoreProps extends IconButtonProps {
-  expand: boolean;
+interface DonationCardProps {
+  donation: Donation;
 }
 
-const ExpandMore = styled((props: ExpandMoreProps) => {
-  const { ...other } = props;
-  return <IconButton {...other} />;
-})(({ theme }) => ({
-  marginLeft: "auto",
-  transition: theme.transitions.create("transform", {
-    duration: theme.transitions.duration.shortest,
-  }),
-  variants: [
-    {
-      props: ({ expand }) => !expand,
-      style: {
-        transform: "rotate(0deg)",
-      },
-    },
-    {
-      props: ({ expand }) => !!expand,
-      style: {
-        transform: "rotate(180deg)",
-      },
-    },
-  ],
-}));
-
-export default function DonationCard({ donation }) {
-  const [expanded, setExpanded] = React.useState(false);
+export default function DonationCard({ donation }: DonationCardProps) {
   const theme = useAppTheme();
+  const navigate = useNavigate();
 
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
+  let color: 'error' | 'secondary' | 'success' = 'success';
+  switch (donation.status) {
+    case DonationStatus.CLOSED:
+      color = 'error';
+      break;
+
+    case DonationStatus.PROCESSING:
+      color = 'secondary';
+      break;
+
+    default:
+      color = 'success';
+  }
 
   return (
     <ThemeProvider theme={theme}>
-      <Card sx={{ maxWidth: 345 }}>
+      <Card
+        sx={{
+          maxWidth: 345,
+          ':hover': {
+            boxShadow: `0px 0px 20px 10px ${theme['palette']['shadow']}}`,
+            cursor: 'pointer',
+          },
+        }}
+        onClick={() => {
+          navigate(routes.donationDetails, {
+            state: { donation: donation },
+          });
+        }}
+      >
         <CardHeader
           avatar={
             <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
@@ -64,38 +62,45 @@ export default function DonationCard({ donation }) {
             </Avatar>
           }
           action={
-            <IconButton aria-label="settings">
-              <MoreVertIcon />
-            </IconButton>
+            <Chip
+              label={donation.status || 'open'}
+              color={color}
+              size="small"
+            />
           }
-          title={donation["name"]}
+          title={donation.name}
           subheader="September 14, 2016"
         />
         <CardMedia component="img" height="194" image={img} alt="Paella dish" />
         <CardContent>
-          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             This impressive paella is a perfect party dish and a fun meal to
             cook together with your guests. Add 1 cup of frozen peas along with
             the mussels, if you like.
           </Typography>
         </CardContent>
-        <CardActions disableSpacing>
-          <IconButton aria-label="add to favorites">
-            <FavoriteIcon />
-          </IconButton>
-          <IconButton aria-label="share">
+        <CardActions sx={{ justifyContent: 'space-between' }} disableSpacing>
+          <Tooltip title="Like this" placement="right">
+            <IconButton aria-label="add to favorites">
+              <FavoriteIcon />
+            </IconButton>
+          </Tooltip>
+          {/* <IconButton aria-label="share">
             <ShareIcon />
-          </IconButton>
-          <ExpandMore
+          </IconButton> */}
+          <Button variant="outlined" color="info">
+            Show more
+          </Button>
+          {/* <ExpandMore
             expand={expanded}
             onClick={handleExpandClick}
             aria-expanded={expanded}
             aria-label="show more"
           >
             <ExpandMoreIcon />
-          </ExpandMore>
+          </ExpandMore> */}
         </CardActions>
-        <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <Collapse in={false} timeout="auto" unmountOnExit>
           <CardContent>
             <Typography sx={{ marginBottom: 2 }}>Method:</Typography>
             <Typography sx={{ marginBottom: 2 }}>

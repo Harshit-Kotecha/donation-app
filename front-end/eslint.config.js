@@ -4,10 +4,6 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
-console.log(
-  { ...reactHooks.configs.recommended.rules },
-  "----------------------"
-);
 export default tseslint.config(
   {
     ignores: [

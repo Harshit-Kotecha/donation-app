@@ -14,7 +14,8 @@
       "@styles/*": ["./styles/*"],
       "@themes/*": ["./themes/*"],
       "@assets/*": ["./assets/*"],
-      "@redux/*": ["./redux/*"]
+      "@redux/*": ["./redux/*"],
+      "@interfaces*": ["./interfaces*"]
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,

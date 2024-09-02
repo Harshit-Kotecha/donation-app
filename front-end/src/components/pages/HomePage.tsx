@@ -1,9 +1,9 @@
-import DonationCard from "@components/atoms/DonationCard";
-import PrimarySearchAppBar from "@components/molecules/SearchAppBar";
-import { ThemeProvider } from "@emotion/react";
-import useDonations from "@hooks/useDonations";
-import useAppTheme from "@hooks/useTheme";
-import { Box, Grid2 } from "@mui/material";
+import DonationCard from '@components/atoms/DonationCard';
+import PrimarySearchAppBar from '@components/molecules/SearchAppBar';
+import { ThemeProvider } from '@emotion/react';
+import useDonations from '@hooks/useDonations';
+import useAppTheme from '@hooks/useTheme';
+import { Box, Grid2 } from '@mui/material';
 
 export default function HomePage() {
   const theme = useAppTheme();
@@ -13,8 +13,8 @@ export default function HomePage() {
     <ThemeProvider theme={theme}>
       <Box
         sx={{
-          backgroundColor: "background.default",
-          backgroundImage: "backgroundImage.default",
+          backgroundColor: 'background.default',
+          backgroundImage: 'backgroundImage.default',
         }}
       >
         <PrimarySearchAppBar />
@@ -26,10 +26,8 @@ export default function HomePage() {
           columns={{ xs: 4, sm: 8, md: 12 }}
           sx={{ px: 3, my: 5 }}
         >
-          {donations?.map((el) => (
-            // <Grid2 key={index} size={{ xs: 2, sm: 4, md: 4 }}>
-            <DonationCard donation={el} />
-            // </Grid2>
+          {donations?.map((el, index: number) => (
+            <DonationCard key={index} donation={el} />
           ))}
         </Grid2>
       </Box>

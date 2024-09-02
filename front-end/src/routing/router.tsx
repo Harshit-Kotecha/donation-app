@@ -1,15 +1,15 @@
-import SignInPage from "@components/pages/SignInPage";
-import SignupPage from "@components/pages/SignUpPage";
-import ErrorPage from "@pages/ErrorPage";
-import HomePage from "@pages/HomePage";
-import { routes } from "@routing/routes.js";
-import App from "App";
-import { createBrowserRouter } from "react-router-dom";
+import DonationDetails from '@components/pages/DonationDetails';
+import SignInPage from '@components/pages/SignInPage';
+import SignupPage from '@components/pages/SignUpPage';
+import ErrorPage from '@pages/ErrorPage';
+import HomePage from '@pages/HomePage';
+import { routes } from '@routing/routes.js';
+import { createBrowserRouter } from 'react-router-dom';
 
 export const router = createBrowserRouter([
   {
-    path: "/",
-    element: <App />,
+    path: '/',
+    element: <HomePage />,
     errorElement: <ErrorPage />,
   },
   {
@@ -21,7 +21,11 @@ export const router = createBrowserRouter([
     element: <SignInPage />,
   },
   {
-    path: routes.home,
+    path: routes.donations,
     element: <HomePage />,
+  },
+  {
+    path: routes.donationDetails,
+    element: <DonationDetails />,
   },
 ]);
