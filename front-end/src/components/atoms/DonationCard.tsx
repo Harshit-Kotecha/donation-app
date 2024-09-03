@@ -53,7 +53,7 @@ export default function DonationCard({ donation }: DonationCardProps) {
           },
         }}
         onClick={() => {
-          const path = `${routes.donationDetails}/${donation.id}`;
+          const path = `${routes.donations}/${donation.id}`;
           navigate(path, {
             state: { donation: donation },
           });

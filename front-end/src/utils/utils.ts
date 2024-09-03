@@ -1,6 +1,6 @@
 import { DonationStatus } from '@interfaces/donation';
 
-export const getStatusColor = (status: DonationStatus): string => {
+export const getStatusColor = (status: DonationStatus ): string => {
   switch (status) {
     case DonationStatus.CLOSED:
       return 'red';

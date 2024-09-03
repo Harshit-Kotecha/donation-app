@@ -6,7 +6,7 @@ import { Donation, DonationStatus } from '@interfaces/donation';
 import { RootState } from '@redux/store';
 import { getStatusColor } from '@utils/utils';
 import { useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 interface DonationProp {
   donation: Donation;
@@ -18,19 +18,14 @@ interface BtnAttributes {
   onClick: () => void;
 }
 
-export default function DonationDetails() {
-  const { state } = useLocation();
-  const { donation }: DonationProp = state;
-
-  const donations = useSelector((state: RootState) => state.donation);
-
+const getBtnAttributes = (status?: string) => {
   const btnAttributes: BtnAttributes = {
     title: 'Receive Donation',
     styles: '',
-    onClick: () => alert(donation.status),
+    onClick: () => alert(status),
   };
 
-  switch (donation.status) {
+  switch (status) {
     case DonationStatus.CLOSED: {
       btnAttributes.title = 'This donation is closed now.';
       btnAttributes.styles = 'hover:cursor-auto';
@@ -41,6 +36,32 @@ export default function DonationDetails() {
       btnAttributes.styles = 'hover:cursor-auto';
       break;
     }
+  }
+
+  return btnAttributes;
+};
+
+export default function DonationDetails() {
+  const { state } = useLocation();
+  const { id } = useParams();
+  const donations = useSelector((state: RootState) => state.donation.value);
+  console.log(donations, '+++++++++++++==');
+  let donation: Donation;
+
+  if (state) {
+    const { donation: tmp }: DonationProp = state;
+    donation = tmp;
+  } else if (id) {
+    donation = donations?.find((el) => el.id === parseInt(id));
+  }
+
+  console.log(state, id);
+  console.log(donation, 'kkkkkkkk');
+
+  const btnAttributes = getBtnAttributes(donation?.status);
+
+  if (!donation) {
+    return <h1>Invalid request</h1>;
   }
 
   return (
@@ -56,7 +77,7 @@ export default function DonationDetails() {
             title={btnAttributes.title}
             onClick={btnAttributes.onClick}
             styles={`fixed	bottom-5 right-11 w-6/12 bg-${getStatusColor(
-              donation.status
+              donation?.status
             )}-700	${btnAttributes.styles}`}
           />
         </div>

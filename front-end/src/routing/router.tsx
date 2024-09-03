@@ -25,11 +25,7 @@ export const router = createBrowserRouter([
     element: <HomePage />,
   },
   {
-    path: routes.donationDetails,
-    element: <DonationDetails />,
-  },
-  {
-    path: `${routes.donationDetails}/:id`,
+    path: `${routes.donations}/:id`,
     element: <DonationDetails />,
   },
 ]);
