@@ -13,4 +13,6 @@ export interface Donation {
   status: DonationStatus;
   images: string;
   expiry_time_in_hours: number;
+  phone_number: number;
+  pin_code: number;
 }

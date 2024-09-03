@@ -43,14 +43,15 @@ export default function DonationCard({ donation }: DonationCardProps) {
     <ThemeProvider theme={theme}>
       <Card
         sx={{
-          maxWidth: 345,
+          width: 345,
           ':hover': {
             boxShadow: `0px 0px 20px 10px ${theme['palette']['shadow']}}`,
             cursor: 'pointer',
           },
         }}
         onClick={() => {
-          navigate(routes.donationDetails, {
+          const path = `${routes.donationDetails}/${donation.id}`;
+          navigate(path, {
             state: { donation: donation },
           });
         }}

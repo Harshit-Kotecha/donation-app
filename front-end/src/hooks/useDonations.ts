@@ -8,11 +8,17 @@ export default function useDonations() {
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
-      const result = await get({ url: '/api/donations' });
+      try {
+        setIsLoading(true);
 
-      setDonations(result.data as Array<Donation>);
-      setIsLoading(false);
+        const result = await get({ url: '/api/donations' });
+
+        setDonations(result.data as Array<Donation>);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchData();

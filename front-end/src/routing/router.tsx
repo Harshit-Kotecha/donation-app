@@ -28,4 +28,8 @@ export const router = createBrowserRouter([
     path: routes.donationDetails,
     element: <DonationDetails />,
   },
+  {
+    path: `${routes.donationDetails}/:id`,
+    element: <DonationDetails />,
+  },
 ]);

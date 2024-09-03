@@ -6,5 +6,11 @@ interface ImageTabProps {
 
 export default function ImageTab({ url }: ImageTabProps) {
   console.log(url);
-  return <img src={img} alt="Donation image" />;
+  return (
+    <img
+      className="inline aspect-square w-full	min-w-3.5 px-24"
+      src={img}
+      alt="Donation image"
+    />
+  );
 }
