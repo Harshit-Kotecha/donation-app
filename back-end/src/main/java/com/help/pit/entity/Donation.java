@@ -56,4 +56,19 @@ public class Donation {
 
     @Column(name = "images")
     private List<String> images;
+
+    @Column(name = "phone_number")
+    @JsonProperty("phone_number")
+    @Min(1000000000)
+    @Max(999999999)
+    private  Long phoneNumber;
+
+    @Column(name = "pin_code")
+    @JsonProperty("pin_code")
+    @Min(100000)
+    @Max(999999)
+    private Long pinCode;
+
+    @Column(name = "likes")
+    private  Integer likes;
 }
