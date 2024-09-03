@@ -44,6 +44,9 @@ export default function DonationCard({ donation }: DonationCardProps) {
       <Card
         sx={{
           width: 345,
+          minWidth: 345,
+          maxWidth: 345,
+          margin: '1.5rem',
           ':hover': {
             boxShadow: `0px 0px 20px 10px ${theme['palette']['shadow']}}`,
             cursor: 'pointer',
@@ -92,14 +95,6 @@ export default function DonationCard({ donation }: DonationCardProps) {
           <Button variant="outlined" color="info">
             Show more
           </Button>
-          {/* <ExpandMore
-            expand={expanded}
-            onClick={handleExpandClick}
-            aria-expanded={expanded}
-            aria-label="show more"
-          >
-            <ExpandMoreIcon />
-          </ExpandMore> */}
         </CardActions>
         <Collapse in={false} timeout="auto" unmountOnExit>
           <CardContent>
