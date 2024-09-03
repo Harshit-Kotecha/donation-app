@@ -20,7 +20,6 @@ export default function DonationDetailsGrid({
     default:
       chipColor = 'green';
   }
-  console.log(chipColor, 'chippppppppppp');
   return (
     <>
       <div className="flex items-start justify-between">

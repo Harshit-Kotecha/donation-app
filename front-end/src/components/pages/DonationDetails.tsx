@@ -3,7 +3,9 @@ import ImageTab from '@components/atoms/ImageTab';
 import DonationDetailsGrid from '@components/molecules/DonationDetailsGrid';
 import SearchAppBar from '@components/molecules/SearchAppBar';
 import { Donation, DonationStatus } from '@interfaces/donation';
+import { RootState } from '@redux/store';
 import { getStatusColor } from '@utils/utils';
+import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
 interface DonationProp {
@@ -19,6 +21,9 @@ interface BtnAttributes {
 export default function DonationDetails() {
   const { state } = useLocation();
   const { donation }: DonationProp = state;
+
+  const donations = useSelector((state: RootState) => state.donation);
+
   const btnAttributes: BtnAttributes = {
     title: 'Receive Donation',
     styles: '',

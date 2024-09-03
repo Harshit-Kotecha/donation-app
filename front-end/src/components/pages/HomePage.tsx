@@ -15,8 +15,8 @@ const Donations = (donationsMap: Map<string, Array<Donation>>) => {
         backgroundImage: 'backgroundImage.default',
       }}
     >
-      {[...donationsMap.entries()]?.map(([key, value]) => (
-        <div className="px-16">
+      {[...donationsMap.entries()]?.map(([key, value], idx) => (
+        <div key={idx} className="px-16">
           <p className="text-3xl text-slate-500 mb-4 pt-11 ml-6">
             {key.toUpperCase()}
           </p>
@@ -55,7 +55,6 @@ export default function HomePage() {
     donationList.push(el);
     donationsMap.set(el.category, donationList);
   });
-  console.log(donationsMap);
 
   return (
     <ThemeProvider theme={theme}>
