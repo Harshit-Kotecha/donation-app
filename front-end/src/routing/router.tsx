@@ -1,3 +1,4 @@
+import AddDonation from '@components/pages/AddDonation';
 import DonationDetails from '@components/pages/DonationDetails';
 import SignInPage from '@components/pages/SignInPage';
 import SignupPage from '@components/pages/SignUpPage';
@@ -27,5 +28,9 @@ export const router = createBrowserRouter([
   {
     path: `${routes.donations}/:id`,
     element: <DonationDetails />,
+  },
+  {
+    path: routes.addDonation,
+    element: <AddDonation />,
   },
 ]);

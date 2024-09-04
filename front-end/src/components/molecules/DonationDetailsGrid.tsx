@@ -43,7 +43,12 @@ export default function DonationDetailsGrid({
         />
       </div>
       <TitleSubtitle title="Address" subtitle={`${donation.address}`} />
-      <TitleSubtitle title="Pin Code" subtitle={`${donation.pin_code}`} />
+      <div className="flex flex-row justify-between	">
+        <TitleSubtitle title="Pin Code" subtitle={`${donation.pin_code}`} />
+        <TitleSubtitle title="region" subtitle={donation.region} />
+        <TitleSubtitle title="District" subtitle={`${donation.district}`} />
+        <TitleSubtitle title="State" subtitle={`${donation.state}`} />
+      </div>
     </>
   );
 }

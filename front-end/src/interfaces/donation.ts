@@ -15,4 +15,7 @@ export interface Donation {
   expiry_time_in_hours: number;
   phone_number: number;
   pin_code: number;
+  region: string;
+  district: string;
+  state: string;
 }

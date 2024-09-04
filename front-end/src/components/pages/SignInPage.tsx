@@ -210,7 +210,7 @@ export default function SignInPage() {
                 variant="contained"
                 onClick={validateInputs}
               >
-                Sign up
+                Sign In
               </Button>
               <Typography sx={{ textAlign: 'center' }}>
                 Don't have an account?
