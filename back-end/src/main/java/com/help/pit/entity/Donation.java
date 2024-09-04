@@ -3,16 +3,15 @@ package com.help.pit.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.help.pit.dao.DonationStages;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
+import java.math.BigInteger;
 import java.util.List;
 
 
@@ -59,16 +58,26 @@ public class Donation {
 
     @Column(name = "phone_number")
     @JsonProperty("phone_number")
-    @Min(1000000000)
-    @Max(999999999)
-    private  Long phoneNumber;
+    @DecimalMax(value = "9999999999", message = "Phone number must be 10 digits long")
+    @DecimalMin(value = "1000000000", message = "Phone number must be 10 digits long")
+    private BigInteger phoneNumber;
 
     @Column(name = "pin_code")
     @JsonProperty("pin_code")
     @Min(100000)
     @Max(999999)
+    @NotNull(message = "PinCode is mandatory")
     private Long pinCode;
 
     @Column(name = "likes")
-    private  Integer likes;
+    private  Integer likes = 0;
+
+    @Column(name = "region")
+    private  String region;
+
+    @Column(name = "district")
+    private String district;
+
+    @Column(name = "state")
+    private  String state;
 }
