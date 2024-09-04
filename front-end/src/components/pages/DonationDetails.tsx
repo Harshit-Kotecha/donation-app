@@ -56,7 +56,7 @@ export default function DonationDetails() {
   }
 
   console.log(state, id);
-  console.log(donation, 'kkkkkkkk');
+  console.log(donation, '--donation');
 
   const btnAttributes = getBtnAttributes(donation?.status);
 

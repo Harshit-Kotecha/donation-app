@@ -1,28 +1,67 @@
+import Button from '@components/atoms/Button';
 import Heading from '@components/atoms/Heading';
 import useAppTheme from '@hooks/useTheme';
 import {
   Box,
-  Button,
   FormControl,
   FormLabel,
   TextField,
   ThemeProvider,
 } from '@mui/material';
 
+const onSubmit = () => {
+  const name: string = (document.getElementById('name') as HTMLInputElement)
+    .value;
+  const email: string = (document.getElementById('email') as HTMLInputElement)
+    .value;
+  const phoneNumber: string = (
+    document.getElementById('phone_number') as HTMLInputElement
+  ).value;
+  const age: string = (document.getElementById('age') as HTMLInputElement)
+    .value;
+  const pinCode: string = (
+    document.getElementById('pin_code') as HTMLInputElement
+  ).value;
+  const category: string = (
+    document.getElementById('category') as HTMLInputElement
+  ).value;
+  const expiryTime: string = (
+    document.getElementById('expiry_time') as HTMLInputElement
+  ).value;
+  const address: string = (
+    document.getElementById('address') as HTMLInputElement
+  ).value;
+
+  console.log(
+    name,
+    email,
+    phoneNumber,
+    age,
+    pinCode,
+    category,
+    expiryTime,
+    address,
+    '--data--------------'
+  );
+
+  // const rs = post('donations')
+};
+
 export default function AddDonation() {
   const theme = useAppTheme();
   return (
     <ThemeProvider theme={theme}>
-      <div className="flex flex-col items-center w-full">
+      <div className="flex flex-col items-center w-full py-7">
         <Heading title="Fill the form to add a new donation:" />
         <Box
           component="form"
-          //   onSubmit={handleSubmit}
+          onSubmit={onSubmit}
           sx={{
             display: 'flex',
             flexDirection: 'column',
             gap: 2,
             width: '30%',
+            marginTop: '2rem',
           }}
         >
           <FormControl>
@@ -152,13 +191,10 @@ export default function AddDonation() {
           </FormControl>
           <Box sx={{ mb: 1 }} />
           <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            //   onClick={validateInputs}
-          >
-            DONATE
-          </Button>
+            title="Donate"
+            onClick={onSubmit}
+            styles="bg-blue-700 hover:bg-blue-500"
+          />
         </Box>
       </div>
     </ThemeProvider>

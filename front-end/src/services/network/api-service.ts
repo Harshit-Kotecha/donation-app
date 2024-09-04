@@ -60,7 +60,7 @@ export interface DefaultResponse<T> {
 }
 
 interface IPostApi extends IGetApi {
-  payload?: string;
+  payload?: object;
   callback?: (data) => void;
 }
 
