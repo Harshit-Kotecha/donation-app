@@ -1,7 +1,9 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestConfig } from 'axios';
 
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+console.log(apiBaseUrl);
 const client = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: apiBaseUrl,
   timeout: 5000,
 });
 
@@ -31,10 +33,11 @@ client.interceptors.response.use(
 
 interface IGetApi {
   url: string;
-  queryParams?: AxiosRequestConfig; // Can it be: AxiosRequestConfig;
+  queryParams?: AxiosRequestConfig;
+  callback?: (data) => void;
 }
 
-export const get = async ({ url, queryParams = {} }: IGetApi) => {
+export const get = async ({ url, queryParams = {}, callback }: IGetApi) => {
   try {
     const response = await client.get(url, {
       params: queryParams,
@@ -46,6 +49,9 @@ export const get = async ({ url, queryParams = {} }: IGetApi) => {
       throw Error(response.statusText);
     }
   } catch (error) {
+    if (callback) {
+      callback(error['message']);
+    }
     console.error(error);
   }
 };
@@ -56,10 +62,15 @@ export interface DefaultResponse<T> {
 
 interface IPostApi extends IGetApi {
   payload?: string;
-  callbackfun: (data) => void;
+  callback?: (data) => void;
 }
 
-export const post = async ({ url, payload, queryParams = {} }: IPostApi) => {
+export const post = async ({
+  url,
+  payload,
+  queryParams = {},
+  callback,
+}: IPostApi) => {
   try {
     const response = await client.post(url, { payload, params: queryParams });
 
@@ -69,6 +80,9 @@ export const post = async ({ url, payload, queryParams = {} }: IPostApi) => {
       throw Error(response.statusText);
     }
   } catch (error) {
+    if (callback) {
+      callback(error['message']);
+    }
     console.error(error);
   }
 };

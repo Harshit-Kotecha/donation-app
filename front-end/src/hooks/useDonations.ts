@@ -4,6 +4,10 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { get } from 'services/network/api-service';
 
+const callback = (data) => {
+  alert(data);
+};
+
 export default function useDonations() {
   const [isLoading, setIsLoading] = useState(false);
   const [donations, setDonations] = useState<Array<Donation>>(null);
@@ -14,7 +18,7 @@ export default function useDonations() {
       try {
         setIsLoading(true);
 
-        const result = await get({ url: '/api/donations' });
+        const result = await get({ url: '/api/donations', callback });
 
         dispatch(update(result.data));
         setDonations(result.data as Array<Donation>);
