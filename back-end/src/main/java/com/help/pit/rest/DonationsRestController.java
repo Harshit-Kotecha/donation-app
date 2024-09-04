@@ -51,7 +51,7 @@ public class DonationsRestController {
         if (result == 0) {
             return new FailureResponse<>(400);
         }
-        return new SuccessResponse<>();
+        return new SuccessResponse<>("Donation updated successfully");
     }
 
     @DeleteMapping("/donations/{id}")
