@@ -2,9 +2,12 @@ package com.help.pit.service;
 
 import com.help.pit.dao.DonationStages;
 import com.help.pit.entity.Donation;
+import com.help.pit.models.DonationFilters;
+import com.help.pit.models.Filters;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface DonationService {
@@ -19,4 +22,11 @@ public interface DonationService {
     Integer updateDonationStatus(@Param("status") DonationStages status, @Param("id") Long id);
 
     List<Donation> filterByName(String name);
+
+    List<String> getAllCategories();
+
+//    Map<String, List<String>> getFilters();
+
+    List<Object> getFilters();
+
 }

@@ -3,13 +3,14 @@ package com.help.pit.service;
 import com.help.pit.dao.DonationRepository;
 import com.help.pit.dao.DonationStages;
 import com.help.pit.entity.Donation;
+import com.help.pit.models.DonationFilters;
+import com.help.pit.models.Filters;
 import com.help.pit.rest.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -56,4 +57,23 @@ public class DonationServiceImpl implements DonationService {
     public List<Donation> filterByName(String name) {
         return donationRepository.findByName(name);
     }
+
+    @Override
+    public List<String> getAllCategories() {
+        return donationRepository.getAllCategories();
+    }
+
+    @Override
+    public List<Object> getFilters() {
+        return donationRepository.getFilters();
+    }
+
+//    @Override
+//    public Map<String, List<String>> getFilters() {
+//        Map<String, List<String>> rs = new HashMap<>();
+//
+//        List<String> categories = donationRepository.getDistinctItems("category");
+//        rs.put("category", categories);
+//        return rs;
+//    }
 }

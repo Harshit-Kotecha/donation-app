@@ -2,12 +2,18 @@ package com.help.pit.rest;
 
 import com.help.pit.dao.DonationStages;
 import com.help.pit.entity.*;
+import com.help.pit.models.DonationFilters;
+import com.help.pit.models.Filters;
 import com.help.pit.service.DonationService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -28,6 +34,23 @@ public class DonationsRestController {
     public BaseResponse<Donation> findById(@PathVariable(name = "id") Long id) {
         return new SuccessResponse<>(donationService.findById(id));
 
+    }
+
+    @GetMapping("/categories")
+    public  BaseResponse<List<String>> getAllCategories() {
+        List<String> categories = new ArrayList<>();
+        try {
+            categories = donationService.getAllCategories();
+        } catch (Exception e) {
+            return new FailureResponse<>(HttpStatus.NO_CONTENT.value());
+        }
+
+        return new SuccessResponse<>(categories);
+    }
+
+    @GetMapping("/filters")
+    public BaseResponse<List<Object>> getAllFilters() {
+        return new SuccessResponse<>(donationService.getFilters());
     }
 
     @PostMapping("/donations")
@@ -57,7 +80,6 @@ public class DonationsRestController {
     @DeleteMapping("/donations/{id}")
     public BaseResponse<String> deleteById(@PathVariable(name = "id") Long id) {
         Donation donation = donationService.findById(id);
-
         donationService.deleteById(id);
 
         return new SuccessResponse<>("Donation of id " + id + " deleted successfully");
