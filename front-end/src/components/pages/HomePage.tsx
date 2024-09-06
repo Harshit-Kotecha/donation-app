@@ -1,3 +1,4 @@
+import img from '@assets/donation-app.jpg';
 import DonationCard from '@components/atoms/DonationCard';
 import PrimarySearchAppBar from '@components/molecules/SearchAppBar';
 import { ThemeProvider } from '@emotion/react';
@@ -59,6 +60,18 @@ export default function HomePage() {
   return (
     <ThemeProvider theme={theme}>
       <PrimarySearchAppBar />
+      <div className="flex flex-row bg-background-dark items-center pt-14">
+        <img src={img} className=" flex-1 w-6/12 box shadow-3xl" />
+        <div className="ml-11 justify-evenly">
+          <p className="flex-1 text-6xl font-bold text-white mb-11">
+            Giving is the essence of living.
+          </p>
+          <p className="flex-1 text-3xl font-bold text-gray-600">
+            Donations spread kindness, empowering lives and creating lasting
+            change.
+          </p>
+        </div>
+      </div>
       {isLoading ? (
         <Box
           sx={{

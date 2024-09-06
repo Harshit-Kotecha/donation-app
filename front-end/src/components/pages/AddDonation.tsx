@@ -8,12 +8,13 @@ import {
   TextField,
   ThemeProvider,
 } from '@mui/material';
+import { get, post } from 'services/network/api-service';
 
-const onSubmit = () => {
+const onSubmit = async () => {
   const name: string = (document.getElementById('name') as HTMLInputElement)
     .value;
-  const email: string = (document.getElementById('email') as HTMLInputElement)
-    .value;
+  // const email: string = (document.getElementById('email') as HTMLInputElement)
+  //   .value;
   const phoneNumber: string = (
     document.getElementById('phone_number') as HTMLInputElement
   ).value;
@@ -32,19 +33,29 @@ const onSubmit = () => {
     document.getElementById('address') as HTMLInputElement
   ).value;
 
-  console.log(
-    name,
-    email,
-    phoneNumber,
-    age,
-    pinCode,
-    category,
-    expiryTime,
-    address,
-    '--data--------------'
-  );
+  const pinCodeJson = await get({
+    url: `api.postalpincode.in/pincode/${pinCode}`,
+  });
+  console.log(pinCodeJson, 'pincode---------------');
+  const pincodeData = pinCodeJson.data[0]['PostOffice'][0];
 
-  // const rs = post('donations')
+  const data = {
+    name,
+    age: parseInt(age),
+    address,
+    expiry_time_in_hours: parseInt(expiryTime),
+    category,
+    phone_number: parseInt(phoneNumber),
+    pin_code: parseInt(pinCode),
+    region: pincodeData['Region'],
+    district: pincodeData['District'],
+    state: pincodeData['State'],
+  };
+
+  console.log(data, '--data--------------');
+
+  const rs = await post({ url: '/api/donations', payload: data });
+  console.log(rs, 'result');
 };
 
 export default function AddDonation() {

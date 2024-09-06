@@ -64,14 +64,9 @@ interface IPostApi extends IGetApi {
   callback?: (data) => void;
 }
 
-export const post = async ({
-  url,
-  payload,
-  queryParams = {},
-  callback,
-}: IPostApi) => {
+export const post = async ({ url, payload, callback }: IPostApi) => {
   try {
-    const response = await client.post(url, { payload, params: queryParams });
+    const response = await client.post(url, payload);
 
     if (isRequestSuccess(response.status)) {
       return response.data;
