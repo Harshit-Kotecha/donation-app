@@ -1,10 +1,8 @@
-import ThemeButton from '@components/atoms/ThemeButton';
+import logo from '@assets/logo.svg';
 import useAppTheme from '@hooks/useTheme';
-import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
 import InputBase from '@mui/material/InputBase';
 import { alpha, styled, ThemeProvider } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
@@ -63,19 +61,14 @@ export default function SearchAppBar() {
     <ThemeProvider theme={theme}>
       <Box sx={{ flexGrow: 1 }}>
         <AppBar
-          sx={{ backgroundColor: 'background.default', textAlign: 'center' }}
+          sx={{
+            backgroundColor: 'background.default',
+            textAlign: 'left',
+          }}
           position="static"
         >
           <Toolbar>
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              sx={{ mr: 2, color: 'text.primary' }}
-            >
-              <MenuIcon />
-            </IconButton>
+            <img src={logo} className="w-min-4 max-w-11 mr-5" />
             <Typography
               variant="h6"
               noWrap
@@ -85,6 +78,7 @@ export default function SearchAppBar() {
                 display: { xs: 'none', sm: 'block' },
                 color: 'text.primary',
                 fontWeight: 'bold',
+                fontStyle: 'italic',
               }}
             >
               {appName}
@@ -105,7 +99,6 @@ export default function SearchAppBar() {
                 inputProps={{ 'aria-label': 'search' }}
               />
             </Search>
-            <ThemeButton />
           </Toolbar>
         </AppBar>
       </Box>

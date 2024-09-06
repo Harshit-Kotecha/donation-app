@@ -60,8 +60,8 @@ export default function HomePage() {
   return (
     <ThemeProvider theme={theme}>
       <PrimarySearchAppBar />
-      <div className="flex flex-row bg-background-dark items-center pt-14">
-        <img src={img} className=" flex-1 w-6/12 box shadow-3xl" />
+      <div className="flex flex-row bg-background-dark items-center">
+        <img src={img} className=" flex-1 w-6/12 " />
         <div className="ml-11 justify-evenly">
           <p className="flex-1 text-6xl font-bold text-white mb-11">
             Giving is the essence of living.
