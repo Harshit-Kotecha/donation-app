@@ -34,10 +34,10 @@ const onSubmit = async () => {
   ).value;
 
   const pinCodeJson = await get({
-    url: `api.postalpincode.in/pincode/${pinCode}`,
+    url: `https://api.postalpincode.in/pincode/${pinCode}`,
   });
   console.log(pinCodeJson, 'pincode---------------');
-  const pincodeData = pinCodeJson.data[0]['PostOffice'][0];
+  const pincodeData = pinCodeJson[0]['PostOffice'][0];
 
   const data = {
     name,
