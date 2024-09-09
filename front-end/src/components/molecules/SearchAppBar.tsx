@@ -1,4 +1,3 @@
-import logo from '@assets/logo.svg';
 import useAppTheme from '@hooks/useTheme';
 import SearchIcon from '@mui/icons-material/Search';
 import AppBar from '@mui/material/AppBar';
@@ -6,10 +5,9 @@ import Box from '@mui/material/Box';
 import InputBase from '@mui/material/InputBase';
 import { alpha, styled, ThemeProvider } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import { routes } from '@routing/routes';
-import { appConstants } from 'constants/app-constants';
-import { Link } from 'react-router-dom';
+import LogoBanner from './LogoBanner';
+import TitleLink from './TitleLink';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -54,7 +52,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function SearchAppBar() {
-  const appName = appConstants.appName;
   const theme = useAppTheme();
 
   return (
@@ -68,37 +65,23 @@ export default function SearchAppBar() {
           position="static"
         >
           <Toolbar>
-            <img src={logo} className="w-min-4 max-w-11 mr-5" />
-            <Typography
-              variant="h6"
-              noWrap
-              component="div"
-              sx={{
-                flexGrow: 1,
-                display: { xs: 'none', sm: 'block' },
-                color: 'text.primary',
-                fontWeight: 'bold',
-                fontStyle: 'italic',
-              }}
-            >
-              {appName}
-            </Typography>
-            <Link
-              to={routes.addDonation}
-              className="mr-6 text-white hover:text-green-500 font-bold tracking-wider"
-            >
-              DONATE
-            </Link>
-            <Search>
-              <SearchIconWrapper sx={{ color: 'text.primary' }}>
-                <SearchIcon />
-              </SearchIconWrapper>
-              <StyledInputBase
-                sx={{ color: 'text.primary', borderColor: 'text.primary' }}
-                placeholder="Search…"
-                inputProps={{ 'aria-label': 'search' }}
-              />
-            </Search>
+            <div className="flex items-center w-full justify-between">
+              <LogoBanner />
+              <div className="flex items-center">
+                <TitleLink title="Donate" link={routes.addDonation} />
+                <TitleLink title="About" link={routes.addDonation} />
+                <Search>
+                  <SearchIconWrapper sx={{ color: 'text.primary' }}>
+                    <SearchIcon />
+                  </SearchIconWrapper>
+                  <StyledInputBase
+                    sx={{ color: 'text.primary', borderColor: 'text.primary' }}
+                    placeholder="Search…"
+                    inputProps={{ 'aria-label': 'search' }}
+                  />
+                </Search>
+              </div>
+            </div>
           </Toolbar>
         </AppBar>
       </Box>

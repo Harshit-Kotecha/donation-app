@@ -76,9 +76,9 @@ export default function DonationDetails() {
           <Button
             title={btnAttributes.title}
             onClick={btnAttributes.onClick}
-            styles={`fixed	bottom-5 right-11 w-6/12 bg-${getStatusColor(
+            styles={`fixed	bottom-5 right-11 w-6/12 ${getStatusColor(
               donation?.status
-            )}-700	${btnAttributes.styles}`}
+            )}	${btnAttributes.styles}`}
           />
         </div>
       </div>
