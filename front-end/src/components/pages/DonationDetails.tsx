@@ -5,6 +5,7 @@ import SearchAppBar from '@components/molecules/SearchAppBar';
 import { Donation, DonationStatus } from '@interfaces/donation';
 import { RootState } from '@redux/store';
 import { getStatusColor } from '@utils/utils';
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useParams } from 'react-router-dom';
 
@@ -47,6 +48,10 @@ export default function DonationDetails() {
   const donations = useSelector((state: RootState) => state.donation.value);
   console.log(donations, '+++++++++++++==');
   let donation: Donation;
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   if (state) {
     const { donation: tmp }: DonationProp = state;

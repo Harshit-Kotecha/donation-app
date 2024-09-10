@@ -14,6 +14,7 @@ const Donations = (donationsMap: Map<string, Array<Donation>>) => {
       sx={{
         backgroundColor: 'background.default',
         backgroundImage: 'backgroundImage.default',
+        minHeight: '100%',
       }}
     >
       {[...donationsMap.entries()]?.map(([key, value], idx) => (

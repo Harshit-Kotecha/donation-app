@@ -10,6 +10,7 @@ import {
   ThemeProvider,
 } from '@mui/material';
 import { routes } from '@routing/routes';
+import { endpoints } from 'constants/endpoints';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { get, post } from 'services/network/api-service';
@@ -176,7 +177,7 @@ export default function AddDonation() {
       data['district'] = pincodeData['District'];
       data['state'] = pincodeData['State'];
 
-      const response = await post({ url: '/api/donations', payload: data });
+      const response = await post({ url: endpoints.donations, payload: data });
       console.log(response, 'result');
       alert(response['message']);
       navigate(routes.donations);
@@ -189,7 +190,7 @@ export default function AddDonation() {
   const getPinCodeData = async (pinCode: number) => {
     try {
       const pinCodeJson = await get({
-        url: `https://api.postalpincode.in/pincode/${pinCode}`,
+        url: `${endpoints.pinCode}/${pinCode}`,
       });
       console.log(pinCodeJson, 'pincode---------------');
       const pincodeData = pinCodeJson[0]['PostOffice'][0];

@@ -1,5 +1,6 @@
 import { Donation } from '@interfaces/donation';
 import { update } from '@redux/donationSlice';
+import { endpoints } from 'constants/endpoints';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { get } from 'services/network/api-service';
@@ -18,7 +19,7 @@ export default function useDonations() {
       try {
         setIsLoading(true);
 
-        const result = await get({ url: '/api/donations', callback });
+        const result = await get({ url: endpoints.donations, callback });
 
         dispatch(update(result.data));
         setDonations(result.data as Array<Donation>);
