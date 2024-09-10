@@ -55,10 +55,6 @@ export const get = async ({ url, queryParams = {}, callback }: IGetApi) => {
   }
 };
 
-export interface DefaultResponse<T> {
-  data?: T;
-}
-
 interface IPostApi extends IGetApi {
   payload?: object;
   callback?: (data) => void;

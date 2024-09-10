@@ -69,7 +69,7 @@ export default function SearchAppBar() {
               <LogoBanner />
               <div className="flex items-center">
                 <TitleLink title="Donate" link={routes.addDonation} />
-                <TitleLink title="About" link={routes.addDonation} />
+                <TitleLink title="About" link={routes.about} />
                 <Search>
                   <SearchIconWrapper sx={{ color: 'text.primary' }}>
                     <SearchIcon />
