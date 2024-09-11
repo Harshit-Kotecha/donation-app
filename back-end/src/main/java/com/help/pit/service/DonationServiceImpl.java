@@ -3,14 +3,9 @@ package com.help.pit.service;
 import com.help.pit.dao.DonationRepository;
 import com.help.pit.dao.DonationStages;
 import com.help.pit.entity.Donation;
-import com.help.pit.models.DonationFilters;
-import com.help.pit.models.Filters;
 import com.help.pit.rest.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Session;
-import org.hibernate.cfg.Configuration;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +21,11 @@ public class DonationServiceImpl implements DonationService {
     @Override
     public List<Donation> findAll() {
         return donationRepository.findAll();
+    }
+
+    @Override
+    public List<Donation> findAllByOrderByExpiryTimeDesc() {
+        return donationRepository.findAllByOrderByExpiryTimeInHours();
     }
 
     @Override
@@ -77,6 +77,11 @@ public class DonationServiceImpl implements DonationService {
     public List<Donation> findByCategoryAndRegionAndState(String category, String region, String state) {
 //        Specification<Donation> donationSpecification = Specification.where(DonationSpecification)
         return donationRepository.findByCategoryAndRegionAndState(category, region, state);
+    }
+
+    @Override
+    public List<Donation> findDonations(String searchKey) {
+        return donationRepository.findDonations(searchKey);
     }
 
     @Override

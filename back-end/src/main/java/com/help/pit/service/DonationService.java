@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface DonationService {
     List<Donation> findAll();
 
+    List<Donation> findAllByOrderByExpiryTimeDesc();
+
     Donation findById(Long id);
 
     Donation save(Donation donation);
@@ -30,5 +32,7 @@ public interface DonationService {
 //    List<Object> getFilters();
 
     List<Donation> findByCategoryAndRegionAndState(String category, String region, String state);
+
+    List<Donation> findDonations(@Param("search_key") String searchKey);
 
 }

@@ -8,6 +8,7 @@ import com.help.pit.service.DonationService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.bind.annotation.*;
@@ -24,12 +25,16 @@ public class DonationsRestController {
     private DonationService donationService;
 
     @GetMapping("/donations")
-    public BaseResponse<List<Donation>> findAll(@RequestParam(name = "name", required = false) String name) {
-        if (name != null) {
-            return new SuccessResponse<>(donationService.filterByName(name));
+    public BaseResponse<List<Donation>> findAll(@RequestParam(name = "search_key", required = false) String searchKey) {
+        if (searchKey != null && !searchKey.trim().isEmpty()) {
+            return new SuccessResponse<>(donationService.findDonations(searchKey.trim().toLowerCase()));
         }
-        return new SuccessResponse<>(donationService.findAll());
+        return new SuccessResponse<>(donationService.findAllByOrderByExpiryTimeDesc());
     }
+
+//    List<Donation> findDonations(@Param("search_key") String searchKey) {
+//        return donationService.findDonations(searchKey);
+//    }
 
     @GetMapping("/donations/{id}")
     public BaseResponse<Donation> findById(@PathVariable(name = "id") Long id) {
