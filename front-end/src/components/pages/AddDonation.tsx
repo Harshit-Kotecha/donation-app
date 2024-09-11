@@ -21,6 +21,10 @@ export default function AddDonation() {
   const [nameError, setNameError] = useState<boolean>(false);
   const [nameErrorMsg, setNameErrorMsg] = useState<string>('');
 
+  // Description field validation states
+  const [descriptionError, setDescriptionError] = useState<boolean>(false);
+  const [descriptionErrorMsg, setDescriptionErrorMsg] = useState<string>('');
+
   // Age field validation states
   const [ageError, setAgeError] = useState<boolean>(false);
   const [ageErrorMsg, setAgeErrorMsg] = useState<string>('');
@@ -51,6 +55,7 @@ export default function AddDonation() {
     name,
     age,
     address,
+    description,
     expiry_time_in_hours,
     category,
     phone_number,
@@ -86,6 +91,16 @@ export default function AddDonation() {
     } else {
       setAddressError(false);
       setAddressErrorMsg('');
+    }
+
+    // Validate description (should not be empty)
+    if (!description || description.trim().length < 1) {
+      setDescriptionError(true);
+      setAddressErrorMsg('Description is required.');
+      isValid = false;
+    } else {
+      setDescriptionError(false);
+      setDescriptionErrorMsg('');
     }
 
     // Validate expiry time (should not be empty or NaN)
@@ -153,11 +168,15 @@ export default function AddDonation() {
     const address: string = (
       document.getElementById('address') as HTMLInputElement
     ).value;
+    const description: string = (
+      document.getElementById('description') as HTMLInputElement
+    ).value;
 
     const data = {
       name,
       age: parseInt(age),
       address,
+      description,
       expiry_time_in_hours: parseInt(expiryTime),
       category,
       phone_number: parseInt(phoneNumber),
@@ -263,6 +282,25 @@ export default function AddDonation() {
               error={phoneNumberError}
               helperText={phoneNumberErrorMsg}
               color={phoneNumberError ? 'error' : 'primary'}
+            />
+          </FormControl>
+
+          <FormControl>
+            <FormLabel htmlFor="description">Description</FormLabel>
+            <TextField
+              required
+              fullWidth
+              name="description"
+              placeholder=""
+              type="text"
+              id="description"
+              autoComplete="description"
+              multiline={true}
+              rows={3}
+              variant="outlined"
+              error={descriptionError}
+              helperText={descriptionErrorMsg}
+              color={descriptionError ? 'error' : 'primary'}
             />
           </FormControl>
 

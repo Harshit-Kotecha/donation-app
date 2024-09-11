@@ -5,9 +5,6 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { get } from 'services/network/api-service';
 
-const callback = (data) => {
-  alert(data);
-};
 
 export default function useDonations() {
   const [isLoading, setIsLoading] = useState(false);
@@ -35,3 +32,7 @@ export default function useDonations() {
 
   return { isLoading, donations };
 }
+
+const callback = (data) => {
+  alert(data);
+};
