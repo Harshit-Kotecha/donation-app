@@ -25,8 +25,10 @@ public interface DonationService {
 
     List<String> getAllCategories();
 
-//    Map<String, List<String>> getFilters();
+    Map<String, List<String>> getFilters();
 
-    List<Object> getFilters();
+//    List<Object> getFilters();
+
+    List<Donation> findByCategoryAndRegionAndState(String category, String region, String state);
 
 }

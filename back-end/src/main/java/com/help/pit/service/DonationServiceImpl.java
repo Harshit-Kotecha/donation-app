@@ -7,11 +7,16 @@ import com.help.pit.models.DonationFilters;
 import com.help.pit.models.Filters;
 import com.help.pit.rest.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Session;
+import org.hibernate.cfg.Configuration;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class DonationServiceImpl implements DonationService {
@@ -63,17 +68,24 @@ public class DonationServiceImpl implements DonationService {
         return donationRepository.getAllCategories();
     }
 
+//    @Override
+//    public List<Object> getFilters() {
+//        return donationRepository.getFilters();
+//    }
+
     @Override
-    public List<Object> getFilters() {
-        return donationRepository.getFilters();
+    public List<Donation> findByCategoryAndRegionAndState(String category, String region, String state) {
+//        Specification<Donation> donationSpecification = Specification.where(DonationSpecification)
+        return donationRepository.findByCategoryAndRegionAndState(category, region, state);
     }
 
-//    @Override
-//    public Map<String, List<String>> getFilters() {
-//        Map<String, List<String>> rs = new HashMap<>();
-//
-//        List<String> categories = donationRepository.getDistinctItems("category");
-//        rs.put("category", categories);
-//        return rs;
-//    }
+    @Override
+    public Map<String, List<String>> getFilters() {
+        Map<String, List<String>> rs = new HashMap<>();
+
+        List<String> categories = donationRepository.getDistinctItems("category");
+        log.debug(categories.toString());
+        rs.put("category", categories);
+        return rs;
+    }
 }

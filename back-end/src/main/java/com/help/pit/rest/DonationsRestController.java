@@ -7,6 +7,7 @@ import com.help.pit.models.Filters;
 import com.help.pit.service.DonationService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.bind.annotation.*;
@@ -49,7 +50,7 @@ public class DonationsRestController {
     }
 
     @GetMapping("/filters")
-    public BaseResponse<List<Object>> getAllFilters() {
+    public BaseResponse<Map<String, List<String>>> getAllFilters() {
         return new SuccessResponse<>(donationService.getFilters());
     }
 
@@ -83,5 +84,11 @@ public class DonationsRestController {
         donationService.deleteById(id);
 
         return new SuccessResponse<>("Donation of id " + id + " deleted successfully");
+    }
+
+    @GetMapping("/donations/sort")
+    public BaseResponse<List<Donation>> findByCategoryAndRegionAndState(@RequestParam(required = false) Map<String, String> params) {
+        System.out.println(params + "params");
+        return new SuccessResponse<>(donationService.findAll());
     }
 }

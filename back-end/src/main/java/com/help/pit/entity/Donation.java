@@ -39,6 +39,10 @@ public class Donation {
     @NotBlank(message = "Address is mandatory")
     private String address;
 
+    @Column(name = "description")
+    @NotBlank(message = "Description is mandatory")
+    private String description;
+
     @Column(name = "expiry_time", columnDefinition = "int default 0")
     @JsonProperty("expiry_time_in_hours")
     @Min(0)

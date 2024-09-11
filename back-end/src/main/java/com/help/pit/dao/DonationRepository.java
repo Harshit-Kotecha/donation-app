@@ -4,6 +4,7 @@ import com.help.pit.entity.Donation;
 import com.help.pit.models.DonationFilters;
 import com.help.pit.models.Filters;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
-public interface DonationRepository extends JpaRepository<Donation, Long> {
+public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSpecificationExecutor<Donation> {
 
     @Transactional
     @Modifying
@@ -27,9 +28,11 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     @Query("SELECT DISTINCT(region) FROM Donation")
     List<String> getAllCategories();
 
-//    @Query("SELECT DISTINCT :region FROM Donation")
-//    List<String> getDistinctItems(String filter);
+    @Query("SELECT DISTINCT :filter FROM Donation")
+    List<String> getDistinctItems(@Param("filter") String filter);
 
     @Query("SELECT region, state, district, category FROM Donation GROUP BY region, state, district, category")
     List<Object> getFilters();
+
+    List<Donation> findByCategoryAndRegionAndState(String category, String region, String state);
 }
