@@ -15,7 +15,6 @@ export const donationSlice = createSlice({
   reducers: {
     update: (state, action: PayloadAction<Donation[]>) => {
       state.value = action.payload;
-      console.log(state.value, action, '....redux');
     },
   },
 });

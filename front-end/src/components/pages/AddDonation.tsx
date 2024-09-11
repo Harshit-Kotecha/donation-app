@@ -10,6 +10,7 @@ import {
   ThemeProvider,
 } from '@mui/material';
 import { routes } from '@routing/routes';
+import { appConstants } from 'constants/app-constants';
 import { endpoints } from 'constants/endpoints';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -225,7 +226,7 @@ export default function AddDonation() {
     <ThemeProvider theme={theme}>
       <SearchAppBar />
       <div className="flex flex-col items-center w-full py-7 bg-background-dark">
-        <Heading title="Fill the form to add a new donation:" />
+        <Heading title={appConstants.makeDonation} />
         <Box
           component="form"
           onSubmit={onSubmit}

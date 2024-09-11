@@ -51,7 +51,11 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function SearchAppBar() {
+interface SearchAppBarProps {
+  onChange?: (e: object) => void;
+}
+
+export default function SearchAppBar({ onChange }: SearchAppBarProps) {
   const theme = useAppTheme();
 
   return (
@@ -70,7 +74,7 @@ export default function SearchAppBar() {
               <div className="flex items-center">
                 <TitleLink title="Donate" link={routes.addDonation} />
                 <TitleLink title="About" link={routes.about} />
-                <Search>
+                <Search onChange={onChange} onSubmit={onChange}>
                   <SearchIconWrapper sx={{ color: 'text.primary' }}>
                     <SearchIcon />
                   </SearchIconWrapper>

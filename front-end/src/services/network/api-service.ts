@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 const client = axios.create({
@@ -32,15 +32,24 @@ client.interceptors.response.use(
 
 interface IGetApi {
   url: string;
-  queryParams?: AxiosRequestConfig;
+  queryParams?: object;
+  abortController?: AbortController;
   callback?: (data) => void;
 }
 
-export const get = async ({ url, queryParams = {}, callback }: IGetApi) => {
+export const get = async ({
+  url,
+  queryParams = {},
+  abortController = null,
+  callback,
+}: IGetApi) => {
   try {
     const response = await client.get(url, {
+      signal: abortController?.signal,
       params: queryParams,
     });
+
+    console.log(response, '-------api');
 
     if (isRequestSuccess(response.status)) {
       return response.data;

@@ -2,11 +2,13 @@ import img from '@assets/donation-app.jpg';
 import DonationCard from '@components/atoms/DonationCard';
 import PrimarySearchAppBar from '@components/molecules/SearchAppBar';
 import { ThemeProvider } from '@emotion/react';
-import useDonations from '@hooks/useDonations';
 import useAppTheme from '@hooks/useTheme';
 import { Donation } from '@interfaces/donation';
 import { Box, CircularProgress } from '@mui/material';
 import '@styles/style.css';
+import { endpoints } from 'constants/endpoints';
+import { useEffect, useRef, useState } from 'react';
+import { get } from 'services/network/api-service';
 
 const Donations = (donationsMap: Map<string, Array<Donation>>) => {
   return (
@@ -49,7 +51,14 @@ const Donations = (donationsMap: Map<string, Array<Donation>>) => {
 
 export default function HomePage() {
   const theme = useAppTheme();
-  const { isLoading, donations } = useDonations();
+  // const { isLoading, donations: allDonations } = useDonations();
+
+  // console.log(allDonations, 'all donations');
+  const [isLoading, setIsLoading] = useState(false);
+  const [donations, setDonations] = useState<Donation[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const controllerRef = useRef(new AbortController());
 
   const donationsMap: Map<string, Array<Donation>> = new Map();
   donations?.forEach((el) => {
@@ -58,9 +67,34 @@ export default function HomePage() {
     donationsMap.set(el.category, donationList);
   });
 
+  const onChange = (e: object) => {
+    const query = e['target']['value'].trim();
+    console.log(query, '--input home');
+    setSearchQuery(query);
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      const foundDonations = await get({
+        url: endpoints.donations,
+        queryParams: searchQuery && { search_key: searchQuery },
+        abortController: controllerRef.current,
+      });
+      console.log(foundDonations, 'inside effect');
+      setDonations(foundDonations.data);
+      setIsLoading(false);
+    };
+    if (searchQuery || donations.length === 0) {
+      fetchData();
+    }
+  }, [searchQuery]);
+
+  console.log(donations, 'donations');
+
   return (
     <ThemeProvider theme={theme}>
-      <PrimarySearchAppBar />
+      <PrimarySearchAppBar onChange={onChange} />
       <div className="flex flex-row bg-background-dark items-center">
         <img src={img} className=" flex-1 w-6/12 " />
         <div className="ml-11 justify-evenly">
@@ -84,6 +118,8 @@ export default function HomePage() {
         >
           <CircularProgress />
         </Box>
+      ) : donationsMap.size === 0 ? (
+        <h1 className="text-3xl text-center mt-11">No donations to show</h1>
       ) : (
         Donations(donationsMap)
       )}

@@ -38,6 +38,11 @@ export default function DonationCard({ donation }: DonationCardProps) {
       color = 'success';
   }
 
+  const expiryText =
+    donation.expiry_time_in_hours === 0
+      ? 'Never expires'
+      : `Expires in ${donation.expiry_time_in_hours} hours`;
+
   return (
     <ThemeProvider theme={theme}>
       <Card
@@ -103,7 +108,7 @@ export default function DonationCard({ donation }: DonationCardProps) {
             <ShareIcon />
           </IconButton> */}
           <Button variant="outlined" color="info">
-            Show more
+            {expiryText}
           </Button>
         </CardActions>
       </Card>
