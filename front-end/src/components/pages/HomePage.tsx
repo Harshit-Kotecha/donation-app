@@ -6,8 +6,9 @@ import useAppTheme from '@hooks/useTheme';
 import { Donation } from '@interfaces/donation';
 import { Box, CircularProgress } from '@mui/material';
 import '@styles/style.css';
+import { debounce } from '@utils/utils';
 import { endpoints } from 'constants/endpoints';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { get } from 'services/network/api-service';
 
 const Donations = (donationsMap: Map<string, Array<Donation>>) => {
@@ -56,7 +57,8 @@ export default function HomePage() {
   // console.log(allDonations, 'all donations');
   const [isLoading, setIsLoading] = useState(false);
   const [donations, setDonations] = useState<Donation[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  // const [searchQuery, setSearchQuery] = useState('');
+  const queryRef = useRef('');
 
   const controllerRef = useRef(new AbortController());
 
@@ -67,37 +69,48 @@ export default function HomePage() {
     donationsMap.set(el.category, donationList);
   });
 
-  const onChange = (e: object) => {
-    const query = e['target']['value'].trim();
+  const onQueryChange = (e: object) => {
+    const query: string = e['target']['value'].trim();
     console.log(query, '--input home');
-    setSearchQuery(query);
+
+    if (query === queryRef.current) {
+      return;
+    }
+
+    queryRef.current = query;
+    searchFun();
   };
 
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+
+      const queryText = queryRef.current;
+      const foundDonations = await get({
+        url: endpoints.donations,
+        queryParams: queryText && { search_key: queryText },
+        abortController: controllerRef.current,
+      });
+      console.log(foundDonations, 'inside effect');
+      setDonations(foundDonations.data);
+    } catch (error) {
+      console.error(error, '-----home page');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const searchFun = useMemo(() => debounce(fetchData, 700), []);
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const foundDonations = await get({
-          url: endpoints.donations,
-          queryParams: searchQuery && { search_key: searchQuery },
-          abortController: controllerRef.current,
-        });
-        console.log(foundDonations, 'inside effect');
-        setDonations(foundDonations.data);
-      } catch (error) {
-        console.error(error, '-----home page');
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchData();
-  }, [searchQuery]);
+  }, []);
 
   console.log(donations, 'donations');
 
   return (
     <ThemeProvider theme={theme}>
-      <PrimarySearchAppBar onChange={onChange} />
+      <PrimarySearchAppBar onChange={onQueryChange} />
       <div className="flex flex-row bg-background-dark items-center">
         <img src={img} className=" flex-1 w-6/12 " />
         <div className="ml-11 justify-evenly">

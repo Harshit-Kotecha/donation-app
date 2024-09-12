@@ -13,3 +13,14 @@ export const getStatusColor = (status: DonationStatus): string => {
       return 'bg-blue-700';
   }
 };
+
+export const debounce = (callback, wait: number) => {
+  let timeoutId: NodeJS.Timeout;
+  return () => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      console.log('inside debounce.......');
+      callback();
+    }, wait);
+  };
+};
