@@ -2,6 +2,7 @@ import Button from '@components/atoms/Button';
 import Heading from '@components/atoms/Heading';
 import SearchAppBar from '@components/molecules/SearchAppBar';
 import useAppTheme from '@hooks/useTheme';
+import { Pincode } from '@interfaces/pincode';
 import {
   Box,
   FormControl,
@@ -12,7 +13,7 @@ import {
 import { routes } from '@routing/routes';
 import { appConstants } from 'constants/app-constants';
 import { endpoints } from 'constants/endpoints';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { get, post } from 'services/network/api-service';
 
@@ -21,6 +22,10 @@ export default function AddDonation() {
   // Name field validation states
   const [nameError, setNameError] = useState<boolean>(false);
   const [nameErrorMsg, setNameErrorMsg] = useState<string>('');
+
+  // Email field validation states
+  const [emailError, setEmailError] = useState<boolean>(false);
+  const [emailErrorMsg, setEmailErrorMsg] = useState<string>('');
 
   // Description field validation states
   const [descriptionError, setDescriptionError] = useState<boolean>(false);
@@ -50,11 +55,15 @@ export default function AddDonation() {
   const [pinCodeError, setPinCodeError] = useState<boolean>(false);
   const [pinCodeErrorMsg, setPinCodeErrorMsg] = useState<string>('');
 
+  // Pin Code data
+  const [pincodeData, setPincodeData] = useState<Pincode | null>(null);
+
   const navigate = useNavigate();
 
   const validateInputs = ({
     name,
     age,
+    email,
     address,
     description,
     expiry_time_in_hours,
@@ -72,6 +81,21 @@ export default function AddDonation() {
     } else {
       setNameError(false);
       setNameErrorMsg('');
+    }
+
+    // Validate email
+    if (
+      !email ||
+      email.trim().length < 1 ||
+      !email.includes('@') ||
+      !email.includes('.')
+    ) {
+      setEmailError(true);
+      setEmailErrorMsg('Valid email address is required.');
+      isValid = false;
+    } else {
+      setEmailError(false);
+      setEmailErrorMsg('');
     }
 
     // Validate age (must be >= 18)
@@ -97,7 +121,7 @@ export default function AddDonation() {
     // Validate description (should not be empty)
     if (!description || description.trim().length < 1) {
       setDescriptionError(true);
-      setAddressErrorMsg('Description is required.');
+      setDescriptionErrorMsg('Description is required.');
       isValid = false;
     } else {
       setDescriptionError(false);
@@ -105,7 +129,10 @@ export default function AddDonation() {
     }
 
     // Validate expiry time (should not be empty or NaN)
-    if (!expiry_time_in_hours || isNaN(expiry_time_in_hours)) {
+    if (
+      (expiry_time_in_hours !== 0 && !expiry_time_in_hours) ||
+      isNaN(expiry_time_in_hours)
+    ) {
       setExpiryTimeError(true);
       setExpiryTimeErrorMsg('Expiry time must be a valid number.');
       isValid = false;
@@ -150,8 +177,9 @@ export default function AddDonation() {
   const onSubmit = async () => {
     const name: string = (document.getElementById('name') as HTMLInputElement)
       .value;
-    // const email: string = (document.getElementById('email') as HTMLInputElement)
-    //   .value;
+    const email: string = (
+      document.getElementById('email_id') as HTMLInputElement
+    ).value;
     const phoneNumber: string = (
       document.getElementById('phone_number') as HTMLInputElement
     ).value;
@@ -173,54 +201,82 @@ export default function AddDonation() {
       document.getElementById('description') as HTMLInputElement
     ).value;
 
-    const data = {
-      name,
-      age: parseInt(age),
-      address,
-      description,
-      expiry_time_in_hours: parseInt(expiryTime),
-      category,
-      phone_number: parseInt(phoneNumber),
-      pin_code: parseInt(pinCode),
-    };
-
-    if (!validateInputs(data)) {
-      return;
-    }
-
     try {
-      const pincodeData = await getPinCodeData(parseInt(pinCode));
+      const data = {
+        name,
+        age: parseInt(age),
+        address,
+        email,
+        description,
+        expiry_time_in_hours: parseInt(expiryTime),
+        category,
+        phone_number: parseInt(phoneNumber),
+        pin_code: parseInt(pinCode),
+        postal_name: pincodeData?.postalName,
+        region: pincodeData?.region,
+        district: pincodeData?.district,
+        state: pincodeData?.state,
+      };
+
+      if (!validateInputs(data)) {
+        return;
+      }
+
       if (!pincodeData) {
         throw Error('Invalid pin code');
       }
-      data['region'] = pincodeData['Region'];
-      data['district'] = pincodeData['District'];
-      data['state'] = pincodeData['State'];
 
       const response = await post({ url: endpoints.donations, payload: data });
-      console.log(response, 'result');
       alert(response['message']);
       navigate(routes.donations);
     } catch (error) {
-      console.error(error['message']);
-      // alert('Invalid PinCode');
+      console.error(error);
+      alert('Invalid PinCode');
     }
   };
 
-  const getPinCodeData = async (pinCode: number) => {
+  const getPinCodeData = async (pinCode: number): Promise<Pincode> => {
     try {
       const pinCodeJson = await get({
         url: `${endpoints.pinCode}/${pinCode}`,
       });
-      console.log(pinCodeJson, 'pincode---------------');
+      if (!pinCodeJson || !pinCodeJson[0]['PostOffice']) {
+        throw new Error('No records found');
+      }
       const pincodeData = pinCodeJson[0]['PostOffice'][0];
-      return pincodeData;
+      const result: Pincode = {
+        postalName: pincodeData['Name'],
+        region: pincodeData['Region'],
+        district: pincodeData['District'],
+        state: pincodeData['State'],
+      };
+      return result;
     } catch (error) {
       console.error(error, '--------pincode');
       alert('Invalid Pin Code');
       return null;
     }
   };
+
+  const onPinCodeChange = async (e: object) => {
+    const pincode: string = e['target']['value'].trim();
+    if (pincode.length === 6) {
+      try {
+        const parsedCode = parseInt(pincode);
+        const data = await getPinCodeData(parsedCode);
+        setPincodeData(data);
+      } catch (error) {
+        console.error(error, 'pincode change..........');
+        alert('Pincode must be an integer');
+      }
+    } else if (pincodeData) {
+      setPincodeData(null);
+    }
+  };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
@@ -235,6 +291,7 @@ export default function AddDonation() {
             flexDirection: 'column',
             gap: 2,
             width: '30%',
+            minWidth: '500px',
             marginTop: '2rem',
           }}
         >
@@ -251,7 +308,6 @@ export default function AddDonation() {
               color={nameError ? 'error' : 'primary'}
             />
           </FormControl>
-
           <FormControl>
             <FormLabel htmlFor="age">Age</FormLabel>
             <TextField
@@ -268,7 +324,22 @@ export default function AddDonation() {
               color={ageError ? 'error' : 'primary'}
             />
           </FormControl>
-
+          <FormControl>
+            <FormLabel htmlFor="email_id">Email address</FormLabel>
+            <TextField
+              required
+              fullWidth
+              name="email_id"
+              placeholder=""
+              type="email"
+              id="email_id"
+              autoComplete="email_id"
+              variant="outlined"
+              error={emailError}
+              helperText={emailErrorMsg}
+              color={emailError ? 'error' : 'primary'}
+            />
+          </FormControl>
           <FormControl>
             <FormLabel htmlFor="phone_number">Phone number</FormLabel>
             <TextField
@@ -285,7 +356,6 @@ export default function AddDonation() {
               color={phoneNumberError ? 'error' : 'primary'}
             />
           </FormControl>
-
           <FormControl>
             <FormLabel htmlFor="description">Description</FormLabel>
             <TextField
@@ -304,7 +374,6 @@ export default function AddDonation() {
               color={descriptionError ? 'error' : 'primary'}
             />
           </FormControl>
-
           <FormControl>
             <FormLabel htmlFor="category">Category</FormLabel>
             <TextField
@@ -321,7 +390,6 @@ export default function AddDonation() {
               color={categoryError ? 'error' : 'primary'}
             />
           </FormControl>
-
           <FormControl>
             <FormLabel htmlFor="expiry_time">Expiry Time (in hours)</FormLabel>
             <TextField
@@ -338,7 +406,6 @@ export default function AddDonation() {
               color={expiryTimeError ? 'error' : 'primary'}
             />
           </FormControl>
-
           <FormControl>
             <FormLabel htmlFor="pin_code">Pin Code</FormLabel>
             <TextField
@@ -350,12 +417,34 @@ export default function AddDonation() {
               id="pin_code"
               autoComplete="pin_code"
               variant="outlined"
+              onChange={onPinCodeChange}
               error={pinCodeError}
               helperText={pinCodeErrorMsg}
               color={pinCodeError ? 'error' : 'primary'}
             />
           </FormControl>
-
+          {pincodeData ? (
+            <FormControl>
+              <FormLabel htmlFor="pin_code_data">Location</FormLabel>
+              <TextField
+                fullWidth
+                name="pin_code_data"
+                placeholder=""
+                type="text"
+                id="pin_code_data"
+                autoComplete="pin_code_data"
+                variant="outlined"
+                focused={true}
+                value={`${pincodeData.postalName}, ${pincodeData.region}, ${pincodeData.district}, ${pincodeData.state}`}
+                error={pinCodeError}
+                helperText={pinCodeErrorMsg}
+                color="warning"
+                inputMode="none"
+              />
+            </FormControl>
+          ) : (
+            <></>
+          )}
           <FormControl>
             <FormLabel htmlFor="address">Address</FormLabel>
             <TextField
