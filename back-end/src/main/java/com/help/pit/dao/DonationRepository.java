@@ -24,7 +24,7 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSp
     @Query("FROM Donation WHERE name LIKE %:name%")
     List<Donation> findByName(@Param("name") String name);
 
-    @Query("FROM Donation WHERE LOWER(name) LIKE %:search_key% OR LOWER(category) LIKE %:search_key% OR LOWER(description) LIKE %:search_key% OR LOWER(region) LIKE %:search_key% OR LOWER(district) LIKE %:search_key% OR LOWER(state) LIKE %:search_key%")
+    @Query("FROM Donation WHERE LOWER(name) LIKE %:search_key% OR LOWER(category) LIKE %:search_key% OR LOWER(description) LIKE %:search_key% OR LOWER(region) LIKE %:search_key% OR LOWER(district) LIKE %:search_key% OR LOWER(state) LIKE %:search_key% OR LOWER(address) LIKE %:search_key% OR LOWER(description) LIKE %:search_key%")
     List<Donation> findDonations(@Param("search_key") String searchKey);
 
     @Query("SELECT DISTINCT(region) FROM Donation")

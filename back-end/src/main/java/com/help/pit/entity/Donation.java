@@ -45,7 +45,7 @@ public class Donation {
 
     @Column(name = "expiry_time", columnDefinition = "int default 0")
     @JsonProperty("expiry_time_in_hours")
-    @Min(0)
+    @Min(-2)
     private Integer expiryTimeInHours;
 
     @Column(name = "category")

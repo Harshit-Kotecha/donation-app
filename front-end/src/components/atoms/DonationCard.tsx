@@ -39,7 +39,7 @@ export default function DonationCard({ donation }: DonationCardProps) {
   }
 
   const expiryText =
-    donation.expiry_time_in_hours === 0
+    donation.expiry_time_in_hours < 0
       ? 'Never expires'
       : `Expires in ${donation.expiry_time_in_hours} hours`;
 
@@ -107,8 +107,15 @@ export default function DonationCard({ donation }: DonationCardProps) {
           {/* <IconButton aria-label="share">
             <ShareIcon />
           </IconButton> */}
-          <Button variant="outlined" color="info">
-            {expiryText}
+          <Button
+            variant="outlined"
+            color={`${
+              donation.status === DonationStatus.OPEN ? 'info' : 'warning'
+            }`}
+          >
+            {donation.status === DonationStatus.OPEN
+              ? expiryText
+              : 'Unavailable Donation'}
           </Button>
         </CardActions>
       </Card>

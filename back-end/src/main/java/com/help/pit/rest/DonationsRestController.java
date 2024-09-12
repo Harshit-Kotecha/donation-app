@@ -32,18 +32,13 @@ public class DonationsRestController {
         return new SuccessResponse<>(donationService.findAllByOrderByExpiryTimeDesc());
     }
 
-//    List<Donation> findDonations(@Param("search_key") String searchKey) {
-//        return donationService.findDonations(searchKey);
-//    }
-
     @GetMapping("/donations/{id}")
     public BaseResponse<Donation> findById(@PathVariable(name = "id") Long id) {
         return new SuccessResponse<>(donationService.findById(id));
-
     }
 
     @GetMapping("/categories")
-    public  BaseResponse<List<String>> getAllCategories() {
+    public BaseResponse<List<String>> getAllCategories() {
         List<String> categories = new ArrayList<>();
         try {
             categories = donationService.getAllCategories();
@@ -64,9 +59,14 @@ public class DonationsRestController {
         if (donation == null) {
             throw new ResourceNotFoundException("Request body is mandatory");
         }
+
+        if (donation.getExpiryTimeInHours() <= 0) {
+            // Never expires
+            donation.setExpiryTimeInHours(-1);
+        }
         donation.setStatus(DonationStages.open);
         final Donation result = donationService.save(donation);
-        return new SuccessResponse<>(result);
+        return new SuccessResponse<>(result, "Donation added successfully!");
 
     }
 

@@ -130,8 +130,10 @@ export default function AddDonation() {
 
     // Validate expiry time (should not be empty or NaN)
     if (
-      (expiry_time_in_hours !== 0 && !expiry_time_in_hours) ||
-      isNaN(expiry_time_in_hours)
+      expiry_time_in_hours !== 0 &&
+      (!expiry_time_in_hours ||
+        isNaN(expiry_time_in_hours) ||
+        expiry_time_in_hours < 0)
     ) {
       setExpiryTimeError(true);
       setExpiryTimeErrorMsg('Expiry time must be a valid number.');
@@ -217,6 +219,8 @@ export default function AddDonation() {
         district: pincodeData?.district,
         state: pincodeData?.state,
       };
+
+      console.log(data, 'data ------------ ');
 
       if (!validateInputs(data)) {
         return;
@@ -391,7 +395,9 @@ export default function AddDonation() {
             />
           </FormControl>
           <FormControl>
-            <FormLabel htmlFor="expiry_time">Expiry Time (in hours)</FormLabel>
+            <FormLabel htmlFor="expiry_time">
+              Expiry time in hours (0 if none)
+            </FormLabel>
             <TextField
               required
               fullWidth
