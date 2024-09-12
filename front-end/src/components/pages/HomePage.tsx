@@ -75,19 +75,22 @@ export default function HomePage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
-      const foundDonations = await get({
-        url: endpoints.donations,
-        queryParams: searchQuery && { search_key: searchQuery },
-        abortController: controllerRef.current,
-      });
-      console.log(foundDonations, 'inside effect');
-      setDonations(foundDonations.data);
-      setIsLoading(false);
+      try {
+        setIsLoading(true);
+        const foundDonations = await get({
+          url: endpoints.donations,
+          queryParams: searchQuery && { search_key: searchQuery },
+          abortController: controllerRef.current,
+        });
+        console.log(foundDonations, 'inside effect');
+        setDonations(foundDonations.data);
+      } catch (error) {
+        console.error(error, '-----home page');
+      } finally {
+        setIsLoading(false);
+      }
     };
-    if (searchQuery || donations.length === 0) {
-      fetchData();
-    }
+    fetchData();
   }, [searchQuery]);
 
   console.log(donations, 'donations');

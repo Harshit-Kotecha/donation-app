@@ -4,9 +4,5 @@ interface HeadingProps {
 }
 
 export default function Heading({ title, styles }: HeadingProps) {
-  return (
-    <h1 className={`text-3xl font-medium text-center ${styles || ''}`}>
-      {title}
-    </h1>
-  );
+  return <h1 className={`text-3xl font-medium ${styles || ''}`}>{title}</h1>;
 }
