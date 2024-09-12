@@ -26,9 +26,15 @@ const Donations = (donationsMap: Map<string, Array<Donation>>) => {
             {key.toUpperCase()}
           </p>
           <div className="flex overflow-x-auto scroll-container">
-            {value?.map((el, index: number) => (
-              <DonationCard key={index} donation={el} />
-            ))}
+            {value
+              ?.sort((a: Donation, b: Donation) => {
+                if (a.expiry_time_in_hours === 0) return 1; // Push a with expiry_time_in_hours = 0 to the end
+                if (b.expiry_time_in_hours === 0) return -1; // Push b with expiry_time_in_hours = 0 to the end
+                return a.expiry_time_in_hours - b.expiry_time_in_hours; // Sort by expiry_time_in_hours in increasing order
+              })
+              .map((el, index: number) => (
+                <DonationCard key={index} donation={el} />
+              ))}
           </div>
           {/* {
             <Grid2
