@@ -60,6 +60,10 @@ public class Donation {
     @Column(name = "images")
     private List<String> images;
 
+    @Column(name = "email")
+    @NotBlank(message = "Email is mandatory")
+    private String email;
+
     @Column(name = "phone_number")
     @JsonProperty("phone_number")
     @DecimalMax(value = "9999999999", message = "Phone number must be 10 digits long")
@@ -75,6 +79,11 @@ public class Donation {
 
     @Column(name = "likes")
     private  Integer likes = 0;
+
+    @Column(name = "postal_name")
+    @JsonProperty("postal_name")
+    @NotBlank(message = "Postal name is mandatory")
+    private String postalName;
 
     @Column(name = "region")
     private  String region;

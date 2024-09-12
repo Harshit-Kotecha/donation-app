@@ -4,7 +4,7 @@ import PrimarySearchAppBar from '@components/molecules/SearchAppBar';
 import { ThemeProvider } from '@emotion/react';
 import useAppTheme from '@hooks/useTheme';
 import { Donation } from '@interfaces/donation';
-import { Box, CircularProgress } from '@mui/material';
+import { Backdrop, Box, CircularProgress } from '@mui/material';
 import '@styles/style.css';
 import { debounce } from '@utils/utils';
 import { endpoints } from 'constants/endpoints';
@@ -129,18 +129,15 @@ export default function HomePage() {
           </p>
         </div>
       </div>
-      {isLoading ? (
-        <Box
-          sx={{
-            display: 'flex',
-            height: '85%',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      ) : donationsMap.size === 0 ? (
+      <Backdrop
+        sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
+        open={isLoading}
+        onClick={() => {}}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+
+      {donationsMap.size === 0 ? (
         <h1 className="text-3xl text-center mt-11">No donations to show</h1>
       ) : (
         Donations(donationsMap)

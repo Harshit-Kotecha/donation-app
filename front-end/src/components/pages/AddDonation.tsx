@@ -58,6 +58,9 @@ export default function AddDonation() {
   // Pin Code data
   const [pincodeData, setPincodeData] = useState<Pincode | null>(null);
 
+  // Alert status
+  const [alertMsg, setAlertMsg] = useState<string | null>(null);
+
   const navigate = useNavigate();
 
   const validateInputs = ({
@@ -287,6 +290,7 @@ export default function AddDonation() {
       <SearchAppBar />
       <div className="flex flex-col items-center w-full py-7 bg-background-dark">
         <Heading title={appConstants.makeDonation} />
+        {alertMsg ? }
         <Box
           component="form"
           onSubmit={onSubmit}
@@ -366,7 +370,7 @@ export default function AddDonation() {
               required
               fullWidth
               name="description"
-              placeholder=""
+              placeholder="I have..."
               type="text"
               id="description"
               autoComplete="description"
