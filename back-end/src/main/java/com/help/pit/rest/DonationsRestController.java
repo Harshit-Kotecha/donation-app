@@ -8,6 +8,7 @@ import com.help.pit.service.DonationService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/")
@@ -64,6 +66,8 @@ public class DonationsRestController {
             // Never expires
             donation.setExpiryTimeInHours(-1);
         }
+        donation.setLikes(0);
+        donation.setCategory(donation.getCategory().toLowerCase());
         donation.setStatus(DonationStages.open);
         final Donation result = donationService.save(donation);
         return new SuccessResponse<>(result, "Donation added successfully!");
@@ -73,6 +77,10 @@ public class DonationsRestController {
     @PatchMapping("/donation/update/{id}")
     public BaseResponse<String> updateDonationStatus(@PathVariable(name = "id") Long id, @RequestParam(name = "status") DonationStages status) {
 
+        if (status.toString().isEmpty()) {
+            return new FailureResponse<>("A valid status is required", HttpStatus.BAD_REQUEST.value());
+        }
+
         // Check whether this user exist or not
         donationService.findById(id);
 
@@ -80,7 +88,15 @@ public class DonationsRestController {
         if (result == 0) {
             return new FailureResponse<>(400);
         }
-        return new SuccessResponse<>("Donation updated successfully");
+        String msg = "";
+        if(status == DonationStages.open) {
+            msg = "Donation is open now!";
+        } else if(status == DonationStages.processing) {
+            msg = "We are processing this donation for you!";
+        } else {
+            msg = "This donation is closed now!";
+        }
+        return new SuccessResponse<>(msg);
     }
 
     @DeleteMapping("/donations/{id}")
