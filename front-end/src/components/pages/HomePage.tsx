@@ -21,11 +21,11 @@ const Donations = (donationsMap: Map<string, Array<Donation>>) => {
       }}
     >
       {[...donationsMap.entries()]?.map(([key, value], idx) => (
-        <div key={idx} className="px-16">
-          <p className="text-3xl text-slate-500 mb-4 pt-11 ml-6">
+        <div key={idx} className="sm:px-16">
+          <p className="text-2xl sm:text-3xl px-4 text-slate-500 mb-3 pt-5 sm:pt-11 ">
             {key.toUpperCase()}
           </p>
-          <div className="flex overflow-x-auto scroll-container">
+          <div className="flex overflow-x-auto scroll-container snap-x snap-mandatory scroll-smooth">
             {value
               ?.sort((a: Donation, b: Donation) => {
                 if (a.expiry_time_in_hours === 0) return 1; // Push a with expiry_time_in_hours = 0 to the end
@@ -117,18 +117,19 @@ export default function HomePage() {
   return (
     <ThemeProvider theme={theme}>
       <PrimarySearchAppBar onChange={onQueryChange} />
-      <div className="flex flex-row bg-background-dark items-center">
-        <img src={img} className=" flex-1 w-6/12 " />
-        <div className="ml-11 justify-evenly">
-          <p className="flex-1 text-6xl font-bold text-white mb-11">
+      <div className="flex flex-col sm:flex-row bg-background-dark items-center">
+        <img src={img} className=" flex-1 w-full sm:w-6/12 " />
+        <div className="mt-3 mx-4 sm:ml-11 justify-evenly">
+          <p className="flex-1 text-2xl font-bold text-white sm:text-6xl mb-2 sm:mb-11">
             Giving is the essence of living.
           </p>
-          <p className="flex-1 text-3xl font-bold text-gray-600">
+          <p className="flex-1 text-xl sm:text-3xl font-bold text-gray-600">
             Donations spread kindness, empowering lives and creating lasting
             change.
           </p>
         </div>
       </div>
+      <div className=""></div>
       <Backdrop
         sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
         open={isLoading}

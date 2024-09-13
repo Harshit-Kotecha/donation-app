@@ -22,7 +22,7 @@ export default function LogoBanner() {
       }}
       onClick={() => navigate(routes.donations)}
     >
-      <img src={logo} className="w-min-4 max-w-11 mr-5" />
+      <img src={logo} className="w-min-2 max-w-9 sm:w-min-4 sm:max-w-10 mr-5" />
       <Typography
         variant="h6"
         noWrap

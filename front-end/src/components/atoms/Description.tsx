@@ -5,7 +5,11 @@ interface DescriptionProps {
 
 export default function Description({ text, className }: DescriptionProps) {
   return (
-    <p className={`text-xl font-semibold text-gray-300 ${className || ''}`}>
+    <p
+      className={`sm:text-xl text-justify font-semibold text-gray-300 ${
+        className || ''
+      }`}
+    >
       {text.split('\n').map((line, index) => (
         <span key={index}>
           {line} <br /> <br />

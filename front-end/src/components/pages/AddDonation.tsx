@@ -1,9 +1,11 @@
 import Button from '@components/atoms/Button';
 import Heading from '@components/atoms/Heading';
+import PageContainer from '@components/atoms/PageContainer';
 import SearchAppBar from '@components/molecules/SearchAppBar';
 import useAppTheme from '@hooks/useTheme';
 import { Pincode } from '@interfaces/pincode';
 import {
+  Alert,
   Box,
   FormControl,
   FormLabel,
@@ -234,8 +236,17 @@ export default function AddDonation() {
       }
 
       const response = await post({ url: endpoints.donations, payload: data });
-      alert(response['message']);
-      navigate(routes.donations);
+      // alert(response['message']);
+      if (response['success']) {
+        window.scrollTo(0, 0);
+        setAlertMsg(response['message']);
+        setTimeout(() => {
+          setAlertMsg(null);
+          navigate(routes.donations);
+        }, 2000);
+      } else {
+        throw new Error(response['message']);
+      }
     } catch (error) {
       console.error(error);
       alert('Invalid PinCode');
@@ -283,204 +294,210 @@ export default function AddDonation() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    setTimeout(() => {
+      setAlertMsg(null);
+    });
   }, []);
 
   return (
     <ThemeProvider theme={theme}>
       <SearchAppBar />
-      <div className="flex flex-col items-center w-full py-7 bg-background-dark">
-        <Heading title={appConstants.makeDonation} />
-        {alertMsg ? }
-        <Box
-          component="form"
-          onSubmit={onSubmit}
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2,
-            width: '30%',
-            minWidth: '500px',
-            marginTop: '2rem',
-          }}
-        >
-          <FormControl>
-            <FormLabel htmlFor="name">Full name</FormLabel>
-            <TextField
-              autoComplete="name"
-              name="name"
-              required
-              fullWidth
-              id="name"
-              error={nameError}
-              helperText={nameErrorMsg}
-              color={nameError ? 'error' : 'primary'}
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor="age">Age</FormLabel>
-            <TextField
-              required
-              fullWidth
-              name="age"
-              placeholder=""
-              type="number"
-              id="age"
-              autoComplete="age"
-              variant="outlined"
-              error={ageError}
-              helperText={ageErrorMsg}
-              color={ageError ? 'error' : 'primary'}
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor="email_id">Email address</FormLabel>
-            <TextField
-              required
-              fullWidth
-              name="email_id"
-              placeholder=""
-              type="email"
-              id="email_id"
-              autoComplete="email_id"
-              variant="outlined"
-              error={emailError}
-              helperText={emailErrorMsg}
-              color={emailError ? 'error' : 'primary'}
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor="phone_number">Phone number</FormLabel>
-            <TextField
-              required
-              fullWidth
-              name="phone_number"
-              placeholder=""
-              type="number"
-              id="phone_number"
-              autoComplete="phone_number"
-              variant="outlined"
-              error={phoneNumberError}
-              helperText={phoneNumberErrorMsg}
-              color={phoneNumberError ? 'error' : 'primary'}
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor="description">Description</FormLabel>
-            <TextField
-              required
-              fullWidth
-              name="description"
-              placeholder="I have..."
-              type="text"
-              id="description"
-              autoComplete="description"
-              multiline={true}
-              rows={3}
-              variant="outlined"
-              error={descriptionError}
-              helperText={descriptionErrorMsg}
-              color={descriptionError ? 'error' : 'primary'}
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor="category">Category</FormLabel>
-            <TextField
-              required
-              fullWidth
-              name="category"
-              placeholder=""
-              type="text"
-              id="category"
-              autoComplete="category"
-              variant="outlined"
-              error={categoryError}
-              helperText={categoryErrorMsg}
-              color={categoryError ? 'error' : 'primary'}
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor="expiry_time">
-              Expiry time in hours (0 if none)
-            </FormLabel>
-            <TextField
-              required
-              fullWidth
-              name="expiry_time"
-              placeholder=""
-              type="number"
-              id="expiry_time"
-              autoComplete="expiry_time"
-              variant="outlined"
-              error={expiryTimeError}
-              helperText={expiryTimeErrorMsg}
-              color={expiryTimeError ? 'error' : 'primary'}
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor="pin_code">Pin Code</FormLabel>
-            <TextField
-              required
-              fullWidth
-              name="pin_code"
-              placeholder=""
-              type="number"
-              id="pin_code"
-              autoComplete="pin_code"
-              variant="outlined"
-              onChange={onPinCodeChange}
-              error={pinCodeError}
-              helperText={pinCodeErrorMsg}
-              color={pinCodeError ? 'error' : 'primary'}
-            />
-          </FormControl>
-          {pincodeData ? (
+      <PageContainer>
+        <div className="flex flex-col items-center w-full bg-background-dark">
+          <Heading styles="text-center" title={appConstants.makeDonation} />
+          {alertMsg ? <Alert severity="success">{alertMsg}</Alert> : <></>}
+          <Box
+            className="w-full sm:w-6/12"
+            component="form"
+            onSubmit={onSubmit}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+              // width: '30%',
+              // minWidth: '350px',
+              marginTop: '2rem',
+            }}
+          >
             <FormControl>
-              <FormLabel htmlFor="pin_code_data">Location</FormLabel>
+              <FormLabel htmlFor="name">Full name</FormLabel>
               <TextField
+                autoComplete="name"
+                name="name"
+                required
                 fullWidth
-                name="pin_code_data"
-                placeholder=""
-                type="text"
-                id="pin_code_data"
-                autoComplete="pin_code_data"
-                variant="outlined"
-                focused={true}
-                value={`${pincodeData.postalName}, ${pincodeData.region}, ${pincodeData.district}, ${pincodeData.state}`}
-                error={pinCodeError}
-                helperText={pinCodeErrorMsg}
-                color="warning"
-                inputMode="none"
+                id="name"
+                error={nameError}
+                helperText={nameErrorMsg}
+                color={nameError ? 'error' : 'primary'}
               />
             </FormControl>
-          ) : (
-            <></>
-          )}
-          <FormControl>
-            <FormLabel htmlFor="address">Address</FormLabel>
-            <TextField
-              required
-              fullWidth
-              name="address"
-              placeholder=""
-              type="text"
-              rows={3}
-              id="address"
-              multiline={true}
-              autoComplete="address"
-              variant="outlined"
-              error={addressError}
-              helperText={addressErrorMsg}
-              color={addressError ? 'error' : 'primary'}
+            <FormControl>
+              <FormLabel htmlFor="age">Age</FormLabel>
+              <TextField
+                required
+                fullWidth
+                name="age"
+                placeholder=""
+                type="number"
+                id="age"
+                autoComplete="age"
+                variant="outlined"
+                error={ageError}
+                helperText={ageErrorMsg}
+                color={ageError ? 'error' : 'primary'}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor="email_id">Email address</FormLabel>
+              <TextField
+                required
+                fullWidth
+                name="email_id"
+                placeholder=""
+                type="email"
+                id="email_id"
+                autoComplete="email_id"
+                variant="outlined"
+                error={emailError}
+                helperText={emailErrorMsg}
+                color={emailError ? 'error' : 'primary'}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor="phone_number">Phone number</FormLabel>
+              <TextField
+                required
+                fullWidth
+                name="phone_number"
+                placeholder=""
+                type="number"
+                id="phone_number"
+                autoComplete="phone_number"
+                variant="outlined"
+                error={phoneNumberError}
+                helperText={phoneNumberErrorMsg}
+                color={phoneNumberError ? 'error' : 'primary'}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor="description">Description</FormLabel>
+              <TextField
+                required
+                fullWidth
+                name="description"
+                placeholder="I have..."
+                type="text"
+                id="description"
+                autoComplete="description"
+                multiline={true}
+                rows={3}
+                variant="outlined"
+                error={descriptionError}
+                helperText={descriptionErrorMsg}
+                color={descriptionError ? 'error' : 'primary'}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor="category">Category</FormLabel>
+              <TextField
+                required
+                fullWidth
+                name="category"
+                placeholder=""
+                type="text"
+                id="category"
+                autoComplete="category"
+                variant="outlined"
+                error={categoryError}
+                helperText={categoryErrorMsg}
+                color={categoryError ? 'error' : 'primary'}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor="expiry_time">
+                Expiry time in hours (0 if none)
+              </FormLabel>
+              <TextField
+                required
+                fullWidth
+                name="expiry_time"
+                placeholder=""
+                type="number"
+                id="expiry_time"
+                autoComplete="expiry_time"
+                variant="outlined"
+                error={expiryTimeError}
+                helperText={expiryTimeErrorMsg}
+                color={expiryTimeError ? 'error' : 'primary'}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor="pin_code">Pin Code</FormLabel>
+              <TextField
+                required
+                fullWidth
+                name="pin_code"
+                placeholder=""
+                type="number"
+                id="pin_code"
+                autoComplete="pin_code"
+                variant="outlined"
+                onChange={onPinCodeChange}
+                error={pinCodeError}
+                helperText={pinCodeErrorMsg}
+                color={pinCodeError ? 'error' : 'primary'}
+              />
+            </FormControl>
+            {pincodeData ? (
+              <FormControl>
+                <FormLabel htmlFor="pin_code_data">Location</FormLabel>
+                <TextField
+                  fullWidth
+                  name="pin_code_data"
+                  placeholder=""
+                  type="text"
+                  id="pin_code_data"
+                  autoComplete="pin_code_data"
+                  variant="outlined"
+                  focused={true}
+                  value={`${pincodeData.postalName}, ${pincodeData.region}, ${pincodeData.district}, ${pincodeData.state}`}
+                  error={pinCodeError}
+                  helperText={pinCodeErrorMsg}
+                  color="warning"
+                  inputMode="none"
+                />
+              </FormControl>
+            ) : (
+              <></>
+            )}
+            <FormControl>
+              <FormLabel htmlFor="address">Address</FormLabel>
+              <TextField
+                required
+                fullWidth
+                name="address"
+                placeholder=""
+                type="text"
+                rows={3}
+                id="address"
+                multiline={true}
+                autoComplete="address"
+                variant="outlined"
+                error={addressError}
+                helperText={addressErrorMsg}
+                color={addressError ? 'error' : 'primary'}
+              />
+            </FormControl>
+            <Box sx={{ mb: 1 }} />
+            <Button
+              title="Donate"
+              onClick={onSubmit}
+              styles="bg-blue-700 hover:bg-blue-500"
             />
-          </FormControl>
-          <Box sx={{ mb: 1 }} />
-          <Button
-            title="Donate"
-            onClick={onSubmit}
-            styles="bg-blue-700 hover:bg-blue-500"
-          />
-        </Box>
-      </div>
+          </Box>
+        </div>
+      </PageContainer>
     </ThemeProvider>
   );
 }

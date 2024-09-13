@@ -46,13 +46,15 @@ export default function DonationCard({ donation }: DonationCardProps) {
   return (
     <ThemeProvider theme={theme}>
       <Card
+        className="m-0 mr-5 sm:m-4"
         sx={{
-          width: 345,
-          minWidth: 345,
+          width: 315,
+          minWidth: 315,
           maxWidth: 345,
           // minHeight: 481,
           // maxHeight: 500,
-          margin: '1.5rem',
+          margin: '1rem',
+          // marginRight: '-0.1rem',
           ':hover': {
             boxShadow: `0px 0px 20px 10px ${theme['palette']['shadow']}}`,
             cursor: 'pointer',
@@ -90,9 +92,9 @@ export default function DonationCard({ donation }: DonationCardProps) {
               display: '-webkit-box',
               overflow: 'hidden',
               WebkitBoxOrient: 'vertical',
-              WebkitLineClamp: 4,
+              WebkitLineClamp: 3,
               textOverflow: 'ellipsis',
-              minHeight: '81px',
+              minHeight: '60px',
             }}
           >
             {donation.description}
