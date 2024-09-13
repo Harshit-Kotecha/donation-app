@@ -158,7 +158,7 @@ export default function AboutPage() {
           <div className="flex-1">
             <Heading
               title="Contact Us:"
-              styles="underline underline-offset-1 w-6/12 text-cyan-500"
+              className="underline underline-offset-1 w-6/12 text-cyan-500"
             />
             <Description text={appConstants.contactUs} className="mt-5" />
           </div>

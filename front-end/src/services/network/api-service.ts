@@ -30,11 +30,12 @@ client.interceptors.response.use(
   }
 );
 
-interface IGetApi {
+interface IApi {
   url: string;
   queryParams?: object;
   abortController?: AbortController;
-  callback?: (data) => void;
+  payload?: object;
+  callback?: (data: string) => void;
 }
 
 export const get = async ({
@@ -42,7 +43,7 @@ export const get = async ({
   queryParams = {},
   abortController = null,
   callback,
-}: IGetApi) => {
+}: IApi) => {
   try {
     const response = await client.get(url, {
       signal: abortController?.signal,
@@ -64,14 +65,37 @@ export const get = async ({
   }
 };
 
-interface IPostApi extends IGetApi {
-  payload?: object;
-  callback?: (data) => void;
-}
-
-export const post = async ({ url, payload, callback }: IPostApi) => {
+export const post = async ({ url, payload, callback }: IApi) => {
   try {
     const response = await client.post(url, payload);
+
+    if (isRequestSuccess(response.status)) {
+      return response.data;
+    } else {
+      throw Error(response.statusText);
+    }
+  } catch (error) {
+    if (callback) {
+      callback(error['message']);
+    }
+    console.error(error);
+  }
+};
+
+export const patch = async ({
+  url,
+  queryParams = {},
+  abortController = null,
+  callback,
+}: IApi) => {
+  try {
+    console.log(queryParams, '-----------query');
+    const response = await client.patch(url, queryParams, {
+      params: queryParams,
+      signal: abortController?.signal,
+    });
+
+    console.log(response, '-------api');
 
     if (isRequestSuccess(response.status)) {
       return response.data;

@@ -1,3 +1,4 @@
+import AlertMsg from '@components/atoms/AlertMsg';
 import Button from '@components/atoms/Button';
 import Heading from '@components/atoms/Heading';
 import PageContainer from '@components/atoms/PageContainer';
@@ -5,7 +6,6 @@ import SearchAppBar from '@components/molecules/SearchAppBar';
 import useAppTheme from '@hooks/useTheme';
 import { Pincode } from '@interfaces/pincode';
 import {
-  Alert,
   Box,
   FormControl,
   FormLabel,
@@ -304,8 +304,8 @@ export default function AddDonation() {
       <SearchAppBar />
       <PageContainer>
         <div className="flex flex-col items-center w-full bg-background-dark">
-          <Heading styles="text-center" title={appConstants.makeDonation} />
-          {alertMsg ? <Alert severity="success">{alertMsg}</Alert> : <></>}
+          <Heading className="text-center" title={appConstants.makeDonation} />
+          {alertMsg ? <AlertMsg msg={alertMsg} /> : <></>}
           <Box
             className="w-full sm:w-6/12"
             component="form"

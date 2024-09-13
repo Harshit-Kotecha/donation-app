@@ -6,7 +6,7 @@ interface DescriptionProps {
 export default function Description({ text, className }: DescriptionProps) {
   return (
     <p
-      className={`sm:text-xl text-justify font-semibold text-gray-300 ${
+      className={`sm:text-xl text-justify font-semibold text-gray-300 break-words overflow-hidden ${
         className || ''
       }`}
     >

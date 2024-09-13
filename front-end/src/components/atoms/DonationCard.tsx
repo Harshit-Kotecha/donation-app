@@ -55,6 +55,7 @@ export default function DonationCard({ donation }: DonationCardProps) {
           // maxHeight: 500,
           margin: '1rem',
           // marginRight: '-0.1rem',
+
           ':hover': {
             boxShadow: `0px 0px 20px 10px ${theme['palette']['shadow']}}`,
             cursor: 'pointer',
