@@ -88,7 +88,7 @@ export default function DonationDetails() {
         break;
       }
       case DonationStatus.PROCESSING: {
-        btnAttributes.title = 'This donation is in processing phase';
+        btnAttributes.title = 'Donation is in processing phase';
         btnAttributes.styles =
           'bg-purple-700 hover:cursor-auto hover:bg-purple-700';
         btnAttributes.onClick = () => {};

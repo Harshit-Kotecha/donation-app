@@ -118,9 +118,9 @@ export default function HomePage() {
   return (
     <ThemeProvider theme={theme}>
       <PrimarySearchAppBar onChange={onQueryChange} />
-      <div className="flex flex-col sm:flex-row bg-background-dark items-center">
-        <Image img={img} className="sm:w-[40%] xl:w-6/12" />
-        <div className="mt-3 mx-4 sm:ml-11 justify-evenly">
+      <div className="flex flex-col lg:flex-row bg-background-dark items-center">
+        <Image img={img} className="lg:w-[40%] xl:w-6/12" />
+        <div className="mt-3 mx-4 lg:ml-11 justify-evenly">
           <p className="flex-1 text-2xl font-bold text-white sm:text-3xl md:text-4xl xl:text-5xl 2xl:text-6xl mb-2 sm:mb-5 xl:mb-9">
             Giving is the essence of living.
           </p>
