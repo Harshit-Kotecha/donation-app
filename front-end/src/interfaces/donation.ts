@@ -13,7 +13,7 @@ export interface Donation {
   category: string;
   status: DonationStatus;
   images: string;
-  expiry_time_in_hours: number;
+  expires_at: string;
   email: string;
   phone_number: number;
   pin_code: number;

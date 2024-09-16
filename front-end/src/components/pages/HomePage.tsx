@@ -29,9 +29,9 @@ const Donations = (donationsMap: Map<string, Array<Donation>>) => {
           <div className="flex overflow-x-auto scroll-container snap-x snap-mandatory scroll-smooth">
             {value
               ?.sort((a: Donation, b: Donation) => {
-                if (a.expiry_time_in_hours === 0) return 1; // Push a with expiry_time_in_hours = 0 to the end
-                if (b.expiry_time_in_hours === 0) return -1; // Push b with expiry_time_in_hours = 0 to the end
-                return a.expiry_time_in_hours - b.expiry_time_in_hours; // Sort by expiry_time_in_hours in increasing order
+                if (a.expires_at === 0) return 1; // Push a with expiry_time_in_hours = 0 to the end
+                if (b.expires_at === 0) return -1; // Push b with expiry_time_in_hours = 0 to the end
+                return a.expires_at - b.expires_at; // Sort by expiry_time_in_hours in increasing order
               })
               .map((el, index: number) => (
                 <DonationCard key={index} donation={el} />

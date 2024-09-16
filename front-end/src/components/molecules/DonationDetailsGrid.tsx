@@ -35,7 +35,7 @@ export default function DonationDetailsGrid({
         <TitleSubtitle title="category" subtitle={donation.category} />
         <TitleSubtitle
           title="Expiry Time"
-          subtitle={`${donation.expiry_time_in_hours} hours`}
+          subtitle={`${donation.expires_at} hours`}
         />
         <TitleSubtitle
           title="Phone number"

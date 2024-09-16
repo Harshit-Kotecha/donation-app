@@ -9,13 +9,12 @@ import ItemDetails, {
 } from '@components/molecules/ItemDetails';
 import SearchAppBar from '@components/molecules/SearchAppBar';
 import { Donation, DonationStatus } from '@interfaces/donation';
-import { RootState } from '@redux/store';
+import { Backdrop } from '@mui/material';
 import { routes } from '@routing/routes';
 import { endpoints } from 'constants/endpoints';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { patch } from 'services/network/api-service';
+import { get, patch } from 'services/network/api-service';
 
 interface DonationProp {
   donation: Donation;
@@ -30,22 +29,33 @@ interface BtnAttributes {
 export default function DonationDetails() {
   const { state } = useLocation();
   const { id } = useParams();
-  const donations = useSelector((state: RootState) => state.donation.value);
   const [alertMsg, setAlertMsg] = useState<string | null>(null);
   const [donationStatus, setDonationStatus] = useState(DonationStatus.OPEN);
+  const [donation, setDonation] = useState<Donation | null>(null);
   const navigate = useNavigate();
-
-  let donation: Donation;
-  if (state) {
-    const { donation: tmp }: DonationProp = state;
-    donation = tmp;
-  } else if (id) {
-    donation = donations?.find((el) => el.id === parseInt(id));
-  }
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    setDonationStatus(donation?.status);
+
+    const fetchData = async (id: number) => {
+      try {
+        const result = await get({
+          url: `${endpoints.donations}/${id}`,
+        });
+        console.log(result, '--------doantion details api');
+        setDonation(result['data']);
+        setDonationStatus(donation?.status);
+      } catch (error) {
+        console.error(error, '----donation details');
+      }
+    };
+
+    if (state) {
+      const { donation: tmpDonation }: DonationProp = state;
+      setDonation(tmpDonation);
+    } else if (id) {
+      fetchData(parseInt(id));
+    }
   }, []);
 
   const getBtnAttributes = (status?: string) => {
@@ -101,66 +111,70 @@ export default function DonationDetails() {
 
   const btnAttributes = getBtnAttributes(donationStatus);
 
-  if (!donation) {
-    return <h1>Invalid request</h1>;
-  }
-
   const itemDetails: ItemDetailsProp[] = [
-    { title: 'Name', subtitle: donation.name.toUpperCase() },
-    { title: 'Category', subtitle: donation.category.toUpperCase() },
+    { title: 'Name', subtitle: donation?.name.toUpperCase() },
+    { title: 'Category', subtitle: donation?.category.toUpperCase() },
     ...(donationStatus === DonationStatus.OPEN
       ? [
           {
             title: 'Expiry Time',
-            subtitle: `${donation.expiry_time_in_hours} hours`,
+            subtitle: `${donation?.expires_at} hours`,
           },
         ]
       : []),
-    { title: 'Email', subtitle: donation.email },
-    { title: 'Phone Number', subtitle: donation.phone_number.toString() },
-    { title: 'Address', subtitle: donation.address },
-    { title: 'Pin Code', subtitle: donation.pin_code.toString() },
-    { title: 'Postal Name', subtitle: donation.postal_name },
-    { title: 'Region', subtitle: donation.region },
-    { title: 'District', subtitle: donation.district },
-    { title: 'State', subtitle: donation.state },
+    { title: 'Email', subtitle: donation?.email },
+    { title: 'Phone Number', subtitle: donation?.phone_number.toString() },
+    { title: 'Address', subtitle: donation?.address },
+    { title: 'Pin Code', subtitle: donation?.pin_code.toString() },
+    { title: 'Postal Name', subtitle: donation?.postal_name },
+    { title: 'Region', subtitle: donation?.region },
+    { title: 'District', subtitle: donation?.district },
+    { title: 'State', subtitle: donation?.state },
   ];
 
   return (
     <>
       <SearchAppBar />
-      <div className="flex flex-col sm:flex-row justify-evenly sm:gap-0 bg-background-dark">
-        <div className="flex-grow">
-          <Image img={img} />
-        </div>
-        <div className="flex-grow px-4 py-5 sm:px-20 sm:py-5 sm:min-w-[100px]">
-          {alertMsg && <AlertMsg msg={alertMsg} />}
-          <Heading
-            title={`Donor details:`}
-            className="mb-5 underline text-green-600"
-          />
-          {itemDetails.map((item, index) => (
-            <ItemDetails
-              key={index}
-              title={item.title}
-              subtitle={item.subtitle}
+      {donation ? (
+        <div className="flex flex-col sm:flex-row justify-evenly sm:gap-0 bg-background-dark">
+          <div className="flex-grow">
+            <Image img={img} />
+          </div>
+          <div className="flex-grow px-4 py-5 sm:px-20 sm:py-5 sm:min-w-[100px]">
+            {alertMsg && <AlertMsg msg={alertMsg} />}
+            <Heading
+              title={`Donor details:`}
+              className="mb-5 underline text-green-600"
             />
-          ))}
-          <Heading
-            title="Donation description:"
-            className="mt-5 underline text-green-600"
-          />
-          <Description
-            text={donation.description}
-            className="font-normal my-3 sm:my-5"
-          />
-          <Button
-            title={btnAttributes.title}
-            onClick={() => btnAttributes.onClick(donation.id)}
-            styles={`w-full	bottom-5 right-11 ${btnAttributes.styles}`}
-          />
+            {itemDetails.map((item, index) => (
+              <ItemDetails
+                key={index}
+                title={item.title}
+                subtitle={item.subtitle}
+              />
+            ))}
+            <Heading
+              title="Donation description:"
+              className="mt-5 underline text-green-600"
+            />
+            <Description
+              text={donation?.description}
+              className="font-normal my-3 sm:my-5"
+            />
+            <Button
+              title={btnAttributes.title}
+              onClick={() => btnAttributes.onClick(donation?.id)}
+              styles={`w-full	bottom-5 right-11 ${btnAttributes.styles}`}
+            />
+          </div>
         </div>
-      </div>
+      ) : (
+        <Backdrop
+          sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
+          open={donation == null}
+          onClick={() => {}}
+        ></Backdrop>
+      )}
     </>
   );
 }
