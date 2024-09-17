@@ -151,7 +151,7 @@ export default function AboutPage() {
               <Button
                 title="Send Message"
                 onClick={onSubmit}
-                styles="bg-cyan-600 hover:bg-cyan-500"
+                className="bg-cyan-600 hover:bg-cyan-500"
               />
             </Box>
           </div>

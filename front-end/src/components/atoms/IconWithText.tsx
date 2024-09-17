@@ -1,10 +1,15 @@
 interface IconWithTextProp {
   icon: string;
   text: string;
+  className?: string;
 }
-export default function IconWithText({ icon, text }: IconWithTextProp) {
+export default function IconWithText({
+  icon,
+  text,
+  className,
+}: IconWithTextProp) {
   return (
-    <div className="flex text-gray-50 items-center mt-1 sm:mt-2">
+    <div className={`flex text-gray-50 items-center ${className || ''}`}>
       <img
         className="w-3 sm:w-5 mr-2 sm:mr-3 text-red-50"
         color="red"

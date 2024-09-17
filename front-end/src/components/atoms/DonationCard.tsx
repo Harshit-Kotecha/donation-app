@@ -41,17 +41,8 @@ export default function DonationCard({ donation }: DonationCardProps) {
   return (
     <ThemeProvider theme={theme}>
       <Card
-        className="m-0 mr-5 pb-0 sm:m-4"
+        className="w-full max-w-[350px] m-4 mr-5 pb-0 sm:m-4"
         sx={{
-          width: 315,
-          minWidth: 315,
-          maxWidth: 345,
-          padding: 0,
-          // minHeight: 481,
-          // maxHeight: 500,
-          margin: '1rem',
-          // marginRight: '-0.1rem',
-
           ':hover': {
             boxShadow: `0px 0px 20px 10px ${theme['palette']['shadow']}}`,
             cursor: 'pointer',
@@ -67,7 +58,7 @@ export default function DonationCard({ donation }: DonationCardProps) {
         <CardHeader
           avatar={
             <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-              R
+              {donation.name.substring(0, 1).toUpperCase()}
             </Avatar>
           }
           action={<Chip label={donation.status} color={color} size="small" />}
@@ -80,7 +71,7 @@ export default function DonationCard({ donation }: DonationCardProps) {
           image={img}
           alt="Donation img"
         />
-        <CardContent className="px-4 py-4">
+        <CardContent className="px-4">
           <Typography
             variant="body2"
             sx={{
@@ -88,14 +79,15 @@ export default function DonationCard({ donation }: DonationCardProps) {
               display: '-webkit-box',
               overflow: 'hidden',
               WebkitBoxOrient: 'vertical',
-              WebkitLineClamp: 3,
+              WebkitLineClamp: 2,
               textOverflow: 'ellipsis',
-              minHeight: '60px',
+              height: '40px',
             }}
           >
             {donation.description}
           </Typography>
           <IconWithText
+            className="mt-4"
             icon={clockIcon}
             text={getExpiryTimeDifference(donation.expires_at)}
           />

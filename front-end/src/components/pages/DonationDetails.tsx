@@ -164,7 +164,7 @@ export default function DonationDetails() {
             <Button
               title={btnAttributes.title}
               onClick={() => btnAttributes.onClick(donation?.id)}
-              styles={`w-full	bottom-5 right-11 ${btnAttributes.styles}`}
+              className={`w-full	bottom-5 right-11 ${btnAttributes.styles}`}
             />
           </div>
         </div>

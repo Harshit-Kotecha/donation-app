@@ -1,80 +1,28 @@
 import img from '@assets/donation-app.jpg';
+import Button from '@components/atoms/Button';
 import DonationCard from '@components/atoms/DonationCard';
 import Image from '@components/atoms/Image';
 import PrimarySearchAppBar from '@components/molecules/SearchAppBar';
 import { ThemeProvider } from '@emotion/react';
 import useAppTheme from '@hooks/useTheme';
 import { Donation } from '@interfaces/donation';
-import { Backdrop, Box, CircularProgress } from '@mui/material';
+import { Backdrop, CircularProgress } from '@mui/material';
 import '@styles/style.css';
 import { debounce } from '@utils/utils';
 import { endpoints } from 'constants/endpoints';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { get } from 'services/network/api-service';
 
-const Donations = (donationsMap: Map<string, Array<Donation>>) => {
-  return (
-    <Box
-      sx={{
-        backgroundColor: 'background.default',
-        backgroundImage: 'backgroundImage.default',
-        minHeight: '100%',
-      }}
-    >
-      {[...donationsMap.entries()]?.map(([key, value], idx) => (
-        <div key={idx} className="sm:px-16">
-          <p className="text-2xl sm:text-3xl px-4 text-slate-500 mb-3 pt-5 sm:pt-11 ">
-            {key.toUpperCase()}
-          </p>
-          <div className="flex overflow-x-auto scroll-container snap-x snap-mandatory scroll-smooth">
-            {value
-              ?.sort((a: Donation, b: Donation) => {
-                if (a.expires_at === 0) return 1; // Push a with expiry_time_in_hours = 0 to the end
-                if (b.expires_at === 0) return -1; // Push b with expiry_time_in_hours = 0 to the end
-                return a.expires_at - b.expires_at; // Sort by expiry_time_in_hours in increasing order
-              })
-              .map((el, index: number) => (
-                <DonationCard key={index} donation={el} />
-              ))}
-          </div>
-          {/* {
-            <Grid2
-              container
-              alignItems="center"
-              justifyContent="center"
-              spacing={{ xs: 0, md: 0 }}
-              // columns={{ xs: 4, sm: 8, md: 12 }}
-              // sx={{ px: 3, my: 5 }}
-            >
-              {value?.map((el, index: number) => (
-                <DonationCard key={index} donation={el} />
-              ))}
-            </Grid2>
-          } */}
-        </div>
-      ))}
-    </Box>
-  );
-};
-
 export default function HomePage() {
   const theme = useAppTheme();
-  // const { isLoading, donations: allDonations } = useDonations();
 
   // console.log(allDonations, 'all donations');
   const [isLoading, setIsLoading] = useState(false);
   const [donations, setDonations] = useState<Donation[]>([]);
-  // const [searchQuery, setSearchQuery] = useState('');
+  const [categories, setCategories] = useState<string[]>([]);
   const queryRef = useRef('');
 
   const controllerRef = useRef(new AbortController());
-
-  const donationsMap: Map<string, Array<Donation>> = new Map();
-  donations?.forEach((el) => {
-    const donationList = donationsMap.get(el.category) || [];
-    donationList.push(el);
-    donationsMap.set(el.category, donationList);
-  });
 
   const onQueryChange = (e: object) => {
     const query: string = e['target']['value'].trim();
@@ -86,6 +34,20 @@ export default function HomePage() {
 
     queryRef.current = query;
     searchFun();
+  };
+
+  const fetchCategories = async () => {
+    try {
+      setIsLoading(true);
+      const result = await get({
+        url: endpoints.categories,
+      });
+      setCategories(result.data);
+    } catch (error) {
+      console.error(error, '-----home page');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const fetchData = async () => {
@@ -111,6 +73,7 @@ export default function HomePage() {
 
   useEffect(() => {
     fetchData();
+    fetchCategories();
   }, []);
 
   console.log(donations, 'donations');
@@ -139,11 +102,22 @@ export default function HomePage() {
         <CircularProgress color="inherit" />
       </Backdrop>
 
-      {donationsMap.size === 0 ? (
-        <h1 className="text-3xl text-center mt-11">No donations to show</h1>
-      ) : (
-        Donations(donationsMap)
-      )}
+      <div className="flex flex-wrap gap-4">
+        {categories.map((el, index) => (
+          <Button
+            key={index}
+            title={el}
+            onClick={() => {}}
+            className="bg-black text-white border border-white"
+          />
+        ))}
+      </div>
+
+      <div className="flex flex-wrap justify-center px-2 bg-background-dark py-5 sm:py-7 md:py-8 xl:py-11">
+        {donations.map((el, i) => (
+          <DonationCard donation={el} key={i} />
+        ))}
+      </div>
     </ThemeProvider>
   );
 }

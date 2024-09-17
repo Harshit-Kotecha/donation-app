@@ -493,7 +493,7 @@ export default function AddDonation() {
             <Button
               title="Donate"
               onClick={onSubmit}
-              styles="bg-blue-700 hover:bg-blue-500"
+              className="bg-blue-700 hover:bg-blue-500"
             />
           </Box>
         </div>
