@@ -1,5 +1,4 @@
 import img from '@assets/donation-app.jpg';
-import Button from '@components/atoms/Button';
 import DonationCard from '@components/atoms/DonationCard';
 import Image from '@components/atoms/Image';
 import PrimarySearchAppBar from '@components/molecules/SearchAppBar';
@@ -102,18 +101,28 @@ export default function HomePage() {
         <CircularProgress color="inherit" />
       </Backdrop>
 
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-wrap gap-4 px-2 justify-center sm:py-7 md:py-8 xl:py-11">
         {categories.map((el, index) => (
-          <Button
+          <div
             key={index}
-            title={el}
-            onClick={() => {}}
-            className="bg-black text-white border border-white"
-          />
+            className="px-6 py-2 bg-background-dark rounded-full border font-bold border-white hover:cursor-pointer hover:bg-white hover:text-black"
+          >
+            <p>{el}</p>
+          </div>
         ))}
       </div>
 
       <div className="flex flex-wrap justify-center px-2 bg-background-dark py-5 sm:py-7 md:py-8 xl:py-11">
+        <div className="flex flex-wrap h-min w-full gap-4 px-2 justify-start sm:py-7 md:py-8 xl:py-11">
+          {categories.map((el, index) => (
+            <div
+              key={index}
+              className="px-6 py-2 bg-background-dark rounded-full border font-bold border-white hover:cursor-pointer hover:bg-white hover:text-black"
+            >
+              <p>{el}</p>
+            </div>
+          ))}
+        </div>
         {donations.map((el, i) => (
           <DonationCard donation={el} key={i} />
         ))}
