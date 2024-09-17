@@ -2,7 +2,7 @@ package com.help.pit.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.help.pit.dao.DonationStages;
+import com.help.pit.dao.DonationStage;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -12,10 +12,9 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
+import org.hibernate.type.descriptor.jdbc.TimestampWithTimeZoneJdbcType;
 
 import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -55,7 +54,7 @@ public class Donation {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", columnDefinition = "donation_stages default 'open'")
     @JdbcType(PostgreSQLEnumJdbcType.class)
-    private DonationStages status;
+    private DonationStage status;
 
     @Column(name = "images")
     private List<String> images;

@@ -1,11 +1,12 @@
 package com.help.pit.service;
 
 import com.help.pit.dao.DonationRepository;
-import com.help.pit.dao.DonationStages;
+import com.help.pit.dao.DonationStage;
 import com.help.pit.entity.Donation;
 import com.help.pit.rest.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,13 +20,13 @@ public class DonationServiceImpl implements DonationService {
     private DonationRepository donationRepository;
 
     @Override
-    public List<Donation> findAll() {
-        return donationRepository.findAll();
+    public List<Donation> findAll(Specification specification) {
+        return (List<Donation>) donationRepository.findAll(specification);
     }
 
     @Override
-    public List<Donation> findAllByOrderByExpiresAtDesc() {
-        return donationRepository.findAllByOrderByExpiresAt();
+    public List<Donation> findAll() {
+        return donationRepository.findAll();
     }
 
     @Override
@@ -54,7 +55,7 @@ public class DonationServiceImpl implements DonationService {
 
     @Transactional
     @Override
-    public Integer updateDonationStatus(DonationStages status, Long id) {
+    public Integer updateDonationStatus(DonationStage status, Long id) {
         return donationRepository.updateDonationStatus(status, id);
     }
 

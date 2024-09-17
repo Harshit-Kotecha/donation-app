@@ -1,6 +1,6 @@
 package com.help.pit.dao;
 
-public enum DonationStages {
+public enum DonationStage {
     open,
     closed,
     processing
