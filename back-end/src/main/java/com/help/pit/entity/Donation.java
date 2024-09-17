@@ -1,17 +1,19 @@
 package com.help.pit.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.help.pit.dao.DonationStages;
+import com.help.pit.dao.DonationStage;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
+import org.hibernate.type.descriptor.jdbc.TimestampWithTimeZoneJdbcType;
 
 import java.math.BigInteger;
+import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 
@@ -50,7 +52,7 @@ public class Donation {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", columnDefinition = "donation_stages default 'open'")
     @JdbcType(PostgreSQLEnumJdbcType.class)
-    private DonationStages status;
+    private DonationStage status;
 
     @Column(name = "images")
     private List<String> images;
@@ -81,11 +83,11 @@ public class Donation {
 
     @Column(name = "created_at")
     @JsonProperty("created_at")
-    private String createdAt;
+    private Instant createdAt;
 
     @Column(name = "expires_at")
     @JsonProperty("expires_at")
-    private String expiresAt;
+    private Instant expiresAt;
 
     @Column(name = "postal_name")
     @JsonProperty("postal_name")

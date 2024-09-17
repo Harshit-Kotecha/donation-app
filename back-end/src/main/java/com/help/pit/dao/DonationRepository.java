@@ -14,12 +14,10 @@ import java.util.List;
 @Repository
 public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSpecificationExecutor<Donation> {
 
-    List<Donation> findAllByOrderByExpiresAt();
-
     @Transactional
     @Modifying
     @Query("UPDATE Donation SET status = :status WHERE id = :id")
-    Integer updateDonationStatus(@Param("status") DonationStages status, @Param("id") Long id);
+    Integer updateDonationStatus(@Param("status") DonationStage status, @Param("id") Long id);
 
     @Query("FROM Donation WHERE name LIKE %:name%")
     List<Donation> findByName(@Param("name") String name);
