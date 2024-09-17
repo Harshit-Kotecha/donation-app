@@ -9,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -77,9 +80,9 @@ public class DonationsRestController {
             return new FailureResponse<>(400);
         }
         String msg = "";
-        if(status == DonationStages.open) {
+        if (status == DonationStages.open) {
             msg = "Donation is open now!";
-        } else if(status == DonationStages.processing) {
+        } else if (status == DonationStages.processing) {
             msg = "We are processing this donation for you!";
         } else {
             msg = "This donation is closed now!";

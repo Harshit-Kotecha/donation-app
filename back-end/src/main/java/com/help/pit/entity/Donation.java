@@ -1,5 +1,6 @@
 package com.help.pit.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.help.pit.dao.DonationStages;
 import jakarta.persistence.*;
@@ -8,10 +9,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 
@@ -81,11 +86,12 @@ public class Donation {
 
     @Column(name = "created_at")
     @JsonProperty("created_at")
-    private String createdAt;
+    @CreationTimestamp
+    private OffsetDateTime createdAt;
 
     @Column(name = "expires_at")
     @JsonProperty("expires_at")
-    private String expiresAt;
+    private OffsetDateTime expiresAt;
 
     @Column(name = "postal_name")
     @JsonProperty("postal_name")
