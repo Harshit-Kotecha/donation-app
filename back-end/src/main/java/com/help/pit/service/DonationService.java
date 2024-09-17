@@ -2,18 +2,15 @@ package com.help.pit.service;
 
 import com.help.pit.dao.DonationStages;
 import com.help.pit.entity.Donation;
-import com.help.pit.models.DonationFilters;
-import com.help.pit.models.Filters;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public interface DonationService {
     List<Donation> findAll();
 
-    List<Donation> findAllByOrderByExpiryTimeDesc();
+    List<Donation> findAllByOrderByExpiresAtDesc();
 
     Donation findById(Long id);
 

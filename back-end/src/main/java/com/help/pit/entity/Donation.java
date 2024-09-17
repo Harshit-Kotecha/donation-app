@@ -43,11 +43,6 @@ public class Donation {
     @NotBlank(message = "Description is mandatory")
     private String description;
 
-    @Column(name = "expiry_time", columnDefinition = "int default 0")
-    @JsonProperty("expiry_time_in_hours")
-    @Min(-2)
-    private Integer expiryTimeInHours;
-
     @Column(name = "category")
     @NotBlank(message = "Category is mandatory")
     private String category;
@@ -79,6 +74,18 @@ public class Donation {
 
     @Column(name = "likes")
     private  Integer likes = 0;
+
+    @Column(name = "has_expiry")
+    @JsonProperty("has_expiry")
+    private Boolean hasExpiry;
+
+    @Column(name = "created_at")
+    @JsonProperty("created_at")
+    private String createdAt;
+
+    @Column(name = "expires_at")
+    @JsonProperty("expires_at")
+    private String expiresAt;
 
     @Column(name = "postal_name")
     @JsonProperty("postal_name")

@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSpecificationExecutor<Donation> {
 
-    List<Donation> findAllByOrderByExpiryTimeInHours();
+    List<Donation> findAllByOrderByExpiresAt();
 
     @Transactional
     @Modifying
@@ -27,7 +27,7 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSp
     @Query("FROM Donation WHERE LOWER(name) LIKE %:search_key% OR LOWER(category) LIKE %:search_key% OR LOWER(description) LIKE %:search_key% OR LOWER(region) LIKE %:search_key% OR LOWER(district) LIKE %:search_key% OR LOWER(state) LIKE %:search_key% OR LOWER(address) LIKE %:search_key% OR LOWER(description) LIKE %:search_key%")
     List<Donation> findDonations(@Param("search_key") String searchKey);
 
-    @Query("SELECT DISTINCT(region) FROM Donation")
+    @Query("SELECT DISTINCT(category) FROM Donation")
     List<String> getAllCategories();
 
     @Query("SELECT DISTINCT :filter FROM Donation")

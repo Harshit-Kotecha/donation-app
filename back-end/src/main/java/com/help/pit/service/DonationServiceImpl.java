@@ -24,8 +24,8 @@ public class DonationServiceImpl implements DonationService {
     }
 
     @Override
-    public List<Donation> findAllByOrderByExpiryTimeDesc() {
-        return donationRepository.findAllByOrderByExpiryTimeInHours();
+    public List<Donation> findAllByOrderByExpiresAtDesc() {
+        return donationRepository.findAllByOrderByExpiresAt();
     }
 
     @Override

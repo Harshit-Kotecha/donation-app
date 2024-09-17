@@ -2,19 +2,15 @@ package com.help.pit.rest;
 
 import com.help.pit.dao.DonationStages;
 import com.help.pit.entity.*;
-import com.help.pit.models.DonationFilters;
-import com.help.pit.models.Filters;
 import com.help.pit.service.DonationService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +27,7 @@ public class DonationsRestController {
         if (searchKey != null && !searchKey.trim().isEmpty()) {
             return new SuccessResponse<>(donationService.findDonations(searchKey.trim().toLowerCase()));
         }
-        return new SuccessResponse<>(donationService.findAllByOrderByExpiryTimeDesc());
+        return new SuccessResponse<>(donationService.findAllByOrderByExpiresAtDesc());
     }
 
     @GetMapping("/donations/{id}")
@@ -39,15 +35,10 @@ public class DonationsRestController {
         return new SuccessResponse<>(donationService.findById(id));
     }
 
-    @GetMapping("/categories")
+    @GetMapping("/donations/categories")
     public BaseResponse<List<String>> getAllCategories() {
-        List<String> categories = new ArrayList<>();
-        try {
-            categories = donationService.getAllCategories();
-        } catch (Exception e) {
-            return new FailureResponse<>(HttpStatus.NO_CONTENT.value());
-        }
-
+        List<String> categories = donationService.getAllCategories();
+        Collections.sort(categories);
         return new SuccessResponse<>(categories);
     }
 
@@ -62,10 +53,7 @@ public class DonationsRestController {
             throw new ResourceNotFoundException("Request body is mandatory");
         }
 
-        if (donation.getExpiryTimeInHours() <= 0) {
-            // Never expires
-            donation.setExpiryTimeInHours(-1);
-        }
+        donation.setHasExpiry(donation.getExpiresAt() != null);
         donation.setLikes(0);
         donation.setCategory(donation.getCategory().toLowerCase());
         donation.setStatus(DonationStages.open);
@@ -77,7 +65,7 @@ public class DonationsRestController {
     @PatchMapping("/donation/update/{id}")
     public BaseResponse<String> updateDonationStatus(@PathVariable(name = "id") Long id, @RequestParam(name = "status") DonationStages status) {
 
-        if (status.toString().isEmpty()) {
+        if (status == null || status.toString().isEmpty()) {
             return new FailureResponse<>("A valid status is required", HttpStatus.BAD_REQUEST.value());
         }
 
