@@ -5,11 +5,14 @@ import com.help.pit.entity.*;
 import com.help.pit.service.DonationService;
 import com.help.pit.utils.DonationUtils;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
@@ -67,9 +70,9 @@ public class DonationsRestController {
         return new SuccessResponse<>(categories);
     }
 
-    @GetMapping("/filters")
-    public BaseResponse<Map<String, List<String>>> getAllFilters() {
-        return new SuccessResponse<>(donationService.getFilters());
+    @GetMapping("/csrf-token")
+    public BaseResponse<CsrfToken> getCsrfToken(HttpServletRequest request) {
+        return new SuccessResponse<>((CsrfToken) request.getAttribute("_csrf"));
     }
 
     @PostMapping("/donations")
