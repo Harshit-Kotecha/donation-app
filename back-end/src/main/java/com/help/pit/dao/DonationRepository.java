@@ -1,6 +1,7 @@
 package com.help.pit.dao;
 
 import com.help.pit.entity.Donation;
+import com.help.pit.utils.DonationStage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;

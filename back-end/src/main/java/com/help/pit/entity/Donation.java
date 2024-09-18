@@ -1,18 +1,15 @@
 package com.help.pit.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.help.pit.dao.DonationStage;
+import com.help.pit.utils.DonationStage;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
-import org.hibernate.type.descriptor.jdbc.TimestampWithTimeZoneJdbcType;
 
 import java.math.BigInteger;
 import java.time.OffsetDateTime;

@@ -1,6 +1,6 @@
 package com.help.pit.rest;
 
-import com.help.pit.dao.DonationStage;
+import com.help.pit.utils.DonationStage;
 import com.help.pit.entity.*;
 import com.help.pit.service.DonationService;
 import com.help.pit.utils.DonationUtils;
@@ -10,14 +10,10 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
