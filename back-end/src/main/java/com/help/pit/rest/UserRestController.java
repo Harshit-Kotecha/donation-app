@@ -19,14 +19,18 @@ public class UserRestController {
     @Autowired
     private UserService userService;
 
-    private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(12);
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @PostMapping("/register")
     public BaseResponse<User> register(@Valid @RequestBody User user) {
         if (user == null) {
             throw new ResourceNotFoundException("Request body is mandatory");
         }
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        return new SuccessResponse<>(userService.register(user));
+        String unencryptedPassword = user.getPassword();
+        user.setPassword(bCryptPasswordEncoder.encode(unencryptedPassword));
+        User newUser = userService.register(user);
+        newUser.setPassword(unencryptedPassword);
+        return new SuccessResponse<>(newUser);
     }
 }
