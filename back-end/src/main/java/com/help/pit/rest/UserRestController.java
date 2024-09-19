@@ -33,4 +33,15 @@ public class UserRestController {
         newUser.setPassword(unencryptedPassword);
         return new SuccessResponse<>(newUser);
     }
+
+    @PostMapping("/login")
+    public BaseResponse<String> login(@Valid @RequestBody User user) {
+        if (user == null) {
+            throw new ResourceNotFoundException("Request body is mandatory");
+        }
+
+        String isVerified = userService.verify(user);
+        System.out.println(isVerified + "login...................");
+        return new SuccessResponse<>(isVerified);
+    }
 }

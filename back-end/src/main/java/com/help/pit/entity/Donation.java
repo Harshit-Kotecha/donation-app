@@ -80,7 +80,7 @@ public class Donation {
     @JsonProperty("has_expiry")
     private Boolean hasExpiry;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
     @JsonProperty("created_at")
     @CreationTimestamp
     private OffsetDateTime createdAt;
