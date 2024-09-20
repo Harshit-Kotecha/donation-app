@@ -1,6 +1,7 @@
 package com.help.pit.service;
 
 import com.help.pit.dao.UserRepository;
+import com.help.pit.entity.SecurityTokens;
 import com.help.pit.entity.User;
 import io.jsonwebtoken.Jwt;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,12 +31,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String verify(User user) {
+    public SecurityTokens verify(User user) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
         if(authentication.isAuthenticated()) {
-            return jwtService.generateToken(user.getUsername());
+            String accessToken = jwtService.generateToken(user.getUsername());
+            return new SecurityTokens(accessToken);
+        } else {
+            throw new UsernameNotFoundException("username or password is not valid");
         }
-        return "false";
     }
 }

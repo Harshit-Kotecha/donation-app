@@ -22,6 +22,9 @@ public class JwtService {
 
     private String secretKey = "";
 
+    // It's 8 hours
+    private static final Integer expiryTime = 1000 * 60 * 60 * 8;
+
     public JwtService() {
         try {
             KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
@@ -42,7 +45,7 @@ public class JwtService {
                 .add(claims)
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 30))
+                .expiration(new Date(System.currentTimeMillis() + expiryTime))
                 .and()
                 .signWith(getKey())
                 .compact();

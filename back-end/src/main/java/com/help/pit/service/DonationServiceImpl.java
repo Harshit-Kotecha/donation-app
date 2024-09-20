@@ -3,7 +3,7 @@ package com.help.pit.service;
 import com.help.pit.dao.DonationRepository;
 import com.help.pit.utils.DonationStage;
 import com.help.pit.entity.Donation;
-import com.help.pit.rest.ResourceNotFoundException;
+import com.help.pit.utils.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;

@@ -1,9 +1,11 @@
 package com.help.pit.rest;
 
 import com.help.pit.entity.BaseResponse;
+import com.help.pit.entity.SecurityTokens;
 import com.help.pit.entity.SuccessResponse;
 import com.help.pit.entity.User;
 import com.help.pit.service.UserService;
+import com.help.pit.utils.ResourceNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,13 +37,11 @@ public class UserRestController {
     }
 
     @PostMapping("/login")
-    public BaseResponse<String> login(@Valid @RequestBody User user) {
+    public BaseResponse<SecurityTokens> login(@Valid @RequestBody User user) {
         if (user == null) {
             throw new ResourceNotFoundException("Request body is mandatory");
         }
 
-        String isVerified = userService.verify(user);
-        System.out.println(isVerified + "login...................");
-        return new SuccessResponse<>(isVerified);
+        return new SuccessResponse<>(userService.verify(user));
     }
 }

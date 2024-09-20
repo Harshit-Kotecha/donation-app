@@ -1,7 +1,7 @@
 package com.help.pit.rest;
 
-import com.help.pit.entity.FailureResponse;
 import com.help.pit.entity.ResourceError;
+import com.help.pit.utils.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
