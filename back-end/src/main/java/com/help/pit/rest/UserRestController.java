@@ -1,9 +1,6 @@
 package com.help.pit.rest;
 
-import com.help.pit.entity.BaseResponse;
-import com.help.pit.entity.SecurityTokens;
-import com.help.pit.entity.SuccessResponse;
-import com.help.pit.entity.User;
+import com.help.pit.entity.*;
 import com.help.pit.service.UserService;
 import com.help.pit.utils.ResourceNotFoundException;
 import jakarta.validation.Valid;
@@ -37,7 +34,7 @@ public class UserRestController {
     }
 
     @PostMapping("/login")
-    public BaseResponse<SecurityTokens> login(@Valid @RequestBody User user) {
+    public BaseResponse<SecurityTokens> login(@RequestBody User user) {
         if (user == null) {
             throw new ResourceNotFoundException("Request body is mandatory");
         }
