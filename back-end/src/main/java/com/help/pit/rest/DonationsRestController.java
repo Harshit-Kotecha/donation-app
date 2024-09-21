@@ -45,8 +45,8 @@ public class DonationsRestController {
             if (status != null && !status.isEmpty()) {
                 DonationStage donationStage = DonationUtils.getDonationStage(status);
 
-                    Predicate statusPredicate = cb.equal(root.get("status"), donationStage);
-                    predicates.add(statusPredicate);
+                Predicate statusPredicate = cb.equal(root.get("status"), donationStage);
+                predicates.add(statusPredicate);
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));
@@ -73,10 +73,13 @@ public class DonationsRestController {
     }
 
     @PostMapping("/donations")
-    public BaseResponse<Donation> add(@Valid @RequestBody Donation donation) {
+    public BaseResponse<Donation> add(@Valid @RequestBody Donation donation, @RequestHeader("Authorization") String authToken) {
         if (donation == null) {
             throw new ResourceNotFoundException("Request body is mandatory");
         }
+
+        // Extract username from token
+        donation.setCreatedBy(donationService.extractUsername(authToken));
 
         donation.setHasExpiry(donation.getExpiresAt() != null);
         donation.setLikes(0);
@@ -101,15 +104,8 @@ public class DonationsRestController {
         if (result == 0) {
             return new FailureResponse<>(400);
         }
-        String msg = "";
-        if (status == DonationStage.open) {
-            msg = "Donation is open now!";
-        } else if (status == DonationStage.processing) {
-            msg = "We are processing this donation for you!";
-        } else {
-            msg = "This donation is closed now!";
-        }
-        return new SuccessResponse<>(msg);
+
+        return new SuccessResponse<>(DonationUtils.getDonationMsg(status));
     }
 
     @DeleteMapping("/donations/{id}")

@@ -27,4 +27,5 @@ public interface DonationService {
 
     List<Donation> findDonations(@Param("search_key") String searchKey);
 
+    String extractUsername(String bearerToken);
 }

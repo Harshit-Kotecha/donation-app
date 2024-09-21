@@ -4,6 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -16,33 +18,33 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+@Slf4j
 @Service
 public class JwtService {
 
-    private String secretKey = "";
+    @Value("${jwtKey}")
+    private String secretKey;
 
-    // It's 8 hours
-    private static final Integer expiryTime = 1000 * 60 * 60 * 8;
+    private static final Long expiryTime = 1000L * 60 * 60 * 8;
 
-    public JwtService() {
+    private void configureSecretKey() {
         try {
             KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
             SecretKey sk = keyGen.generateKey();
             secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
+            log.info(secretKey);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
-
     }
 
-    public  String generateToken(String email, Integer id) {
+    public  String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("id", id);
 
         return Jwts.builder()
                 .claims()
                 .add(claims)
-                .subject(email)
+                .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiryTime))
                 .and()
@@ -55,7 +57,7 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String extractEmail(String token) {
+    public String extractUsername(String token) {
         // extract username from jwt token
         return extractClaim(token, Claims::getSubject);
     }
@@ -74,7 +76,7 @@ public class JwtService {
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
-        String username = extractEmail(token);
+        String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 

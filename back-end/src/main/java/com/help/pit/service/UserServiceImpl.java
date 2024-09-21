@@ -30,11 +30,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public SecurityTokens verify(User user) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+    public String generateToken(String username) {
+        return jwtService.generateToken(username);
+    }
+
+    @Override
+    public SecurityTokens verifyAndGenerateToken(User user) {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
         if(authentication.isAuthenticated()) {
-            String accessToken = jwtService.generateToken(user.getName(), user.getId());
+            String accessToken = generateToken(user.getUsername());
             return new SecurityTokens(accessToken);
         } else {
             throw new UsernameNotFoundException("email or password is not valid");

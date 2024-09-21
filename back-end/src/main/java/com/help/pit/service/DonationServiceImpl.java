@@ -6,6 +6,7 @@ import com.help.pit.entity.Donation;
 import com.help.pit.utils.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,8 @@ import java.util.*;
 public class DonationServiceImpl implements DonationService {
 
     private DonationRepository donationRepository;
+
+    private JwtService jwtService;
 
     @Override
     public List<Donation> findAll(Specification<Donation> specification) {
@@ -72,5 +75,11 @@ public class DonationServiceImpl implements DonationService {
     @Override
     public List<Donation> findDonations(String searchKey) {
         return donationRepository.findDonations(searchKey);
+    }
+
+    @Override
+    public String extractUsername(String bearerToken) {
+            String token = bearerToken.substring(7);
+            return jwtService.extractUsername(token);
     }
 }

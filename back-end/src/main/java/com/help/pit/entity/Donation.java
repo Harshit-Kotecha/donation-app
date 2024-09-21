@@ -1,5 +1,6 @@
 package com.help.pit.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.help.pit.utils.DonationStage;
 import jakarta.persistence.*;
@@ -51,7 +52,7 @@ public class Donation {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", columnDefinition = "donation_stages default 'open'")
     @JdbcType(PostgreSQLEnumJdbcType.class)
-    private DonationStage status;
+    private DonationStage status = DonationStage.open;
 
     @Column(name = "images")
     private List<String> images;
@@ -89,17 +90,28 @@ public class Donation {
     @JsonProperty("expires_at")
     private OffsetDateTime expiresAt;
 
+    @Column(name = "created_by", updatable = false)
+    @JsonProperty(value = "created_by", access = JsonProperty.Access.READ_ONLY)
+    private String createdBy;
+
     @Column(name = "postal_name")
     @JsonProperty("postal_name")
     @NotBlank(message = "Postal name is mandatory")
     private String postalName;
 
     @Column(name = "region")
+    @NotBlank(message = "region is mandatory")
     private  String region;
 
     @Column(name = "district")
+    @NotBlank(message = "district is mandatory")
     private String district;
 
     @Column(name = "state")
+    @NotBlank(message = "state is mandatory")
     private  String state;
+
+    @Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
+    @JsonIgnore
+    private Boolean isDeleted = false;
 }

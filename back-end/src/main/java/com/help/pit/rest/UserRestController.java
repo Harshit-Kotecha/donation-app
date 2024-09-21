@@ -30,15 +30,16 @@ public class UserRestController {
         user.setPassword(bCryptPasswordEncoder.encode(unencryptedPassword));
         User newUser = userService.register(user);
         newUser.setPassword(unencryptedPassword);
+        newUser.setAccessToken(userService.generateToken(newUser.getUsername()));
         return new SuccessResponse<>(newUser);
     }
 
     @PostMapping("/login")
     public BaseResponse<SecurityTokens> login(@RequestBody User user) {
-        if (user == null) {
+        if (user.getUsername() == null || user.getPassword() == null) {
             throw new ResourceNotFoundException("Request body is mandatory");
         }
 
-        return new SuccessResponse<>(userService.verify(user));
+        return new SuccessResponse<>(userService.verifyAndGenerateToken(user));
     }
 }

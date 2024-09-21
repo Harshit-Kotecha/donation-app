@@ -23,17 +23,19 @@ public class User {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "name")
-    @NotBlank(message = "username is mandatory")
-    private  String name;
+    @Column(name = "email", unique = true)
+    @NotBlank(message = "email is mandatory")
+    @JsonProperty("email")
+    private  String username;
+
+    @Column(name = "full_name")
+    @NotBlank(message = "name is mandatory")
+    @JsonProperty("full_name")
+    private  String fullName;
 
     @Column(name = "password")
     @NotBlank(message = "password is mandatory")
     private  String password;
-
-    @Column(name = "email")
-    @NotBlank(message = "Email is mandatory")
-    private String email;
 
     @Column(name = "phone_number")
     @JsonProperty("phone_number")
@@ -41,4 +43,8 @@ public class User {
     @DecimalMax(value = "9999999999", message = "Phone number must be 10 digits long")
     @DecimalMin(value = "1000000000", message = "Phone number must be 10 digits long")
     private BigInteger phoneNumber;
+
+    @Transient
+    @JsonProperty("access_token")
+    private String accessToken;
 }

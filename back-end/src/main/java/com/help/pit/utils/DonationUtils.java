@@ -9,4 +9,13 @@ public class DonationUtils {
             default -> null;
         };
     }
+
+    static public String getDonationMsg(DonationStage donationStage) {
+        return switch (donationStage) {
+            case open -> "Donation is open now!";
+            case processing -> "We are processing this donation for you!";
+            case closed ->"This donation is closed now!";
+            default -> "Something went wrong!";
+        };
+    }
 }
