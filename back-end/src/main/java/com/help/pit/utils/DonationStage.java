@@ -1,4 +1,4 @@
-package com.help.pit.dao;
+package com.help.pit.utils;
 
 public enum DonationStage {
     open,

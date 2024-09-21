@@ -1,11 +1,12 @@
 package com.help.pit.service;
 
 import com.help.pit.dao.DonationRepository;
-import com.help.pit.dao.DonationStage;
+import com.help.pit.utils.DonationStage;
 import com.help.pit.entity.Donation;
-import com.help.pit.rest.ResourceNotFoundException;
+import com.help.pit.utils.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +20,10 @@ public class DonationServiceImpl implements DonationService {
 
     private DonationRepository donationRepository;
 
+    private JwtService jwtService;
+
     @Override
-    public List<Donation> findAll(Specification specification) {
+    public List<Donation> findAll(Specification<Donation> specification) {
         return (List<Donation>) donationRepository.findAll(specification);
     }
 
@@ -69,29 +72,14 @@ public class DonationServiceImpl implements DonationService {
         return donationRepository.getAllCategories();
     }
 
-//    @Override
-//    public List<Object> getFilters() {
-//        return donationRepository.getFilters();
-//    }
-
-    @Override
-    public List<Donation> findByCategoryAndRegionAndState(String category, String region, String state) {
-//        Specification<Donation> donationSpecification = Specification.where(DonationSpecification)
-        return donationRepository.findByCategoryAndRegionAndState(category, region, state);
-    }
-
     @Override
     public List<Donation> findDonations(String searchKey) {
         return donationRepository.findDonations(searchKey);
     }
 
     @Override
-    public Map<String, List<String>> getFilters() {
-        Map<String, List<String>> rs = new HashMap<>();
-
-        List<String> categories = donationRepository.getDistinctItems("category");
-        log.debug(categories.toString());
-        rs.put("category", categories);
-        return rs;
+    public String extractUsername(String bearerToken) {
+            String token = bearerToken.substring(7);
+            return jwtService.extractUsername(token);
     }
 }

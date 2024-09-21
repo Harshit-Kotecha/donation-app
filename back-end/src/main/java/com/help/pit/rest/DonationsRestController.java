@@ -1,20 +1,20 @@
 package com.help.pit.rest;
 
-import com.help.pit.dao.DonationStage;
+import com.help.pit.utils.DonationStage;
 import com.help.pit.entity.*;
 import com.help.pit.service.DonationService;
 import com.help.pit.utils.DonationUtils;
+import com.help.pit.utils.ResourceNotFoundException;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -45,8 +45,8 @@ public class DonationsRestController {
             if (status != null && !status.isEmpty()) {
                 DonationStage donationStage = DonationUtils.getDonationStage(status);
 
-                    Predicate statusPredicate = cb.equal(root.get("status"), donationStage);
-                    predicates.add(statusPredicate);
+                Predicate statusPredicate = cb.equal(root.get("status"), donationStage);
+                predicates.add(statusPredicate);
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));
@@ -67,16 +67,19 @@ public class DonationsRestController {
         return new SuccessResponse<>(categories);
     }
 
-    @GetMapping("/filters")
-    public BaseResponse<Map<String, List<String>>> getAllFilters() {
-        return new SuccessResponse<>(donationService.getFilters());
+    @GetMapping("/csrf-token")
+    public BaseResponse<CsrfToken> getCsrfToken(HttpServletRequest request) {
+        return new SuccessResponse<>((CsrfToken) request.getAttribute("_csrf"));
     }
 
     @PostMapping("/donations")
-    public BaseResponse<Donation> add(@Valid @RequestBody Donation donation) {
+    public BaseResponse<Donation> add(@Valid @RequestBody Donation donation, @RequestHeader("Authorization") String authToken) {
         if (donation == null) {
             throw new ResourceNotFoundException("Request body is mandatory");
         }
+
+        // Extract username from token
+        donation.setCreatedBy(donationService.extractUsername(authToken));
 
         donation.setHasExpiry(donation.getExpiresAt() != null);
         donation.setLikes(0);
@@ -101,15 +104,8 @@ public class DonationsRestController {
         if (result == 0) {
             return new FailureResponse<>(400);
         }
-        String msg = "";
-        if (status == DonationStage.open) {
-            msg = "Donation is open now!";
-        } else if (status == DonationStage.processing) {
-            msg = "We are processing this donation for you!";
-        } else {
-            msg = "This donation is closed now!";
-        }
-        return new SuccessResponse<>(msg);
+
+        return new SuccessResponse<>(DonationUtils.getDonationMsg(status));
     }
 
     @DeleteMapping("/donations/{id}")
