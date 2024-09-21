@@ -28,4 +28,8 @@ public interface DonationService {
     List<Donation> findDonations(@Param("search_key") String searchKey);
 
     String extractUsername(String bearerToken);
+
+    String findCreatedBy(Long id);
+
+    Integer softDeleteDonation(@Param("email") String email, @Param("id") Long id);
 }

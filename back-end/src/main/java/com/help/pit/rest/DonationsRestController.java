@@ -10,15 +10,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import javax.naming.NoPermissionException;
+import java.util.*;
 
 @Slf4j
 @CrossOrigin(origins = "*")
@@ -109,16 +109,15 @@ public class DonationsRestController {
     }
 
     @DeleteMapping("/donations/{id}")
-    public BaseResponse<String> deleteById(@PathVariable(name = "id") Long id) {
+    public BaseResponse<String> deleteById(@RequestHeader("Authorization") String token, @PathVariable(name = "id") Long id) throws NoPermissionException, BadRequestException {
         Donation donation = donationService.findById(id);
-        donationService.deleteById(id);
 
+        String currentUser = donationService.extractUsername(token);
+
+        Integer result = donationService.softDeleteDonation(currentUser, id);
+        if(result == 0) {
+            throw new BadRequestException("You don't have permission to delete this donation");
+        }
         return new SuccessResponse<>("Donation of id " + id + " deleted successfully");
-    }
-
-    @GetMapping("/donations/sort")
-    public BaseResponse<List<Donation>> findByCategoryAndRegionAndState(@RequestParam(required = false) Map<String, String> params) {
-        System.out.println(params + "params");
-        return new SuccessResponse<>();
     }
 }

@@ -34,7 +34,7 @@ public class DonationServiceImpl implements DonationService {
 
     @Override
     public Donation findById(Long id) {
-        Optional<Donation> result = donationRepository.findById(id);
+        Optional<Donation> result = donationRepository.findByIdAndIsDeletedFalse(id);
         Donation donation;
         if (result.isPresent()) {
             donation = result.get();
@@ -64,7 +64,7 @@ public class DonationServiceImpl implements DonationService {
 
     @Override
     public List<Donation> filterByName(String name) {
-        return donationRepository.findByName(name);
+        return donationRepository.findByNameAndIsDeletedFalse(name);
     }
 
     @Override
@@ -81,5 +81,15 @@ public class DonationServiceImpl implements DonationService {
     public String extractUsername(String bearerToken) {
             String token = bearerToken.substring(7);
             return jwtService.extractUsername(token);
+    }
+
+    @Override
+    public String findCreatedBy(Long id) {
+        return donationRepository.findCreatedBy(id);
+    }
+
+    @Override
+    public Integer softDeleteDonation(String email, Long id) {
+        return donationRepository.softDeleteDonation(email, id);
     }
 }
