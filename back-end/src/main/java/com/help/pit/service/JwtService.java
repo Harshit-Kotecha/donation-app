@@ -25,7 +25,7 @@ public class JwtService {
     @Value("${jwtKey}")
     private String secretKey;
 
-    private static final Long expiryTime = 1000L * 60 * 60 * 8;
+    private static final Long expiryTime = 1000L * 60 * 60 * 24 * 10;
 
     private void configureSecretKey() {
         try {

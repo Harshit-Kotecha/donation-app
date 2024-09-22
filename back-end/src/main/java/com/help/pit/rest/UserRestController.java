@@ -6,10 +6,9 @@ import com.help.pit.utils.ResourceNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -41,5 +40,11 @@ public class UserRestController {
         }
 
         return new SuccessResponse<>(userService.verifyAndGenerateToken(user));
+    }
+
+    @GetMapping("/my-profile")
+    public BaseResponse<UserProjection> getUserData(@RequestHeader("Authorization") String token) {
+        String username = userService.extractUsername(token);
+        return new SuccessResponse<>(userService.findByUsernameBy(username));
     }
 }

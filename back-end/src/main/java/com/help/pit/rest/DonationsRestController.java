@@ -120,4 +120,11 @@ public class DonationsRestController {
         }
         return new SuccessResponse<>("Donation of id " + id + " deleted successfully");
     }
+
+    @GetMapping("/my-donations")
+    public BaseResponse<List<Donation>> getMyDonations(@RequestHeader("Authorization") String token) {
+        String currentUser = donationService.extractUsername(token);
+
+        return new SuccessResponse<>(donationService.findByCreatedByAndIsDeletedFalse(currentUser));
+    }
 }

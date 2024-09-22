@@ -52,4 +52,6 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSp
             	)
             """)
     Integer softDeleteDonation(@Param("email") String email, @Param("id") Long id);
+
+    List<Donation> findByCreatedByAndIsDeletedFalse(String createdBy);
 }

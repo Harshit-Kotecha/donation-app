@@ -16,11 +16,9 @@ import java.util.*;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class DonationServiceImpl implements DonationService {
+public class DonationServiceImpl extends BaseServiceImpl implements DonationService {
 
     private DonationRepository donationRepository;
-
-    private JwtService jwtService;
 
     @Override
     public List<Donation> findAll(Specification<Donation> specification) {
@@ -77,11 +75,6 @@ public class DonationServiceImpl implements DonationService {
         return donationRepository.findDonations(searchKey);
     }
 
-    @Override
-    public String extractUsername(String bearerToken) {
-            String token = bearerToken.substring(7);
-            return jwtService.extractUsername(token);
-    }
 
     @Override
     public String findCreatedBy(Long id) {
@@ -91,5 +84,10 @@ public class DonationServiceImpl implements DonationService {
     @Override
     public Integer softDeleteDonation(String email, Long id) {
         return donationRepository.softDeleteDonation(email, id);
+    }
+
+    @Override
+    public List<Donation> findByCreatedByAndIsDeletedFalse(String createdBy) {
+        return donationRepository.findByCreatedByAndIsDeletedFalse(createdBy);
     }
 }
