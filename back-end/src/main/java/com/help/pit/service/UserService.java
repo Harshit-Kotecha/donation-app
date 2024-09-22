@@ -3,9 +3,7 @@ package com.help.pit.service;
 
 import com.help.pit.entity.SecurityTokens;
 import com.help.pit.entity.User;
-import com.help.pit.entity.UserProjection;
-
-import java.util.List;
+import com.help.pit.entity.UserDTO;
 
 public interface UserService extends BaseService {
     User register(User user);
@@ -14,5 +12,5 @@ public interface UserService extends BaseService {
 
     String generateToken(String email);
 
-    UserProjection findByUsernameBy(String name);
+    UserDTO findByUsernameBy(String name);
 }

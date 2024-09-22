@@ -3,7 +3,7 @@ package com.help.pit.service;
 import com.help.pit.dao.UserRepository;
 import com.help.pit.entity.SecurityTokens;
 import com.help.pit.entity.User;
-import com.help.pit.entity.UserProjection;
+import com.help.pit.entity.UserDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,8 +11,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -38,8 +36,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     }
 
     @Override
-    public UserProjection findByUsernameBy(String name) {
-        return userRepository.findProjectedByUsername(name);
+    public UserDTO findByUsernameBy(String name) {
+        return userRepository.findUserDTOByUsername(name);
     }
 
     @Override

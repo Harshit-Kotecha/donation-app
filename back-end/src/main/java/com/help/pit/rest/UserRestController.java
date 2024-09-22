@@ -43,7 +43,7 @@ public class UserRestController {
     }
 
     @GetMapping("/my-profile")
-    public BaseResponse<UserProjection> getUserData(@RequestHeader("Authorization") String token) {
+    public BaseResponse<UserDTO> getUserData(@RequestHeader("Authorization") String token) {
         String username = userService.extractUsername(token);
         return new SuccessResponse<>(userService.findByUsernameBy(username));
     }
