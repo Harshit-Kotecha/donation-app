@@ -42,16 +42,9 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSp
             	isDeleted = TRUE
             WHERE
             	id = :id
-            	AND :email = (
-            		SELECT
-            			createdBy
-            		FROM
-            			Donation
-            		WHERE
-            			id = :id
-            	)
+            	AND createdBy = :user_id
             """)
-    Integer softDeleteDonation(@Param("email") String email, @Param("id") Long id);
+    Integer softDeleteDonation(@Param("user_id") Integer userId, @Param("id") Long donationId);
 
-    List<Donation> findByCreatedByAndIsDeletedFalse(String createdBy);
+    List<Donation> findByCreatedBy(Integer createdBy);
 }

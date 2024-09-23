@@ -6,7 +6,6 @@ import com.help.pit.entity.Donation;
 import com.help.pit.utils.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,12 +81,12 @@ public class DonationServiceImpl extends BaseServiceImpl implements DonationServ
     }
 
     @Override
-    public Integer softDeleteDonation(String email, Long id) {
-        return donationRepository.softDeleteDonation(email, id);
+    public Integer softDeleteDonation(Integer userId, Long id) {
+        return donationRepository.softDeleteDonation(userId, id);
     }
 
     @Override
-    public List<Donation> findByCreatedByAndIsDeletedFalse(String createdBy) {
-        return donationRepository.findByCreatedByAndIsDeletedFalse(createdBy);
+    public List<Donation> findByCreatedBy(Integer createdBy) {
+        return donationRepository.findByCreatedBy(createdBy);
     }
 }
