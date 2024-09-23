@@ -1,5 +1,6 @@
 package com.help.pit.service;
 
+import com.help.pit.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -38,13 +39,18 @@ public class JwtService {
         }
     }
 
-    public  String generateToken(String username) {
+    public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
+
+        if(user.getId() == null) {
+            throw new RuntimeException("User id not found");
+        }
+        claims.put("user_id", user.getId());
 
         return Jwts.builder()
                 .claims()
                 .add(claims)
-                .subject(username)
+                .subject(user.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiryTime))
                 .and()
@@ -60,6 +66,12 @@ public class JwtService {
     public String extractUsername(String token) {
         // extract username from jwt token
         return extractClaim(token, Claims::getSubject);
+    }
+
+    // New method to extract the id from claims
+    public <T> T extractKey(String token, String key , Class<T> tClass) {
+        Claims claims = extractAllClaims(token);  // Extract all claims from the token
+        return claims.get(key, tClass);
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimResolver) {

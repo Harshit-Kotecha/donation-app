@@ -10,7 +10,9 @@ public interface UserService extends BaseService {
 
    SecurityTokens verifyAndGenerateToken(User user);
 
-    String generateToken(String email);
+    String generateToken(User user);
 
-    UserDTO findByUsernameBy(String name);
+    UserDTO getUserById(Integer id);
+
+    Integer getUserId(String username);
 }

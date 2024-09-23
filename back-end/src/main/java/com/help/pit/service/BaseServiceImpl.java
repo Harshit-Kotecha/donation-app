@@ -11,4 +11,10 @@ public class BaseServiceImpl implements BaseService{
         String token = bearerToken.substring(7);
         return jwtService.extractUsername(token);
     }
+
+    @Override
+    public Integer extractUserId(String bearerToken) {
+        String token = bearerToken.substring(7);
+        return jwtService.extractKey(token, "user_id", Integer.class);
+    }
 }

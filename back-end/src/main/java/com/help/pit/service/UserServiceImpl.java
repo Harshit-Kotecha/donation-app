@@ -31,13 +31,18 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     }
 
     @Override
-    public String generateToken(String username) {
-        return jwtService.generateToken(username);
+    public String generateToken(User user) {
+        return jwtService.generateToken(user);
     }
 
     @Override
-    public UserDTO findByUsernameBy(String name) {
-        return userRepository.findUserDTOByUsername(name);
+    public UserDTO getUserById(Integer id) {
+        return userRepository.findUserDTOById(id);
+    }
+
+    @Override
+    public Integer getUserId(String username) {
+        return userRepository.getUserId(username);
     }
 
     @Override
@@ -45,7 +50,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
         if(authentication.isAuthenticated()) {
-            String accessToken = generateToken(user.getUsername());
+            String accessToken = jwtService.generateToken(user);
+            System.out.println(jwtService.extractKey(accessToken, "user_id", Integer.class) + "--------------------token");
             return new SecurityTokens(accessToken);
         } else {
             throw new UsernameNotFoundException("email or password is not valid");
