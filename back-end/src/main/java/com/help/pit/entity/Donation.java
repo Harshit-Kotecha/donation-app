@@ -92,6 +92,7 @@ public class Donation {
 
     @Column(name = "created_by", updatable = false)
     @JsonProperty(value = "created_by", access = JsonProperty.Access.READ_ONLY)
+    @JsonIgnore
     private String createdBy;
 
     @Column(name = "postal_name")
