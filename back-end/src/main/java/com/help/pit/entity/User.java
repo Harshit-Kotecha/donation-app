@@ -26,16 +26,16 @@ public class User {
     @Column(name = "email", unique = true)
     @NotBlank(message = "email is mandatory")
     @JsonProperty("email")
-    private  String username;
+    private String username;
 
     @Column(name = "full_name")
     @NotBlank(message = "name is mandatory")
     @JsonProperty("full_name")
-    private  String fullName;
+    private String fullName;
 
     @Column(name = "password")
     @NotBlank(message = "password is mandatory")
-    private  String password;
+    private String password;
 
     @Column(name = "phone_number")
     @JsonProperty("phone_number")

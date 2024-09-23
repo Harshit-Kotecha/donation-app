@@ -5,11 +5,9 @@ import com.help.pit.service.UserService;
 import com.help.pit.utils.ResourceNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
@@ -30,7 +28,7 @@ public class UserRestController {
         user.setPassword(bCryptPasswordEncoder.encode(unencryptedPassword));
         User newUser = userService.register(user);
         newUser.setPassword(unencryptedPassword);
-        newUser.setAccessToken(userService.generateToken(newUser.getUsername()));
+        newUser.setAccessToken(userService.generateToken(newUser));
         return new SuccessResponse<>(newUser);
     }
 
@@ -39,7 +37,17 @@ public class UserRestController {
         if (user.getUsername() == null || user.getPassword() == null) {
             throw new ResourceNotFoundException("Request body is mandatory");
         }
-
+        Integer id = userService.getUserId(user.getUsername());
+        user.setId(id);
         return new SuccessResponse<>(userService.verifyAndGenerateToken(user));
+    }
+
+    @GetMapping("/my-profile")
+    public BaseResponse<UserDTO> getUserData(@RequestHeader("Authorization") String token) throws Exception {
+        Integer id = userService.extractUserId(token);
+        if(id == null) {
+            throw new Exception("Please log in again");
+        }
+        return new SuccessResponse<>(userService.getUserById(id));
     }
 }

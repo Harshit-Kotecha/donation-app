@@ -10,15 +10,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import javax.naming.NoPermissionException;
+import java.util.*;
 
 @Slf4j
 @CrossOrigin(origins = "*")
@@ -36,6 +35,9 @@ public class DonationsRestController {
 
         Specification<Donation> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
+
+            Predicate isDeletedPredicate = cb.equal(root.get("isDeleted"), false);
+            predicates.add(isDeletedPredicate);
 
             if (category != null && !category.isEmpty()) {
                 Predicate categoryPredicate = cb.equal(root.get("category"), category);
@@ -78,8 +80,8 @@ public class DonationsRestController {
             throw new ResourceNotFoundException("Request body is mandatory");
         }
 
-        // Extract username from token
-        donation.setCreatedBy(donationService.extractUsername(authToken));
+        // Extract user id from token
+        donation.setCreatedBy(donationService.extractUserId(authToken));
 
         donation.setHasExpiry(donation.getExpiresAt() != null);
         donation.setLikes(0);
@@ -98,27 +100,33 @@ public class DonationsRestController {
         }
 
         // Check whether this user exist or not
-        donationService.findById(id);
+        // donationService.findById(id);
 
         Integer result = donationService.updateDonationStatus(status, id);
         if (result == 0) {
-            return new FailureResponse<>(400);
+            return new FailureResponse<>("Donation not found" ,400);
         }
 
         return new SuccessResponse<>(DonationUtils.getDonationMsg(status));
     }
 
     @DeleteMapping("/donations/{id}")
-    public BaseResponse<String> deleteById(@PathVariable(name = "id") Long id) {
+    public BaseResponse<String> deleteById(@RequestHeader("Authorization") String token, @PathVariable(name = "id") Long id) throws NoPermissionException, BadRequestException {
         Donation donation = donationService.findById(id);
-        donationService.deleteById(id);
 
+        Integer userId = donationService.extractUserId(token);
+
+        Integer result = donationService.softDeleteDonation(userId, id);
+        if(result == 0) {
+            throw new BadRequestException("You don't have permission to delete this donation");
+        }
         return new SuccessResponse<>("Donation of id " + id + " deleted successfully");
     }
 
-    @GetMapping("/donations/sort")
-    public BaseResponse<List<Donation>> findByCategoryAndRegionAndState(@RequestParam(required = false) Map<String, String> params) {
-        System.out.println(params + "params");
-        return new SuccessResponse<>();
+    @GetMapping("/my-donations")
+    public BaseResponse<List<Donation>> getMyDonations(@RequestHeader("Authorization") String token) {
+        Integer id = donationService.extractUserId(token);
+
+        return new SuccessResponse<>(donationService.findByCreatedBy(id));
     }
 }

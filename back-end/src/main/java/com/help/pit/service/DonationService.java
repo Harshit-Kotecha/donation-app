@@ -6,9 +6,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Map;
 
-public interface DonationService {
+public interface DonationService extends BaseService{
     List<Donation> findAll(Specification<Donation> specification);
 
     List<Donation> findAll();
@@ -27,5 +26,9 @@ public interface DonationService {
 
     List<Donation> findDonations(@Param("search_key") String searchKey);
 
-    String extractUsername(String bearerToken);
+    String findCreatedBy(Long id);
+
+    Integer softDeleteDonation(@Param("user_id") Integer userId, @Param("id") Long id);
+
+    List<Donation> findByCreatedBy(Integer createdBy);
 }

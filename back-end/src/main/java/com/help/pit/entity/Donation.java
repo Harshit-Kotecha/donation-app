@@ -90,9 +90,10 @@ public class Donation {
     @JsonProperty("expires_at")
     private OffsetDateTime expiresAt;
 
-    @Column(name = "created_by", updatable = false)
+    @Column(name = "created_by", updatable = false, nullable = false)
     @JsonProperty(value = "created_by", access = JsonProperty.Access.READ_ONLY)
-    private String createdBy;
+    @JsonIgnore
+    private Integer createdBy;
 
     @Column(name = "postal_name")
     @JsonProperty("postal_name")

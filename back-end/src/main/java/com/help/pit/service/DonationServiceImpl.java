@@ -6,7 +6,6 @@ import com.help.pit.entity.Donation;
 import com.help.pit.utils.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,11 +15,9 @@ import java.util.*;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class DonationServiceImpl implements DonationService {
+public class DonationServiceImpl extends BaseServiceImpl implements DonationService {
 
     private DonationRepository donationRepository;
-
-    private JwtService jwtService;
 
     @Override
     public List<Donation> findAll(Specification<Donation> specification) {
@@ -34,7 +31,7 @@ public class DonationServiceImpl implements DonationService {
 
     @Override
     public Donation findById(Long id) {
-        Optional<Donation> result = donationRepository.findById(id);
+        Optional<Donation> result = donationRepository.findByIdAndIsDeletedFalse(id);
         Donation donation;
         if (result.isPresent()) {
             donation = result.get();
@@ -64,7 +61,7 @@ public class DonationServiceImpl implements DonationService {
 
     @Override
     public List<Donation> filterByName(String name) {
-        return donationRepository.findByName(name);
+        return donationRepository.findByNameAndIsDeletedFalse(name);
     }
 
     @Override
@@ -77,9 +74,19 @@ public class DonationServiceImpl implements DonationService {
         return donationRepository.findDonations(searchKey);
     }
 
+
     @Override
-    public String extractUsername(String bearerToken) {
-            String token = bearerToken.substring(7);
-            return jwtService.extractUsername(token);
+    public String findCreatedBy(Long id) {
+        return donationRepository.findCreatedBy(id);
+    }
+
+    @Override
+    public Integer softDeleteDonation(Integer userId, Long id) {
+        return donationRepository.softDeleteDonation(userId, id);
+    }
+
+    @Override
+    public List<Donation> findByCreatedBy(Integer createdBy) {
+        return donationRepository.findByCreatedBy(createdBy);
     }
 }

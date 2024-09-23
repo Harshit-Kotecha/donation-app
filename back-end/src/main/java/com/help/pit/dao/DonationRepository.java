@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSpecificationExecutor<Donation> {
@@ -20,20 +21,30 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSp
     @Query("UPDATE Donation SET status = :status WHERE id = :id")
     Integer updateDonationStatus(@Param("status") DonationStage status, @Param("id") Long id);
 
-    @Query("FROM Donation WHERE name LIKE %:name%")
-    List<Donation> findByName(@Param("name") String name);
+    List<Donation> findByNameAndIsDeletedFalse(@Param("name") String name);
 
-    @Query("FROM Donation WHERE LOWER(name) LIKE %:search_key% OR LOWER(category) LIKE %:search_key% OR LOWER(description) LIKE %:search_key% OR LOWER(region) LIKE %:search_key% OR LOWER(district) LIKE %:search_key% OR LOWER(state) LIKE %:search_key% OR LOWER(address) LIKE %:search_key% OR LOWER(description) LIKE %:search_key%")
+    Optional<Donation> findByIdAndIsDeletedFalse(Long id);
+
+    @Query("FROM Donation WHERE isDeleted = FALSE AND (LOWER(name) LIKE %:search_key% OR LOWER(category) LIKE %:search_key% OR LOWER(description) LIKE %:search_key% OR LOWER(region) LIKE %:search_key% OR LOWER(district) LIKE %:search_key% OR LOWER(state) LIKE %:search_key% OR LOWER(address) LIKE %:search_key% OR LOWER(description) LIKE %:search_key%)")
     List<Donation> findDonations(@Param("search_key") String searchKey);
 
-    @Query("SELECT DISTINCT(category) FROM Donation")
+    @Query("SELECT DISTINCT(category) FROM Donation WHERE isDeleted = false")
     List<String> getAllCategories();
 
-    @Query("SELECT DISTINCT :filter FROM Donation")
-    List<String> getDistinctItems(@Param("filter") String filter);
+    @Query("SELECT createdBy FROM Donation where id = :id")
+    String findCreatedBy(Long id);
 
-    @Query("SELECT region, state, district, category FROM Donation GROUP BY region, state, district, category")
-    List<Object> getFilters();
+    @Transactional
+    @Modifying
+    @Query("""
+            UPDATE Donation
+            SET
+            	isDeleted = TRUE
+            WHERE
+            	id = :id
+            	AND createdBy = :user_id
+            """)
+    Integer softDeleteDonation(@Param("user_id") Integer userId, @Param("id") Long donationId);
 
-    List<Donation> findByCategoryAndRegionAndState(String category, String region, String state);
+    List<Donation> findByCreatedBy(Integer createdBy);
 }

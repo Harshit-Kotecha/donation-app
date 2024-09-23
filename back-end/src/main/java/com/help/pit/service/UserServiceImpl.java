@@ -3,6 +3,7 @@ package com.help.pit.service;
 import com.help.pit.dao.UserRepository;
 import com.help.pit.entity.SecurityTokens;
 import com.help.pit.entity.User;
+import com.help.pit.entity.UserDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
@@ -30,8 +31,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String generateToken(String username) {
-        return jwtService.generateToken(username);
+    public String generateToken(User user) {
+        return jwtService.generateToken(user);
+    }
+
+    @Override
+    public UserDTO getUserById(Integer id) {
+        return userRepository.findUserDTOById(id);
+    }
+
+    @Override
+    public Integer getUserId(String username) {
+        return userRepository.getUserId(username);
     }
 
     @Override
@@ -39,7 +50,8 @@ public class UserServiceImpl implements UserService {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
         if(authentication.isAuthenticated()) {
-            String accessToken = generateToken(user.getUsername());
+            String accessToken = jwtService.generateToken(user);
+            System.out.println(jwtService.extractKey(accessToken, "user_id", Integer.class) + "--------------------token");
             return new SecurityTokens(accessToken);
         } else {
             throw new UsernameNotFoundException("email or password is not valid");
