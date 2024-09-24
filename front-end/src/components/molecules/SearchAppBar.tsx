@@ -1,5 +1,4 @@
 import useAppTheme from '@hooks/useTheme';
-import SearchIcon from '@mui/icons-material/Search';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import InputBase from '@mui/material/InputBase';
@@ -7,7 +6,7 @@ import { alpha, styled, ThemeProvider } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import { routes } from '@routing/routes';
 import LogoBanner from './LogoBanner';
-import TitleLink from './TitleLink';
+import TitleLink, { TitleLinkProps } from './TitleLink';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -58,6 +57,12 @@ interface SearchAppBarProps {
 export default function SearchAppBar({ onChange }: SearchAppBarProps) {
   const theme = useAppTheme();
 
+  const navbarItems: TitleLinkProps[] = [
+    { title: 'My Donations', link: routes.about },
+    { title: 'Donate', link: routes.addDonation },
+    { title: 'About', link: routes.about },
+  ];
+
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ flexGrow: 1 }}>
@@ -72,9 +77,10 @@ export default function SearchAppBar({ onChange }: SearchAppBarProps) {
             <div className="flex items-center w-full justify-between">
               <LogoBanner />
               <div className="flex items-center">
-                <TitleLink title="Donate" link={routes.addDonation} />
-                <TitleLink title="About" link={routes.about} />
-                <Search onChange={onChange} onSubmit={onChange}>
+                {navbarItems.map((e, i) => (
+                  <TitleLink key={i} title={e.title} link={e.link} />
+                ))}
+                {/* <Search onChange={onChange} onSubmit={onChange}>
                   <SearchIconWrapper sx={{ color: 'text.primary' }}>
                     <SearchIcon />
                   </SearchIconWrapper>
@@ -83,7 +89,7 @@ export default function SearchAppBar({ onChange }: SearchAppBarProps) {
                     placeholder="Search…"
                     inputProps={{ 'aria-label': 'search' }}
                   />
-                </Search>
+                </Search> */}
               </div>
             </div>
           </Toolbar>

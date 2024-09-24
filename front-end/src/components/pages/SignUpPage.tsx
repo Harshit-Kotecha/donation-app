@@ -1,3 +1,4 @@
+import AlertMsg from '@components/atoms/AlertMsg';
 import SignUpHeader from '@components/atoms/SignUpHeader';
 import useAppTheme from '@hooks/useTheme';
 import Box from '@mui/material/Box';
@@ -12,11 +13,10 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { routes } from '@routing/routes';
 import { setAccessTokenInCookie, setCookie } from '@utils/handle-tokens';
-import { firebaseErrorCodes } from 'constants/firebase-error-codes';
-import { auth } from 'firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { endpoints } from 'constants/endpoints';
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { post } from 'services/network/api-service';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -61,11 +61,15 @@ export default function SignUpPage() {
     React.useState('');
   const [nameError, setNameError] = React.useState(false);
   const [nameErrorMessage, setNameErrorMessage] = React.useState('');
+  const [phoneNoError, setPhoneNoError] = React.useState(false);
+  const [phoneNoErrorMessage, setPhoneNoErrorMessage] = React.useState('');
+  const [alertMsg, setAlertMsg] = React.useState<string | null>(null);
 
   const navigate = useNavigate();
 
   const validateInputs = () => {
     const email = document.getElementById('email') as HTMLInputElement;
+    const phone = document.getElementById('phone') as HTMLInputElement;
     const password = document.getElementById('password') as HTMLInputElement;
     const name = document.getElementById('name') as HTMLInputElement;
     const confirmPassword = document.getElementById(
@@ -83,7 +87,16 @@ export default function SignUpPage() {
       setEmailErrorMessage('');
     }
 
-    if (!password.value || password.value.length < 8) {
+    if (!phone.value || phone.value.length != 10) {
+      setPhoneNoError(true);
+      setPhoneNoErrorMessage('Phone number must be 10 digits long.');
+      isValid = false;
+    } else {
+      setPhoneNoError(false);
+      setPhoneNoErrorMessage('');
+    }
+
+    if (!password.value) {
       setPasswordError(true);
       setPasswordErrorMessage('Password must be at least 8 characters long.');
       isValid = false;
@@ -113,42 +126,49 @@ export default function SignUpPage() {
     return isValid;
   };
 
+  const callback = (data: string) => {
+    setAlertMsg(data);
+    setTimeout(() => {
+      setAlertMsg(null);
+    }, 3000);
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (validateInputs() == false) {
       return;
     }
     const data = new FormData(event.currentTarget);
-    console.log({
-      name: data.get('name'),
-      email: data.get('email'),
-      password: data.get('password'),
-    });
 
     const name = data.get('name') as string;
     const email = data.get('email') as string;
     const password = data.get('password') as string;
+    const phone = data.get('phone') as string;
 
     try {
-      const user = await createUserWithEmailAndPassword(auth, email, password);
-      setAccessTokenInCookie(user['user']['accessToken']);
+      // const user = await createUserWithEmailAndPassword(auth, email, password);
+      const user = await post({
+        url: endpoints.register,
+        payload: {
+          full_name: name,
+          phone_number: phone,
+          email,
+          password,
+        },
+        callback: callback,
+      });
+      console.log(user, '-----------user');
+      if (user == null) {
+        throw new Error('Bad credentials');
+      }
+      setAccessTokenInCookie(user['data']['access_token']);
       setCookie({
         key: 'name',
         value: name,
       });
       navigate(routes.donations, { replace: true });
     } catch (error) {
-      console.error(error);
-      switch (error.code) {
-        case firebaseErrorCodes.emailInUse:
-          alert('Redirecting to login');
-          navigate(routes.signin, { replace: true });
-          break;
-
-        default:
-          alert(error.code);
-          break;
-      }
+      console.error(error, '---------err');
     }
   };
 
@@ -178,6 +198,7 @@ export default function SignUpPage() {
               onSubmit={handleSubmit}
               sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
             >
+              {alertMsg && <AlertMsg msg={alertMsg} severity="error" />}
               <FormControl>
                 <FormLabel htmlFor="name">Full name</FormLabel>
                 <TextField
@@ -205,6 +226,20 @@ export default function SignUpPage() {
                   error={emailError}
                   helperText={emailErrorMessage}
                   color={passwordError ? 'error' : 'primary'}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel htmlFor="phone">Phone number</FormLabel>
+                <TextField
+                  required
+                  fullWidth
+                  id="phone"
+                  name="phone"
+                  autoComplete="phone"
+                  variant="outlined"
+                  error={phoneNoError}
+                  helperText={phoneNoErrorMessage}
+                  color={phoneNoError ? 'error' : 'primary'}
                 />
               </FormControl>
               <FormControl>

@@ -1,4 +1,7 @@
-import axios from 'axios';
+import { routes } from '@routing/routes';
+import { getCookie } from '@utils/handle-tokens';
+import axios, { AxiosError } from 'axios';
+import { cookiesKeys } from 'constants/cookies-keys';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 const client = axios.create({
@@ -6,29 +9,47 @@ const client = axios.create({
   timeout: 5000,
 });
 
-// Request interceptor
-client.interceptors.request.use(
-  function (config) {
-    // const token = getCookie(cookiesKeys.accessToken);
-    // if (token) {
-    //   config.headers.Authorization = token;
-    // }
-    return config;
-  },
-  function (error) {
-    return Promise.reject(error);
-  }
-);
+export const setupInterceptors = () => {
+  // Request interceptor
+  client.interceptors.request.use(
+    function (config) {
+      const token = getCookie(cookiesKeys.accessToken);
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    function (error) {
+      return Promise.reject(error);
+    }
+  );
 
-// Response interceptor
-client.interceptors.response.use(
-  function (response) {
-    return response;
-  },
-  function (error) {
-    return Promise.reject(error);
+  // Response interceptor
+  client.interceptors.response.use(
+    function (response) {
+      return response;
+    },
+    function (error) {
+      if (error['status'] === 401) {
+        window.location.href = routes.signin;
+      }
+      return Promise.reject(error);
+    }
+  );
+};
+
+setupInterceptors();
+
+const handleError = (error: Error, callback?: (data: string) => void) => {
+  if (callback) {
+    if (error instanceof AxiosError) {
+      const data = error.response?.data?.message || 'Something went wrong!';
+      callback(data);
+    } else {
+      callback(error['message']);
+    }
   }
-);
+};
 
 interface IApi {
   url: string;
@@ -58,9 +79,7 @@ export const get = async ({
       throw Error(response.statusText);
     }
   } catch (error) {
-    if (callback) {
-      callback(error['message']);
-    }
+    handleError(error, callback);
     console.error(error);
   }
 };
@@ -75,10 +94,7 @@ export const post = async ({ url, payload, callback }: IApi) => {
       throw Error(response.statusText);
     }
   } catch (error) {
-    if (callback) {
-      callback(error['message']);
-    }
-    console.error(error);
+    handleError(error, callback);
   }
 };
 
@@ -103,10 +119,7 @@ export const patch = async ({
       throw Error(response.statusText);
     }
   } catch (error) {
-    if (callback) {
-      callback(error['message']);
-    }
-    console.error(error);
+    handleError(error, callback);
   }
 };
 

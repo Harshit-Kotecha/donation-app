@@ -1,11 +1,12 @@
 import img from '@assets/donation-app.jpg';
+import search from '@assets/search.svg';
 import DonationCard from '@components/atoms/DonationCard';
 import Image from '@components/atoms/Image';
 import PrimarySearchAppBar from '@components/molecules/SearchAppBar';
 import { ThemeProvider } from '@emotion/react';
 import useAppTheme from '@hooks/useTheme';
 import { Donation } from '@interfaces/donation';
-import { Backdrop, CircularProgress } from '@mui/material';
+import { Alert, AlertTitle, Backdrop, CircularProgress } from '@mui/material';
 import '@styles/style.css';
 import { debounce } from '@utils/utils';
 import { endpoints } from 'constants/endpoints';
@@ -19,13 +20,13 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [donations, setDonations] = useState<Donation[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
+  const [alertMsg, setAlertMsg] = useState<string | null>(null);
   const queryRef = useRef('');
 
   const controllerRef = useRef(new AbortController());
 
   const onQueryChange = (e: object) => {
     const query: string = e['target']['value'].trim();
-    console.log(query, '--input home');
 
     if (query === queryRef.current) {
       return;
@@ -35,13 +36,19 @@ export default function HomePage() {
     searchFun();
   };
 
+  const callback = (data: string) => {
+    setAlertMsg(data);
+  };
+
   const fetchCategories = async () => {
     try {
       setIsLoading(true);
       const result = await get({
         url: endpoints.categories,
+        callback,
       });
-      setCategories(result.data);
+      const a = ['a', 'a', 'djfka', 'dkkkkkkkkk'];
+      setCategories(['All', ...result.data, ...a]);
     } catch (error) {
       console.error(error, '-----home page');
     } finally {
@@ -58,6 +65,7 @@ export default function HomePage() {
         url: endpoints.donations,
         queryParams: queryText && { search_key: queryText },
         abortController: controllerRef.current,
+        callback,
       });
       console.log(foundDonations, 'inside effect');
       setDonations(foundDonations.data);
@@ -101,28 +109,42 @@ export default function HomePage() {
         <CircularProgress color="inherit" />
       </Backdrop>
 
-      <div className="flex flex-wrap gap-4 px-2 justify-center sm:py-7 md:py-8 xl:py-11">
+      {alertMsg && (
+        <Alert className="m-4" severity="error">
+          <AlertTitle>Error</AlertTitle>
+          {alertMsg}
+        </Alert>
+      )}
+      {/* <div className="flex flex-row h-min w-full gap-4 scroll-container overflow-x-auto px-2 justify-start sm:py-7 md:py-8 xl:py-11">
         {categories.map((el, index) => (
           <div
             key={index}
-            className="px-6 py-2 bg-background-dark rounded-full border font-bold border-white hover:cursor-pointer hover:bg-white hover:text-black"
+            className="px-6 py-2 bg-background-dark  rounded-full border font-bold border-white hover:cursor-pointer hover:bg-white hover:text-black"
           >
             <p>{el}</p>
           </div>
         ))}
+      </div> */}
+      <div className="flex max-w-[350px] md:max-w-[600px] border-gray-400 pt-6 justify-center items-center mx-auto relative">
+        <img className="w-[24px] h-[24px] absolute left-[20px]" src={search} />
+        <input
+          className="w-full pl-12 pr-4 py-2 rounded-full text-xl"
+          type="search"
+        />
       </div>
-
-      <div className="flex flex-wrap justify-center px-2 bg-background-dark py-5 sm:py-7 md:py-8 xl:py-11">
-        <div className="flex flex-wrap h-min w-full gap-4 px-2 justify-start sm:py-7 md:py-8 xl:py-11">
+      {/* <div className="w-full overflow-x-auto whitespace-nowrap py-4">
+        <div className="flex flex-row gap-4 px-2 justify-center">
           {categories.map((el, index) => (
             <div
               key={index}
-              className="px-6 py-2 bg-background-dark rounded-full border font-bold border-white hover:cursor-pointer hover:bg-white hover:text-black"
+              className="px-6 py-2 bg-background-dark rounded-full border font-bold border-white hover:cursor-pointer hover:bg-white hover:text-black flex-shrink-0"
             >
               <p>{el}</p>
             </div>
           ))}
         </div>
+      </div> */}
+      <div className="flex flex-wrap justify-center px-2 bg-background-dark py-5 sm:py-0">
         {donations.map((el, i) => (
           <DonationCard donation={el} key={i} />
         ))}

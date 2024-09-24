@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-interface TitleLinkProps {
+export interface TitleLinkProps {
   title: string;
   link: string;
 }
