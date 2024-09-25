@@ -11,7 +11,7 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { red } from '@mui/material/colors';
 import { routes } from '@routing/routes';
-import { getExpiryTimeDifference } from '@utils/utils';
+import { getExpiryTime } from '@utils/utils';
 import { useNavigate } from 'react-router-dom';
 import img from '../../assets/donation.jpg';
 import IconWithText from './IconWithText';
@@ -89,7 +89,11 @@ export default function DonationCard({ donation }: DonationCardProps) {
           <IconWithText
             className="mt-4"
             icon={clockIcon}
-            text={getExpiryTimeDifference(donation.expires_at)}
+            text={
+              donation.has_expiry
+                ? getExpiryTime(donation.expires_at)
+                : 'Never expires!'
+            }
           />
         </CardContent>
       </Card>

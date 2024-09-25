@@ -21,4 +21,7 @@ export interface Donation {
   region: string;
   district: string;
   state: string;
+  has_expiry: boolean;
+  likes: number;
+  created_at: string;
 }

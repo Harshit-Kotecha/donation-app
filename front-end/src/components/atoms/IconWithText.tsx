@@ -15,7 +15,7 @@ export default function IconWithText({
         color="red"
         src={icon}
       />
-      <p className="text-[10px] text-light-grey sm:text-[14px] xl:text-[16px]">
+      <p className="text-[14px] text-light-grey sm:text-[14px] xl:text-[16px]">
         {text}
       </p>
     </div>

@@ -1,5 +1,4 @@
 import logo from '@assets/logo.svg';
-import { Typography } from '@mui/material';
 import { routes } from '@routing/routes';
 import { appConstants } from 'constants/app-constants';
 import { useState } from 'react';
@@ -23,20 +22,7 @@ export default function LogoBanner() {
       onClick={() => navigate(routes.donations)}
     >
       <img src={logo} className="w-min-2 max-w-9 sm:w-min-4 sm:max-w-10 mr-5" />
-      <Typography
-        variant="h6"
-        noWrap
-        component="div"
-        sx={{
-          flexGrow: 1,
-          display: { xs: 'none', sm: 'block' },
-          color: 'text.primary',
-          fontWeight: 'bold',
-          fontStyle: 'italic',
-        }}
-      >
-        {appName}
-      </Typography>
+      <p className="italic font-bold sm:text-xl sm:tracking-wide">{appName}</p>
     </div>
   );
 }

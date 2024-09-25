@@ -2,7 +2,7 @@ import Button from '@components/atoms/Button';
 import Description from '@components/atoms/Description';
 import Heading from '@components/atoms/Heading';
 import PageContainer from '@components/atoms/PageContainer';
-import SearchAppBar from '@components/molecules/SearchAppBar';
+import MyAppBar from '@components/molecules/MyAppBar';
 import useAppTheme from '@hooks/useTheme';
 import {
   Box,
@@ -83,10 +83,10 @@ export default function AboutPage() {
 
   return (
     <ThemeProvider theme={theme}>
-      <SearchAppBar />
+      <MyAppBar />
       <PageContainer>
         <Description text={appDescription} />
-        <div className="flex items-center flex-col-reverse sm:flex-row">
+        <div className="flex items-center flex-col-reverse sm:gap-8 sm:flex-row">
           <div className="flex-1 mt-4 sm:mt-8 w-full sm:w-6/12">
             <Box
               component="form"
@@ -162,7 +162,7 @@ export default function AboutPage() {
             />
             <Description text={appConstants.contactUs} className="mt-5" />
           </div>
-        </div>{' '}
+        </div>
       </PageContainer>
     </ThemeProvider>
   );

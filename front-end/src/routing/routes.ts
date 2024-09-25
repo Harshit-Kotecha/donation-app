@@ -4,4 +4,6 @@ export const routes = {
   donations: '/donations',
   addDonation: '/add-donation',
   about: '/about',
+  myDonations: '/my-donations',
+  myProfile: '/my-profile',
 };

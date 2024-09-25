@@ -14,7 +14,9 @@ export const setupInterceptors = () => {
   client.interceptors.request.use(
     function (config) {
       const token = getCookie(cookiesKeys.accessToken);
-      if (token) {
+      const authRequired = config.headers['authRequired'];
+
+      if (authRequired.toString() === 'true' && token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
       return config;
@@ -57,6 +59,7 @@ interface IApi {
   abortController?: AbortController;
   payload?: object;
   callback?: (data: string) => void;
+  authRequired?: boolean;
 }
 
 export const get = async ({
@@ -64,11 +67,15 @@ export const get = async ({
   queryParams = {},
   abortController = null,
   callback,
+  authRequired = true,
 }: IApi) => {
   try {
     const response = await client.get(url, {
       signal: abortController?.signal,
       params: queryParams,
+      headers: {
+        authRequired,
+      },
     });
 
     console.log(response, '-------api');
@@ -84,9 +91,18 @@ export const get = async ({
   }
 };
 
-export const post = async ({ url, payload, callback }: IApi) => {
+export const post = async ({
+  url,
+  payload,
+  callback,
+  authRequired = true,
+}: IApi) => {
   try {
-    const response = await client.post(url, payload);
+    const response = await client.post(url, payload, {
+      headers: {
+        authRequired,
+      },
+    });
 
     if (isRequestSuccess(response.status)) {
       return response.data;
@@ -103,12 +119,16 @@ export const patch = async ({
   queryParams = {},
   abortController = null,
   callback,
+  authRequired = true,
 }: IApi) => {
   try {
     console.log(queryParams, '-----------query');
     const response = await client.patch(url, queryParams, {
       params: queryParams,
       signal: abortController?.signal,
+      headers: {
+        authRequired,
+      },
     });
 
     console.log(response, '-------api');

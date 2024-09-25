@@ -1,26 +1,28 @@
 import AlertMsg from '@components/atoms/AlertMsg';
 import Button from '@components/atoms/Button';
-import Heading from '@components/atoms/Heading';
+import DonationQuote from '@components/atoms/DonationQuote';
 import PageContainer from '@components/atoms/PageContainer';
-import SearchAppBar from '@components/molecules/SearchAppBar';
-import useAppTheme from '@hooks/useTheme';
+import MyDateTimePicker from '@components/molecules/MyDateTimePicker';
 import { Pincode } from '@interfaces/pincode';
 import {
   Box,
   FormControl,
   FormLabel,
+  InputLabel,
+  MenuItem,
+  Select,
   TextField,
-  ThemeProvider,
 } from '@mui/material';
 import { routes } from '@routing/routes';
-import { appConstants } from 'constants/app-constants';
+import { convertToISOFormat } from '@utils/utils';
 import { endpoints } from 'constants/endpoints';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { get, post } from 'services/network/api-service';
+import { getCategories } from 'services/network/donation-api-services';
+import MainScreen from './MainScreen';
 
 export default function AddDonation() {
-  const theme = useAppTheme();
   // Name field validation states
   const [nameError, setNameError] = useState<boolean>(false);
   const [nameErrorMsg, setNameErrorMsg] = useState<string>('');
@@ -42,8 +44,9 @@ export default function AddDonation() {
   const [addressErrorMsg, setAddressErrorMsg] = useState<string>('');
 
   // Expiry Time field validation states
-  const [expiryTimeError, setExpiryTimeError] = useState<boolean>(false);
-  const [expiryTimeErrorMsg, setExpiryTimeErrorMsg] = useState<string>('');
+  // const [expiryTimeError, setExpiryTimeError] = useState<boolean>(false);
+  // const [expiryTimeErrorMsg, setExpiryTimeErrorMsg] = useState<string>('');
+  const [expiryTime, setExpiryTime] = useState<string | null>(null);
 
   // Category field validation states
   const [categoryError, setCategoryError] = useState<boolean>(false);
@@ -63,6 +66,11 @@ export default function AddDonation() {
   // Alert status
   const [alertMsg, setAlertMsg] = useState<string | null>(null);
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [isAddingNewCategory, setIsAddingNewCategory] = useState(false);
+
   const navigate = useNavigate();
 
   const validateInputs = ({
@@ -71,7 +79,6 @@ export default function AddDonation() {
     email,
     address,
     description,
-    expiry_time_in_hours,
     category,
     phone_number,
     pin_code,
@@ -133,21 +140,6 @@ export default function AddDonation() {
       setDescriptionErrorMsg('');
     }
 
-    // Validate expiry time (should not be empty or NaN)
-    if (
-      expiry_time_in_hours !== 0 &&
-      (!expiry_time_in_hours ||
-        isNaN(expiry_time_in_hours) ||
-        expiry_time_in_hours < 0)
-    ) {
-      setExpiryTimeError(true);
-      setExpiryTimeErrorMsg('Expiry time must be a valid number.');
-      isValid = false;
-    } else {
-      setExpiryTimeError(false);
-      setExpiryTimeErrorMsg('');
-    }
-
     // Validate category (should not be empty)
     if (!category || category.trim().length < 1) {
       setCategoryError(true);
@@ -195,12 +187,14 @@ export default function AddDonation() {
     const pinCode: string = (
       document.getElementById('pin_code') as HTMLInputElement
     ).value;
-    const category: string = (
-      document.getElementById('category') as HTMLInputElement
-    ).value.toLowerCase();
-    const expiryTime: string = (
-      document.getElementById('expiry_time') as HTMLInputElement
-    ).value;
+    const category: string = isAddingNewCategory
+      ? (
+          document.getElementById('category') as HTMLInputElement
+        )?.value?.toLowerCase()
+      : selectedCategory;
+    // const expiryTime: string = (
+    //   document.getElementById('expiry_time') as HTMLInputElement
+    // ).value;
     const address: string = (
       document.getElementById('address') as HTMLInputElement
     ).value;
@@ -215,7 +209,7 @@ export default function AddDonation() {
         address,
         email,
         description,
-        expiry_time_in_hours: parseInt(expiryTime),
+        expires_at: expiryTime,
         category,
         phone_number: parseInt(phoneNumber),
         pin_code: parseInt(pinCode),
@@ -257,6 +251,7 @@ export default function AddDonation() {
     try {
       const pinCodeJson = await get({
         url: `${endpoints.pinCode}/${pinCode}`,
+        authRequired: false,
       });
       if (!pinCodeJson || !pinCodeJson[0]['PostOffice']) {
         throw new Error('No records found');
@@ -292,22 +287,32 @@ export default function AddDonation() {
     }
   };
 
+  const onAcceptDateTime = (e) => {
+    const time = convertToISOFormat(e['$d']);
+    setExpiryTime(time);
+  };
+
   useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      setCategories(await getCategories());
+      setIsLoading(false);
+    };
     window.scrollTo(0, 0);
-    setTimeout(() => {
-      setAlertMsg(null);
-    });
+    fetchData();
   }, []);
 
   return (
-    <ThemeProvider theme={theme}>
-      <SearchAppBar />
+    <MainScreen isLoading={isLoading}>
       <PageContainer>
-        <div className="flex flex-col items-center w-full bg-background-dark">
-          <Heading className="text-center" title={appConstants.makeDonation} />
+        <div className="flex flex-col items-center bg-background-dark">
+          <DonationQuote
+            title="Your kindness can make a real difference"
+            subtitle="Consider making a donation today!"
+          />
           {alertMsg ? <AlertMsg msg={alertMsg} /> : <></>}
           <Box
-            className="w-full sm:w-6/12"
+            className="w-full max-w-[700px]"
             component="form"
             onSubmit={onSubmit}
             sx={{
@@ -398,40 +403,54 @@ export default function AddDonation() {
                 color={descriptionError ? 'error' : 'primary'}
               />
             </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="category">Category</FormLabel>
-              <TextField
-                required
-                fullWidth
-                name="category"
-                placeholder=""
-                type="text"
-                id="category"
-                autoComplete="category"
-                variant="outlined"
+            <FormControl fullWidth>
+              <InputLabel id="category-dropdown">Category</InputLabel>
+              <Select
+                id="category-select"
+                value={selectedCategory}
+                label="Category"
                 error={categoryError}
-                helperText={categoryErrorMsg}
                 color={categoryError ? 'error' : 'primary'}
-              />
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === 'add-new') {
+                    setIsAddingNewCategory(true);
+                  } else {
+                    setIsAddingNewCategory(false);
+                  }
+                  setSelectedCategory(value);
+                }}
+              >
+                {categories?.map((e, i) => (
+                  <MenuItem key={i} value={e}>
+                    {e}
+                  </MenuItem>
+                ))}
+                <MenuItem value="add-new">+ Add new category</MenuItem>
+              </Select>
             </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="expiry_time">
-                Expiry time in hours (0 if none)
-              </FormLabel>
-              <TextField
-                required
-                fullWidth
-                name="expiry_time"
-                placeholder=""
-                type="number"
-                id="expiry_time"
-                autoComplete="expiry_time"
-                variant="outlined"
-                error={expiryTimeError}
-                helperText={expiryTimeErrorMsg}
-                color={expiryTimeError ? 'error' : 'primary'}
-              />
-            </FormControl>
+            {isAddingNewCategory && (
+              <FormControl>
+                <FormLabel htmlFor="category">Category</FormLabel>
+                <TextField
+                  required
+                  fullWidth
+                  name="category"
+                  placeholder=""
+                  type="text"
+                  id="category"
+                  autoComplete="category"
+                  variant="outlined"
+                  error={categoryError}
+                  helperText={categoryErrorMsg}
+                  color={categoryError ? 'error' : 'primary'}
+                />
+              </FormControl>
+            )}
+            <MyDateTimePicker
+              label="Choose expiry time, if there's any"
+              onAccept={onAcceptDateTime}
+            />
             <FormControl>
               <FormLabel htmlFor="pin_code">Pin Code</FormLabel>
               <TextField
@@ -498,6 +517,6 @@ export default function AddDonation() {
           </Box>
         </div>
       </PageContainer>
-    </ThemeProvider>
+    </MainScreen>
   );
 }

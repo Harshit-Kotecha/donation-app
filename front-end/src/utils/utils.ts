@@ -25,38 +25,95 @@ export const debounce = (callback, wait: number) => {
   };
 };
 
-export function getExpiryTimeDifference(time: string) {
-  // Parse the input time string as UTC and convert to a Date object
-  const inputDateUTC = new Date(time + ' UTC');
+export function getExpiryTime(expiryDateTimeStr: string): string {
+  const now = new Date();
+  const expiryDate = new Date(expiryDateTimeStr);
 
-  // Get the current date in Asia/Kolkata time zone
-  const currentDate = new Date();
+  // Calculate the time difference in milliseconds
+  const diff = expiryDate.getTime() - now.getTime();
 
-  // Convert the input UTC date to Asia/Kolkata time zone
-  const inputDateIST = new Date(
-    inputDateUTC.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })
-  );
-
-  // Calculate the difference in milliseconds
-  const differenceInMilliseconds = Number(currentDate) - Number(inputDateIST);
-
-  // Convert the difference to various units
-  const seconds = Math.floor((differenceInMilliseconds / 1000) % 60);
-  const minutes = Math.floor((differenceInMilliseconds / (1000 * 60)) % 60);
-  const hours = Math.floor((differenceInMilliseconds / (1000 * 60 * 60)) % 24);
-  const days = Math.floor(differenceInMilliseconds / (1000 * 60 * 60 * 24));
-
-  if (days < 0 || hours < 0 || minutes < 0 || seconds < 0) {
+  // If the time has already passed
+  if (diff <= 0) {
     return 'Already expired!';
   }
 
+  // Calculate days, hours, minutes
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
   if (days > 0) {
-    return `Expires in ${days} ${days === 1 ? 'day' : 'days'}`;
+    return `Expires in ${days} day${days > 1 ? 's' : ''}`;
   } else if (hours > 0) {
-    return `Expires in ${hours} ${hours === 1 ? 'hour' : 'hours'}`;
+    return `Expires in ${hours} hour${hours > 1 ? 's' : ''}`;
   } else if (minutes > 0) {
-    return `Expires in ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
+    return `Expires in ${minutes} minute${minutes > 1 ? 's' : ''}`;
   } else {
-    return `Expires in ${seconds} ${seconds === 1 ? 'second' : 'seconds'}`;
+    return 'Expires in less than a minute';
   }
+}
+
+export function formatDateTime(dateTimeStr: string): string {
+  if (dateTimeStr == null) {
+    return '';
+  }
+
+  const date = new Date(dateTimeStr);
+
+  // Array of month names to map the month index
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  // Extract date components
+  const day = date.getDate();
+  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear();
+
+  // Get the hour and minute in 12-hour format
+  let hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+
+  hours = hours % 12;
+  hours = hours ? hours : 12; // Convert hour '0' to '12'
+
+  // Format the result as "23 March 2024, 11:11 PM"
+  return `${day} ${month} ${year}, ${hours}:${minutes} ${ampm}`;
+}
+
+export function convertToISOFormat(dateStr: string): string {
+  const date = new Date(dateStr);
+
+  // Extract timezone offset in hours and minutes
+  const timezoneOffset = -date.getTimezoneOffset();
+  const hoursOffset = Math.floor(timezoneOffset / 60);
+  const minutesOffset = timezoneOffset % 60;
+  const timezoneSign = hoursOffset >= 0 ? '+' : '-';
+
+  // Pad hours and minutes to always have two digits
+  const pad = (num: number) => num.toString().padStart(2, '0');
+  const formattedTimezone = `${timezoneSign}${pad(Math.abs(hoursOffset))}:${pad(
+    minutesOffset
+  )}`;
+
+  // Format the date to match the required ISO format
+  const isoString = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+    date.getDate()
+  )}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
+    date.getSeconds()
+  )}.${date.getMilliseconds().toString().padStart(6, '0')}${formattedTimezone}`;
+
+  return isoString;
 }

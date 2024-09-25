@@ -1,17 +1,26 @@
 import img from '@assets/donation-app.jpg';
+import filter from '@assets/filter.svg';
 import search from '@assets/search.svg';
-import DonationCard from '@components/atoms/DonationCard';
-import Image from '@components/atoms/Image';
-import PrimarySearchAppBar from '@components/molecules/SearchAppBar';
+import Banner from '@components/molecules/Banner';
+import PrimarySearchAppBar from '@components/molecules/MyAppBar';
+import Filters from '@components/molecules/dialog';
+import DonationsView from '@components/organisms/DonationsView';
 import { ThemeProvider } from '@emotion/react';
 import useAppTheme from '@hooks/useTheme';
 import { Donation } from '@interfaces/donation';
-import { Alert, AlertTitle, Backdrop, CircularProgress } from '@mui/material';
+import {
+  Alert,
+  AlertTitle,
+  Backdrop,
+  CircularProgress,
+  SelectChangeEvent,
+} from '@mui/material';
 import '@styles/style.css';
 import { debounce } from '@utils/utils';
 import { endpoints } from 'constants/endpoints';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { get } from 'services/network/api-service';
+import { getCategories } from 'services/network/donation-api-services';
 
 export default function HomePage() {
   const theme = useAppTheme();
@@ -24,6 +33,58 @@ export default function HomePage() {
   const queryRef = useRef('');
 
   const controllerRef = useRef(new AbortController());
+
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [filterCategory, setFilterCategory] = useState<string>('');
+  const [filterStatus, setFilterStatus] = useState<string>('');
+
+  const handleChange = (event: SelectChangeEvent, type: string) => {
+    const value: string = event.target.value;
+    if (type === 'category') {
+      setFilterCategory(value);
+    } else if (type === 'status') {
+      setFilterStatus(value);
+    }
+  };
+
+  const handleClickOpen = () => {
+    setFilterOpen(true);
+  };
+
+  const handleClose = (
+    event: React.SyntheticEvent<unknown>,
+    reason?: string
+  ) => {
+    if (reason !== 'backdropClick') {
+      setFilterOpen(false);
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      setIsLoading(true);
+
+      const queryParams = {};
+      if (filterCategory) {
+        queryParams['category'] = filterCategory;
+      }
+      if (filterStatus) {
+        queryParams['status'] = filterStatus;
+      }
+
+      const foundDonations = await get({
+        url: endpoints.donations,
+        queryParams: queryParams,
+        callback,
+      });
+      setDonations(foundDonations.data);
+    } catch (error) {
+      console.error(error, '-----home page');
+    } finally {
+      setIsLoading(false);
+      setFilterOpen(false);
+    }
+  };
 
   const onQueryChange = (e: object) => {
     const query: string = e['target']['value'].trim();
@@ -41,19 +102,9 @@ export default function HomePage() {
   };
 
   const fetchCategories = async () => {
-    try {
-      setIsLoading(true);
-      const result = await get({
-        url: endpoints.categories,
-        callback,
-      });
-      const a = ['a', 'a', 'djfka', 'dkkkkkkkkk'];
-      setCategories(['All', ...result.data, ...a]);
-    } catch (error) {
-      console.error(error, '-----home page');
-    } finally {
-      setIsLoading(false);
-    }
+    setIsLoading(true);
+    setCategories(await getCategories(callback));
+    setIsLoading(false);
   };
 
   const fetchData = async () => {
@@ -76,31 +127,22 @@ export default function HomePage() {
     }
   };
 
-  const searchFun = useMemo(() => debounce(fetchData, 700), []);
+  const searchFun = useMemo(() => debounce(fetchData, 400), []);
 
   useEffect(() => {
     fetchData();
     fetchCategories();
   }, []);
 
-  console.log(donations, 'donations');
-
   return (
     <ThemeProvider theme={theme}>
-      <PrimarySearchAppBar onChange={onQueryChange} />
-      <div className="flex flex-col lg:flex-row bg-background-dark items-center">
-        <Image img={img} className="lg:w-[40%] xl:w-6/12" />
-        <div className="mt-3 mx-4 lg:ml-11 justify-evenly">
-          <p className="flex-1 text-2xl font-bold text-white sm:text-3xl md:text-4xl xl:text-5xl 2xl:text-6xl mb-2 sm:mb-5 xl:mb-9">
-            Giving is the essence of living.
-          </p>
-          <p className="flex-1 text-xl sm:text-2xl md:text-3xl 2xl:text-4xl font-medium text-gray-600">
-            Donations spread kindness, empowering lives and creating lasting
-            change.
-          </p>
-        </div>
-      </div>
-      <div className=""></div>
+      <PrimarySearchAppBar />
+      <Banner
+        src={img}
+        title="Giving is the essence of living."
+        subtitle="Donations spread kindness, empowering lives and creating lasting
+            change."
+      />
       <Backdrop
         sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
         open={isLoading}
@@ -115,40 +157,30 @@ export default function HomePage() {
           {alertMsg}
         </Alert>
       )}
-      {/* <div className="flex flex-row h-min w-full gap-4 scroll-container overflow-x-auto px-2 justify-start sm:py-7 md:py-8 xl:py-11">
-        {categories.map((el, index) => (
-          <div
-            key={index}
-            className="px-6 py-2 bg-background-dark  rounded-full border font-bold border-white hover:cursor-pointer hover:bg-white hover:text-black"
-          >
-            <p>{el}</p>
-          </div>
-        ))}
-      </div> */}
       <div className="flex max-w-[350px] md:max-w-[600px] border-gray-400 pt-6 justify-center items-center mx-auto relative">
         <img className="w-[24px] h-[24px] absolute left-[20px]" src={search} />
         <input
-          className="w-full pl-12 pr-4 py-2 rounded-full text-xl"
+          className="w-full pl-14 pr-4 py-3 rounded-full text-xl"
           type="search"
+          onChange={onQueryChange}
+        />
+        <img
+          src={filter}
+          onClick={handleClickOpen}
+          className="w-[28px] h-[28px] ml-4 hover:cursor-pointer"
         />
       </div>
-      {/* <div className="w-full overflow-x-auto whitespace-nowrap py-4">
-        <div className="flex flex-row gap-4 px-2 justify-center">
-          {categories.map((el, index) => (
-            <div
-              key={index}
-              className="px-6 py-2 bg-background-dark rounded-full border font-bold border-white hover:cursor-pointer hover:bg-white hover:text-black flex-shrink-0"
-            >
-              <p>{el}</p>
-            </div>
-          ))}
-        </div>
-      </div> */}
-      <div className="flex flex-wrap justify-center px-2 bg-background-dark py-5 sm:py-0">
-        {donations.map((el, i) => (
-          <DonationCard donation={el} key={i} />
-        ))}
-      </div>
+      <Filters
+        categories={categories}
+        status={['open', 'closed']}
+        open={filterOpen}
+        filterCategory={filterCategory}
+        filterStatus={filterStatus}
+        handleChange={handleChange}
+        handleClose={handleClose}
+        handleSubmit={handleSubmit}
+      />
+      <DonationsView donations={donations} />
     </ThemeProvider>
   );
 }

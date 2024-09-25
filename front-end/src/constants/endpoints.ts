@@ -5,4 +5,5 @@ export const endpoints = {
   pinCode: 'https://api.postalpincode.in/pincode',
   login: '/user/login',
   register: '/user/register',
+  myDonations: '/api/my-donations',
 };

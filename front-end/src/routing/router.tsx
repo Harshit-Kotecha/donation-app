@@ -1,6 +1,7 @@
 import AboutPage from '@components/pages/AboutPage';
 import AddDonation from '@components/pages/AddDonation';
 import DonationDetails from '@components/pages/DonationDetails';
+import MyDonations from '@components/pages/MyDonations';
 import SignInPage from '@components/pages/SignInPage';
 import SignupPage from '@components/pages/SignUpPage';
 import ErrorPage from '@pages/ErrorPage';
@@ -37,5 +38,9 @@ export const router = createBrowserRouter([
   {
     path: routes.about,
     element: <AboutPage />,
+  },
+  {
+    path: routes.myDonations,
+    element: <MyDonations />,
   },
 ]);

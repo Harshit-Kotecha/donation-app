@@ -7,10 +7,11 @@ import Image from '@components/atoms/Image';
 import ItemDetails, {
   ItemDetailsProp,
 } from '@components/molecules/ItemDetails';
-import SearchAppBar from '@components/molecules/SearchAppBar';
+import MyAppBar from '@components/molecules/MyAppBar';
 import { Donation, DonationStatus } from '@interfaces/donation';
 import { Backdrop } from '@mui/material';
 import { routes } from '@routing/routes';
+import { formatDateTime, getExpiryTime } from '@utils/utils';
 import { endpoints } from 'constants/endpoints';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -53,6 +54,7 @@ export default function DonationDetails() {
     if (state) {
       const { donation: tmpDonation }: DonationProp = state;
       setDonation(tmpDonation);
+      setDonationStatus(tmpDonation.status);
     } else if (id) {
       fetchData(parseInt(id));
     }
@@ -70,6 +72,7 @@ export default function DonationDetails() {
           });
 
           if (res['success']) {
+            window.scrollTo(0, 0);
             setAlertMsg(res['data']);
             setDonationStatus(DonationStatus.PROCESSING);
             setTimeout(() => {
@@ -112,16 +115,18 @@ export default function DonationDetails() {
   const btnAttributes = getBtnAttributes(donationStatus);
 
   const itemDetails: ItemDetailsProp[] = [
-    { title: 'Name', subtitle: donation?.name.toUpperCase() },
-    { title: 'Category', subtitle: donation?.category.toUpperCase() },
-    ...(donationStatus === DonationStatus.OPEN
-      ? [
-          {
-            title: 'Expiry Time',
-            subtitle: `${donation?.expires_at} hours`,
-          },
-        ]
-      : []),
+    { title: 'Name', subtitle: donation?.name },
+    { title: 'Category', subtitle: donation?.category },
+    {
+      title: 'Created at',
+      subtitle: formatDateTime(donation?.created_at),
+    },
+    {
+      title: 'Expiry Time',
+      subtitle: donation?.has_expiry
+        ? getExpiryTime(donation.expires_at)
+        : 'Never expires!',
+    },
     { title: 'Email', subtitle: donation?.email },
     { title: 'Phone Number', subtitle: donation?.phone_number.toString() },
     { title: 'Address', subtitle: donation?.address },
@@ -134,7 +139,7 @@ export default function DonationDetails() {
 
   return (
     <>
-      <SearchAppBar />
+      <MyAppBar />
       {donation ? (
         <div className="flex flex-col sm:flex-row justify-evenly sm:gap-0 bg-background-dark">
           <div className="flex-grow">
