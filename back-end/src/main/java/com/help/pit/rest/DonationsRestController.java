@@ -50,7 +50,8 @@ public class DonationsRestController {
                 Predicate statusPredicate = cb.equal(root.get("status"), donationStage);
                 predicates.add(statusPredicate);
             }
-
+            assert query != null;
+            query.orderBy(cb.asc(root.get("id")));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
