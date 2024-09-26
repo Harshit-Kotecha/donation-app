@@ -143,6 +143,22 @@ export const patch = async ({
   }
 };
 
+export const deleteReq = async ({ url, payload = {}, callback }: IApi) => {
+  try {
+    const response = await client.delete(url, { data: payload });
+
+    console.log(response, '-------api');
+
+    if (isRequestSuccess(response.status)) {
+      return response.data;
+    } else {
+      throw Error(response.statusText);
+    }
+  } catch (error) {
+    handleError(error, callback);
+  }
+};
+
 function isRequestSuccess(statusCode: number): boolean {
   return statusCode == 200 || statusCode == 201;
 }

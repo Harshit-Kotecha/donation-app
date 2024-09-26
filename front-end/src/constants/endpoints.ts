@@ -6,4 +6,5 @@ export const endpoints = {
   login: '/user/login',
   register: '/user/register',
   myDonations: '/api/my-donations',
+  delete: '/api/donations',
 };

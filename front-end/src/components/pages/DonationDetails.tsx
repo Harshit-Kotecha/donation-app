@@ -1,4 +1,6 @@
+import deleteIcon from '@assets/delete_icon.svg';
 import img from '@assets/donation.jpg';
+import like from '@assets/like.svg';
 import AlertMsg from '@components/atoms/AlertMsg';
 import Button from '@components/atoms/Button';
 import Description from '@components/atoms/Description';
@@ -15,7 +17,7 @@ import { formatDateTime, getExpiryTime } from '@utils/utils';
 import { endpoints } from 'constants/endpoints';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { get, patch } from 'services/network/api-service';
+import { deleteReq, get, patch } from 'services/network/api-service';
 
 interface DonationProp {
   donation: Donation;
@@ -137,6 +139,30 @@ export default function DonationDetails() {
     { title: 'State', subtitle: donation?.state },
   ];
 
+  const ItemBtn = ({ img, onClick }) => {
+    return (
+      <div
+        onClick={onClick}
+        className="hover:cursor-pointer flex-1 py-4 border border-white rounded-full"
+      >
+        <img src={img} className="w-6 h-6 mx-auto" />
+      </div>
+    );
+  };
+
+  const onDelete = async (id) => {
+    try {
+      const res = await deleteReq({ url: `${endpoints.delete}/${id}` });
+      setAlertMsg(res['data']);
+      window.scrollTo(0, 0);
+      setTimeout(() => {
+        navigate(-1);
+      }, 2000);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
       <MyAppBar />
@@ -166,6 +192,10 @@ export default function DonationDetails() {
               text={donation?.description}
               className="font-normal my-3 sm:my-5"
             />
+            <div className="flex flex-row mb-4 gap-2">
+              <ItemBtn img={like} onClick={() => {}} />
+              <ItemBtn img={deleteIcon} onClick={() => onDelete(donation.id)} />
+            </div>
             <Button
               title={btnAttributes.title}
               onClick={() => btnAttributes.onClick(donation?.id)}

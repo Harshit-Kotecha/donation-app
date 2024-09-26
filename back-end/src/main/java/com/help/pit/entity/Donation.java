@@ -91,11 +91,6 @@ public class Donation {
     @JsonProperty("expires_at")
     private OffsetDateTime expiresAt;
 
-//    @Column(name = "created_by", updatable = false, nullable = false)
-//    @JsonProperty(value = "created_by", access = JsonProperty.Access.READ_ONLY)
-//    @JsonIgnore
-//    private Integer createdBy;
-
     @Column(name = "postal_name")
     @JsonProperty("postal_name")
     @NotBlank(message = "Postal name is mandatory")
@@ -121,7 +116,4 @@ public class Donation {
     @JoinColumn(name = "user_id", referencedColumnName = "id", updatable = false, nullable = false)
     @JsonIgnore
     private User user;
-
-//    @Column(name = "user_id", insertable = false, updatable = false)
-//    private Integer userId;
 }
