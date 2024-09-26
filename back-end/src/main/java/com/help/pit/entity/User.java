@@ -11,6 +11,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -47,4 +49,6 @@ public class User {
     @Transient
     @JsonProperty("access_token")
     private String accessToken;
+
+//    private List<Donation> donations = new ArrayList<>();
 }

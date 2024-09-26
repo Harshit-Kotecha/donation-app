@@ -1,5 +1,6 @@
 package com.help.pit.rest;
 
+import com.help.pit.service.UserService;
 import com.help.pit.utils.DonationStage;
 import com.help.pit.entity.*;
 import com.help.pit.service.DonationService;
@@ -17,6 +18,7 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 
 import javax.naming.NoPermissionException;
+import java.math.BigInteger;
 import java.util.*;
 
 @Slf4j
@@ -26,6 +28,8 @@ import java.util.*;
 @AllArgsConstructor
 public class DonationsRestController {
     private DonationService donationService;
+
+    private UserService userService;
 
     @GetMapping("/donations")
     public BaseResponse<List<Donation>> findAll(@RequestParam(name = "search_key", required = false) String searchKey, @RequestParam(name = "category", required = false) String category, @RequestParam(name = "status", required = false) String status) {
@@ -82,8 +86,8 @@ public class DonationsRestController {
         }
 
         // Extract user id from token
-        donation.setCreatedBy(donationService.extractUserId(authToken));
-
+        Integer id = donationService.extractUserId(authToken);
+        donation.setUser(userService.findById(id));
         donation.setHasExpiry(donation.getExpiresAt() != null);
         donation.setLikes(0);
         donation.setCategory(donation.getCategory().toLowerCase());
@@ -105,7 +109,7 @@ public class DonationsRestController {
 
         Integer result = donationService.updateDonationStatus(status, id);
         if (result == 0) {
-            return new FailureResponse<>("Donation not found" ,400);
+            return new FailureResponse<>("Donation not found", 400);
         }
 
         return new SuccessResponse<>(DonationUtils.getDonationMsg(status));
@@ -118,7 +122,7 @@ public class DonationsRestController {
         Integer userId = donationService.extractUserId(token);
 
         Integer result = donationService.softDeleteDonation(userId, id);
-        if(result == 0) {
+        if (result == 0) {
             throw new BadRequestException("You don't have permission to delete this donation");
         }
         return new SuccessResponse<>("Donation of id " + id + " deleted successfully");
@@ -127,7 +131,8 @@ public class DonationsRestController {
     @GetMapping("/my-donations")
     public BaseResponse<List<Donation>> getMyDonations(@RequestHeader("Authorization") String token) {
         Integer id = donationService.extractUserId(token);
+        User user = userService.findById(id);
 
-        return new SuccessResponse<>(donationService.findByCreatedBy(id));
+        return new SuccessResponse<>(donationService.findByUser(user));
     }
 }

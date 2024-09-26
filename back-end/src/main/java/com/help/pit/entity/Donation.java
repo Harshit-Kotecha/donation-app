@@ -34,7 +34,8 @@ public class Donation {
 
     @Column(name = "age")
     @NotNull
-    @Min(18) @Max(120)
+    @Min(18)
+    @Max(120)
     private Integer age;
 
     @Column(name = "address")
@@ -75,7 +76,7 @@ public class Donation {
     private Long pinCode;
 
     @Column(name = "likes")
-    private  Integer likes = 0;
+    private Integer likes = 0;
 
     @Column(name = "has_expiry")
     @JsonProperty("has_expiry")
@@ -90,10 +91,10 @@ public class Donation {
     @JsonProperty("expires_at")
     private OffsetDateTime expiresAt;
 
-    @Column(name = "created_by", updatable = false, nullable = false)
-    @JsonProperty(value = "created_by", access = JsonProperty.Access.READ_ONLY)
-    @JsonIgnore
-    private Integer createdBy;
+//    @Column(name = "created_by", updatable = false, nullable = false)
+//    @JsonProperty(value = "created_by", access = JsonProperty.Access.READ_ONLY)
+//    @JsonIgnore
+//    private Integer createdBy;
 
     @Column(name = "postal_name")
     @JsonProperty("postal_name")
@@ -102,7 +103,7 @@ public class Donation {
 
     @Column(name = "region")
     @NotBlank(message = "region is mandatory")
-    private  String region;
+    private String region;
 
     @Column(name = "district")
     @NotBlank(message = "district is mandatory")
@@ -110,9 +111,17 @@ public class Donation {
 
     @Column(name = "state")
     @NotBlank(message = "state is mandatory")
-    private  String state;
+    private String state;
 
     @Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
     @JsonIgnore
     private Boolean isDeleted = false;
+
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", updatable = false, nullable = false)
+    @JsonIgnore
+    private User user;
+
+//    @Column(name = "user_id", insertable = false, updatable = false)
+//    private Integer userId;
 }

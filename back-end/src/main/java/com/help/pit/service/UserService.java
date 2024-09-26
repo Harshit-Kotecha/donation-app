@@ -5,8 +5,12 @@ import com.help.pit.entity.SecurityTokens;
 import com.help.pit.entity.User;
 import com.help.pit.entity.UserDTO;
 
+import java.util.Optional;
+
 public interface UserService extends BaseService {
     User register(User user);
+
+    User findById(Integer id);
 
    SecurityTokens verifyAndGenerateToken(User user);
 

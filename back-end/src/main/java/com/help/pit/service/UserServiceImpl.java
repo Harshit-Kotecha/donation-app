@@ -4,6 +4,7 @@ import com.help.pit.dao.UserRepository;
 import com.help.pit.entity.SecurityTokens;
 import com.help.pit.entity.User;
 import com.help.pit.entity.UserDTO;
+import com.help.pit.utils.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,6 +12,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -28,6 +31,16 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     public User register(User user) {
         return userRepository.save(user);
+    }
+
+    @Override
+    public User findById(Integer id) {
+        Optional<User> result = userRepository.findById(id);
+        if(result.isPresent()) {
+            return result.get();
+        } else {
+            throw new ResourceNotFoundException("User not found");
+        }
     }
 
     @Override

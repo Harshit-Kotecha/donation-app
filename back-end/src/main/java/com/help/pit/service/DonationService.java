@@ -1,5 +1,6 @@
 package com.help.pit.service;
 
+import com.help.pit.entity.User;
 import com.help.pit.utils.DonationStage;
 import com.help.pit.entity.Donation;
 import org.springframework.data.jpa.domain.Specification;
@@ -26,9 +27,7 @@ public interface DonationService extends BaseService{
 
     List<Donation> findDonations(@Param("search_key") String searchKey);
 
-    String findCreatedBy(Long id);
-
     Integer softDeleteDonation(@Param("user_id") Integer userId, @Param("id") Long id);
 
-    List<Donation> findByCreatedBy(Integer createdBy);
+    List<Donation> findByUser(User user);
 }

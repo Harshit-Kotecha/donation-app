@@ -1,6 +1,7 @@
 package com.help.pit.service;
 
 import com.help.pit.dao.DonationRepository;
+import com.help.pit.entity.User;
 import com.help.pit.utils.DonationStage;
 import com.help.pit.entity.Donation;
 import com.help.pit.utils.ResourceNotFoundException;
@@ -74,19 +75,13 @@ public class DonationServiceImpl extends BaseServiceImpl implements DonationServ
         return donationRepository.findDonations(searchKey);
     }
 
-
-    @Override
-    public String findCreatedBy(Long id) {
-        return donationRepository.findCreatedBy(id);
-    }
-
     @Override
     public Integer softDeleteDonation(Integer userId, Long id) {
         return donationRepository.softDeleteDonation(userId, id);
     }
 
     @Override
-    public List<Donation> findByCreatedBy(Integer createdBy) {
-        return donationRepository.findByCreatedBy(createdBy);
+    public List<Donation> findByUser(User user) {
+        return donationRepository.findByUserAndIsDeletedFalseOrderById(user);
     }
 }

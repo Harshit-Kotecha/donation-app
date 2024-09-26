@@ -1,8 +1,8 @@
 package com.help.pit.dao;
 
 import com.help.pit.entity.Donation;
+import com.help.pit.entity.User;
 import com.help.pit.utils.DonationStage;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -32,9 +32,6 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSp
     @Query("SELECT DISTINCT(category) FROM Donation WHERE isDeleted = false")
     List<String> getAllCategories();
 
-    @Query("SELECT createdBy FROM Donation where id = :id")
-    String findCreatedBy(Long id);
-
     @Transactional
     @Modifying
     @Query("""
@@ -43,9 +40,9 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSp
             	isDeleted = TRUE
             WHERE
             	id = :id
-            	AND createdBy = :user_id
+            	AND user.id = :user_id
             """)
     Integer softDeleteDonation(@Param("user_id") Integer userId, @Param("id") Long donationId);
 
-    List<Donation> findByCreatedBy(Integer createdBy);
+    List<Donation> findByUserAndIsDeletedFalseOrderById(User user);
 }
