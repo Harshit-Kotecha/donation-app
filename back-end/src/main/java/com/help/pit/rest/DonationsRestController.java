@@ -1,5 +1,8 @@
 package com.help.pit.rest;
 
+import com.help.pit.dao.DonationRepository;
+import com.help.pit.dao.LikeRepository;
+import com.help.pit.service.LikeService;
 import com.help.pit.service.UserService;
 import com.help.pit.utils.DonationStage;
 import com.help.pit.entity.*;
@@ -12,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -30,6 +34,8 @@ public class DonationsRestController {
     private DonationService donationService;
 
     private UserService userService;
+
+    private LikeService likeService;
 
     @GetMapping("/donations")
     public BaseResponse<List<Donation>> findAll(@RequestParam(name = "search_key", required = false) String searchKey, @RequestParam(name = "category", required = false) String category, @RequestParam(name = "status", required = false) String status) {
@@ -134,5 +140,11 @@ public class DonationsRestController {
         User user = userService.findById(id);
 
         return new SuccessResponse<>(donationService.findByUser(user));
+    }
+
+    @PostMapping("/donation/like/{id}")
+    public BaseResponse<Like> likeDonation(@RequestBody Like like, @RequestHeader("Authorization") String authToken) {
+like.setUserId(likeService.extractUserId(authToken));
+        return new SuccessResponse<>(likeService.save(like));
     }
 }
