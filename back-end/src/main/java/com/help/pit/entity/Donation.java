@@ -14,7 +14,9 @@ import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.math.BigInteger;
 import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Entity
@@ -75,7 +77,7 @@ public class Donation {
     @NotNull(message = "PinCode is mandatory")
     private Long pinCode;
 
-    @Column(name = "likes")
+    @Column(name = "likes", updatable = false)
     private Integer likes = 0;
 
     @Column(name = "has_expiry")
@@ -116,4 +118,21 @@ public class Donation {
     @JoinColumn(name = "user_id", referencedColumnName = "id", updatable = false, nullable = false)
     @JsonIgnore
     private User user;
+
+    @Transient
+    @JsonProperty("has_user_liked")
+    private Boolean hasUserLiked;
+
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_donation", joinColumns = {@JoinColumn(name = "fk_donation")}, inverseJoinColumns = {@JoinColumn(name = "fk_user")})
+    private Set<User> userLiked = new HashSet<>();
+
+    public Integer getLikes() {
+        return this.userLiked.size();
+    }
+
+    public Boolean getHasUserLiked(User currUser) {
+        return userLiked.contains(currUser);
+    }
 }

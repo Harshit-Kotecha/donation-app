@@ -142,9 +142,23 @@ public class DonationsRestController {
         return new SuccessResponse<>(donationService.findByUser(user));
     }
 
-    @PostMapping("/donation/like/{id}")
-    public BaseResponse<Like> likeDonation(@RequestBody Like like, @RequestHeader("Authorization") String authToken) {
-like.setUserId(likeService.extractUserId(authToken));
-        return new SuccessResponse<>(likeService.save(like));
+    @PatchMapping("/donation/like/{id}")
+    public BaseResponse<String> likeDonation(@PathVariable(name = "id") Long did, @RequestHeader("Authorization") String authToken) {
+        Integer id = donationService.extractUserId(authToken);
+        User user = userService.findById(id);
+
+        String msg = "";
+
+        Donation donation = donationService.findById(did);
+        if(donation.getUserLiked().contains(user)) {
+            donation.getUserLiked().remove(user);
+            msg = "Donation disliked successfully!";
+        } else {
+            donation.getUserLiked().add(user);
+            msg = "Donation liked successfully";
+        }
+
+        donationService.save(donation);
+        return new SuccessResponse<>(msg);
     }
 }
