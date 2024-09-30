@@ -139,18 +139,22 @@ export default function DonationDetails() {
     { title: 'State', subtitle: donation?.state },
   ];
 
-  const ItemBtn = ({ img, onClick }) => {
+  const ItemBtn = ({ img, onClick, count = 0 }) => {
     return (
       <div
         onClick={onClick}
         className="hover:cursor-pointer flex-1 py-4 border border-white rounded-full"
       >
-        <img src={img} className="w-6 h-6 mx-auto" />
+        <div className="flex flex-row w-max mx-auto justify-center items-center">
+          {' '}
+          <img src={img} className="w-6 h-6 mx-auto" />
+          {count > 0 ? <p className="ml-4 text-xl">{count}</p> : <></>}
+        </div>
       </div>
     );
   };
 
-  const onDelete = async (id) => {
+  const onDelete = async (id: number) => {
     try {
       const res = await deleteReq({ url: `${endpoints.delete}/${id}` });
       setAlertMsg(res['data']);
@@ -161,6 +165,17 @@ export default function DonationDetails() {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const callback = (data: string) => {
+    setAlertMsg(data);
+    setTimeout(() => {
+      setAlertMsg(null);
+    }, 3000);
+  };
+
+  const onLike = async (id: number) => {
+    await patch({ url: `${endpoints.like}/${id}`, callback });
   };
 
   return (
@@ -193,7 +208,11 @@ export default function DonationDetails() {
               className="font-normal my-3 sm:my-5"
             />
             <div className="flex flex-row mb-4 gap-2">
-              <ItemBtn img={like} onClick={() => {}} />
+              <ItemBtn
+                img={like}
+                onClick={() => onLike(donation.id)}
+                count={donation.likes}
+              />
               <ItemBtn img={deleteIcon} onClick={() => onDelete(donation.id)} />
             </div>
             <Button
