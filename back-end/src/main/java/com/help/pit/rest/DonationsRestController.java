@@ -1,5 +1,8 @@
 package com.help.pit.rest;
 
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.help.pit.dao.DonationRepository;
 import com.help.pit.dao.LikeRepository;
 import com.help.pit.service.LikeService;
@@ -18,6 +21,7 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,9 +42,18 @@ public class DonationsRestController {
     private LikeService likeService;
 
     @GetMapping("/donations")
-    public BaseResponse<List<Donation>> findAll(@RequestParam(name = "search_key", required = false) String searchKey, @RequestParam(name = "category", required = false) String category, @RequestParam(name = "status", required = false) String status) {
+    public BaseResponse<Object> findAll(@RequestParam(name = "search_key", required = false) String searchKey, @RequestParam(name = "category", required = false) String category, @RequestParam(name = "status", required = false) String status) {
+        List<Donation> result;
+
+        SimpleBeanPropertyFilter simpleBeanPropertyFilter =
+                SimpleBeanPropertyFilter.serializeAllExcept("hasUserLiked");
+
+        FilterProvider filterProvider = new SimpleFilterProvider()
+                .addFilter("userFilter", simpleBeanPropertyFilter);
+
         if (searchKey != null && !searchKey.trim().isEmpty()) {
-            return new SuccessResponse<>(donationService.findDonations(searchKey.trim().toLowerCase()));
+            result = donationService.findDonations(searchKey.trim().toLowerCase());
+//            return new SuccessResponse<>(donationService.findDonations(searchKey.trim().toLowerCase()));
         }
 
         Specification<Donation> specification = (root, query, cb) -> {
@@ -65,7 +78,14 @@ public class DonationsRestController {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        return new SuccessResponse<>(donationService.findAll(specification));
+//        return new SuccessResponse<>(donationService.findAll(specification));
+        result = donationService.findAll(specification);
+        MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(result);
+        mappingJacksonValue.setFilters(filterProvider);
+
+//        return mappingJacksonValue;
+        return new SuccessResponse<>(mappingJacksonValue.getValue());
+
     }
 
     @GetMapping("/donations/{id}")
@@ -150,7 +170,7 @@ public class DonationsRestController {
         String msg = "";
 
         Donation donation = donationService.findById(did);
-        if(donation.getUserLiked().contains(user)) {
+        if (donation.getUserLiked().contains(user)) {
             donation.getUserLiked().remove(user);
             msg = "Donation disliked successfully!";
         } else {
