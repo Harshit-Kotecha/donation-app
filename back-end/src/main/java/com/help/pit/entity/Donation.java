@@ -118,6 +118,11 @@ public class Donation {
     @JsonIgnore
     private User user;
 
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiver_user_id", referencedColumnName = "id")
+    @JsonIgnore
+    private User receiverUser;
+
     @Transient
     @JsonProperty("has_user_liked")
     private Boolean hasUserLiked;

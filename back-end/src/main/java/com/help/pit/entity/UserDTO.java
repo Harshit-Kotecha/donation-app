@@ -13,6 +13,8 @@ import java.math.BigInteger;
 @NoArgsConstructor
 public class UserDTO {
 
+    private Integer id;
+
     @JsonProperty("email")
     private String username;
 

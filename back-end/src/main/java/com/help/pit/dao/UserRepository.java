@@ -12,7 +12,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     User findByUsername(String name);
 
-    @Query("SELECT new com.help.pit.entity.UserDTO(u.username, u.fullName, u.phoneNumber) FROM User u WHERE u.id = :id")
+    @Query("SELECT new com.help.pit.entity.UserDTO(u.id, u.username, u.fullName, u.phoneNumber) FROM User u WHERE u.id = :id")
     UserDTO findUserDTOById(Integer id);
 
     @Query("SELECT id FROM User WHERE username = :username")

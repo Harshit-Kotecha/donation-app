@@ -18,6 +18,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -42,8 +43,7 @@ public class DonationsRestController {
     private LikeService likeService;
 
     @GetMapping("/donations")
-    public BaseResponse<Object> findAll(@RequestParam(name = "search_key", required = false) String searchKey, @RequestParam(name = "category", required = false) String category, @RequestParam(name = "status", required = false) String status) {
-        List<Donation> result;
+    public BaseResponse<List<Donation>> findAll(@RequestParam(name = "search_key", required = false) String searchKey, @RequestParam(name = "category", required = false) String category, @RequestParam(name = "status", required = false) String status) {
 
         SimpleBeanPropertyFilter simpleBeanPropertyFilter =
                 SimpleBeanPropertyFilter.serializeAllExcept("hasUserLiked");
@@ -52,8 +52,8 @@ public class DonationsRestController {
                 .addFilter("userFilter", simpleBeanPropertyFilter);
 
         if (searchKey != null && !searchKey.trim().isEmpty()) {
-            result = donationService.findDonations(searchKey.trim().toLowerCase());
-//            return new SuccessResponse<>(donationService.findDonations(searchKey.trim().toLowerCase()));
+//            result = donationService.findDonations(searchKey.trim().toLowerCase());
+            return new SuccessResponse<>(donationService.findDonations(searchKey.trim().toLowerCase()));
         }
 
         Specification<Donation> specification = (root, query, cb) -> {
@@ -79,12 +79,12 @@ public class DonationsRestController {
         };
 
 //        return new SuccessResponse<>(donationService.findAll(specification));
-        result = donationService.findAll(specification);
-        MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(result);
-        mappingJacksonValue.setFilters(filterProvider);
+//        result = donationService.findAll(specification);
+//        MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(result);
+//        mappingJacksonValue.setFilters(filterProvider);
 
 //        return mappingJacksonValue;
-        return new SuccessResponse<>(mappingJacksonValue.getValue());
+        return new SuccessResponse<>(donationService.findAll(specification));
 
     }
 
@@ -164,8 +164,7 @@ public class DonationsRestController {
 
     @PatchMapping("/donation/like/{id}")
     public BaseResponse<String> likeDonation(@PathVariable(name = "id") Long did, @RequestHeader("Authorization") String authToken) {
-        Integer id = donationService.extractUserId(authToken);
-        User user = userService.findById(id);
+        User user = getUser(authToken);
 
         String msg = "";
 
@@ -180,5 +179,23 @@ public class DonationsRestController {
 
         donationService.save(donation);
         return new SuccessResponse<>(msg);
+    }
+
+    @PatchMapping("/donation/receive/{id}")
+    public BaseResponse<UserDTO> receiveDonation(@RequestHeader("Authorization") String authToken, @PathVariable(name = "id") Long id) throws BadRequestException {
+        Donation donation = donationService.findById(id);
+        if(donation.getReceiverUser() != null) {
+            throw new BadRequestException("Someone else is already receiving this donation");
+        }
+        User user = getUser(authToken);
+        donation.setReceiverUser(user);
+        donationService.save(donation);
+        UserDTO userDTO = new UserDTO(user.getId(), user.getUsername(), user.getFullName(), user.getPhoneNumber());
+        return new SuccessResponse<>(userDTO, "You are receiving this donation");
+    }
+
+    User getUser(String authToken) {
+        Integer id = donationService.extractUserId(authToken);
+        return userService.findById(id);
     }
 }

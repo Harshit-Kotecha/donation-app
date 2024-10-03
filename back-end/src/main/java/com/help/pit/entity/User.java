@@ -49,6 +49,4 @@ public class User {
     @Transient
     @JsonProperty("access_token")
     private String accessToken;
-
-//    private List<Donation> donations = new ArrayList<>();
 }
