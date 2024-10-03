@@ -12,6 +12,7 @@ import com.help.pit.entity.*;
 import com.help.pit.service.DonationService;
 import com.help.pit.utils.DonationUtils;
 import com.help.pit.utils.ResourceNotFoundException;
+import com.help.pit.utils.SnGMapper;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -40,7 +41,8 @@ public class DonationsRestController {
 
     private UserService userService;
 
-    private LikeService likeService;
+    @Autowired
+    private SnGMapper sngMapper;
 
     @GetMapping("/donations")
     public BaseResponse<List<Donation>> findAll(@RequestParam(name = "search_key", required = false) String searchKey, @RequestParam(name = "category", required = false) String category, @RequestParam(name = "status", required = false) String status) {
@@ -190,7 +192,7 @@ public class DonationsRestController {
         User user = getUser(authToken);
         donation.setReceiverUser(user);
         donationService.save(donation);
-        UserDTO userDTO = new UserDTO(user.getId(), user.getUsername(), user.getFullName(), user.getPhoneNumber());
+        UserDTO userDTO = sngMapper.toUserDTO(user);
         return new SuccessResponse<>(userDTO, "You are receiving this donation");
     }
 
