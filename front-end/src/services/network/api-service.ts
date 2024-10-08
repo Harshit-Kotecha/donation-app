@@ -143,9 +143,19 @@ export const patch = async ({
   }
 };
 
-export const deleteReq = async ({ url, payload = {}, callback }: IApi) => {
+export const deleteReq = async ({
+  url,
+  payload = {},
+  callback,
+  authRequired = true,
+}: IApi) => {
   try {
-    const response = await client.delete(url, { data: payload });
+    const response = await client.delete(url, {
+      data: payload,
+      headers: {
+        authRequired,
+      },
+    });
 
     console.log(response, '-------api');
 

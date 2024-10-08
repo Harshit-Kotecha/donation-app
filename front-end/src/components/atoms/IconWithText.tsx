@@ -11,7 +11,7 @@ export default function IconWithText({
   return (
     <div className={`flex text-gray-50 items-center ${className || ''}`}>
       <img
-        className="w-3 sm:w-5 mr-2 sm:mr-3 text-red-50"
+        className="w-4 sm:w-5 mr-2 sm:mr-3 text-red-50"
         color="red"
         src={icon}
       />
