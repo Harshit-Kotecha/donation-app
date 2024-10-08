@@ -123,6 +123,10 @@ public class Donation {
     @JsonIgnore
     private User receiverUser;
 
+    @JsonIgnore
+    @Column(name = "has_receiver_closed_donation")
+    private Boolean hasReceiverClosedThisDonation;
+
     @Transient
     @JsonProperty("has_user_liked")
     private Boolean hasUserLiked;

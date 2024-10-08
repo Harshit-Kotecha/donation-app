@@ -1,5 +1,6 @@
 package com.help.pit.dao;
 
+import com.help.pit.entity.AllUsersDTO;
 import com.help.pit.entity.Donation;
 import com.help.pit.entity.User;
 import com.help.pit.utils.DonationStage;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSpecificationExecutor<Donation> {
@@ -21,6 +23,11 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSp
     @Modifying
     @Query("UPDATE Donation SET status = :status WHERE id = :id")
     Integer updateDonationStatus(@Param("status") DonationStage status, @Param("id") Long id);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Donation SET status = :status, receiverUser = :receiver_user WHERE id = :id")
+    Integer processDonation(@Param("status") DonationStage status, @Param("id") Long donationId, @Param("receiver_user") User receiverUser);
 
     List<Donation> findByNameAndIsDeletedFalse(@Param("name") String name);
 
@@ -45,4 +52,18 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSp
     Integer softDeleteDonation(@Param("user_id") Integer userId, @Param("id") Long donationId);
 
     List<Donation> findByUserAndIsDeletedFalseOrderById(User user);
+
+    @Query("SELECT new com.help.pit.entity.AllUsersDTO(d.receiverUser, d.user, d.status) " +
+            "FROM Donation d " +
+            "JOIN FETCH d.receiverUser " +  // Eagerly load receiverUser
+            "JOIN FETCH d.user " +  // Eagerly load user
+            "WHERE d.id = :id")
+    AllUsersDTO findUsersByDonationId(@Param("id") Long id);
+
+    @Modifying
+    @Query("UPDATE Donation d SET d.userLiked = :userLiked WHERE d.id = :id")
+    Integer updateUserLiked(@Param("id") Long donationId, @Param("userLiked") Set<User> userLiked);
+
+    @Query("SELECT userLiked FROM Donation WHERE id = :id")
+    Set<User> getUserLiked(@Param("id") Long donationId);
 }

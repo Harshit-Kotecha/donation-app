@@ -125,23 +125,23 @@ public class DonationsRestController {
 
     }
 
-    @PatchMapping("/donation/update/{id}")
-    public BaseResponse<String> updateDonationStatus(@PathVariable(name = "id") Long id, @RequestParam(name = "status") DonationStage status) {
-
-        if (status == null || status.toString().isEmpty()) {
-            return new FailureResponse<>("A valid status is required", HttpStatus.BAD_REQUEST.value());
-        }
-
-        // Check whether this user exist or not
-        // donationService.findById(id);
-
-        Integer result = donationService.updateDonationStatus(status, id);
-        if (result == 0) {
-            return new FailureResponse<>("Donation not found", 400);
-        }
-
-        return new SuccessResponse<>(DonationUtils.getDonationMsg(status));
-    }
+//    @PatchMapping("/donation/update/{id}")
+//    public BaseResponse<String> updateDonationStatus(@PathVariable(name = "id") Long id, @RequestParam(name = "status") DonationStage status) {
+//
+//        if (status == null || status.toString().isEmpty()) {
+//            return new FailureResponse<>("A valid status is required", HttpStatus.BAD_REQUEST.value());
+//        }
+//
+//        // Check whether this user exist or not
+//        // donationService.findById(id);
+//
+//        Integer result = donationService.updateDonationStatus(status, id);
+//        if (result == 0) {
+//            return new FailureResponse<>("Donation not found", 400);
+//        }
+//
+//        return new SuccessResponse<>(DonationUtils.getDonationMsg(status));
+//    }
 
     @DeleteMapping("/donations/{id}")
     public BaseResponse<String> deleteById(@RequestHeader("Authorization") String token, @PathVariable(name = "id") Long id) throws NoPermissionException, BadRequestException {
@@ -165,35 +165,90 @@ public class DonationsRestController {
     }
 
     @PatchMapping("/donation/like/{id}")
-    public BaseResponse<String> likeDonation(@PathVariable(name = "id") Long did, @RequestHeader("Authorization") String authToken) {
+    public BaseResponse<String> likeDonation(@PathVariable(name = "id") Long id, @RequestHeader("Authorization") String authToken) {
         User user = getUser(authToken);
+        Set<User> userLiked = donationService.getUserLiked(id);
+        String msg;
 
-        String msg = "";
-
-        Donation donation = donationService.findById(did);
-        if (donation.getUserLiked().contains(user)) {
-            donation.getUserLiked().remove(user);
+        if (userLiked.contains(user)) {
+            userLiked.remove(user);
             msg = "Donation disliked successfully!";
         } else {
-            donation.getUserLiked().add(user);
+            userLiked.add(user);
             msg = "Donation liked successfully";
         }
 
-        donationService.save(donation);
+        donationService.updateUserLiked(id, userLiked);
         return new SuccessResponse<>(msg);
     }
 
+    // A user can't receive his own donations
     @PatchMapping("/donation/receive/{id}")
     public BaseResponse<UserDTO> receiveDonation(@RequestHeader("Authorization") String authToken, @PathVariable(name = "id") Long id) throws BadRequestException {
-        Donation donation = donationService.findById(id);
-        if(donation.getReceiverUser() != null) {
-            throw new BadRequestException("Someone else is already receiving this donation");
+        AllUsersDTO usersDTO = donationService.findUsersByDonationId(id);
+
+        if (usersDTO.getReceiverUser() != null) {
+            throw new BadRequestException("A receiver has already been assigned for this donation.");
         }
+
         User user = getUser(authToken);
-        donation.setReceiverUser(user);
-        donationService.save(donation);
+        Integer result = donationService.processDonation(DonationStage.processing, id, user);
+        if (result == 0) {
+            throw new BadRequestException("This donation doesn't exist!");
+        }
+
         UserDTO userDTO = sngMapper.toUserDTO(user);
         return new SuccessResponse<>(userDTO, "You are receiving this donation");
+    }
+
+    // Both the creator and receiver of donation should close this donation.
+    @PatchMapping("/donation/close/{id}")
+    public BaseResponse<String> closeDonation(@RequestHeader("Authorization") String authToken, @PathVariable(name = "id") Long id) throws BadRequestException, NoPermissionException {
+        AllUsersDTO usersDTO = donationService.findUsersByDonationId(id);
+
+        if (usersDTO.getReceiverUser() == null) {
+            throw new BadRequestException("A receiver must be assigned first for this donation to be closed.");
+        }
+        if (usersDTO.getDonationStage() == DonationStage.closed) {
+            throw new BadRequestException("This donation is already closed!");
+        }
+
+        User currUser = getUser(authToken);
+        if (currUser != usersDTO.getCreaterUser() && currUser != usersDTO.getReceiverUser()) {
+            throw new NoPermissionException("You don't have permission to close this donation");
+        }
+
+        DonationStage donationStage = getDonationStage(usersDTO, currUser);
+        String msg = donationStage == DonationStage.closed ? "Congratulations for completing this donation" : "This donation is marked as closed by you.";
+
+        Integer result = donationService.updateDonationStatus(donationStage, id);
+        if (result == 0) {
+            throw new BadRequestException("This donation doesn't exist!");
+        }
+        return new SuccessResponse<>(msg);
+    }
+
+    private static DonationStage getDonationStage(AllUsersDTO usersDTO, User currUser) throws NoPermissionException {
+        DonationStage donationStage;
+
+        if (usersDTO.getDonationStage() == DonationStage.closed_by_receiver) {
+            // Now donor should close this
+            if (currUser == usersDTO.getCreaterUser()) {
+                donationStage = DonationStage.closed;
+            } else {
+                throw new NoPermissionException("The donor must also close this donation");
+            }
+        } else if (usersDTO.getDonationStage() == DonationStage.closed_by_donor) {
+            // Now receiver should close this
+            if (currUser == usersDTO.getReceiverUser()) {
+                donationStage = DonationStage.closed;
+            } else {
+                throw new NoPermissionException("The receiver must also close this donation");
+            }
+        } else {
+            donationStage = currUser == usersDTO.getCreaterUser() ? DonationStage.closed_by_donor : DonationStage.closed_by_receiver;
+        }
+        return donationStage;
     }
 
     User getUser(String authToken) {

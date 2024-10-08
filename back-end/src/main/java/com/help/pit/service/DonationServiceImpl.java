@@ -1,6 +1,7 @@
 package com.help.pit.service;
 
 import com.help.pit.dao.DonationRepository;
+import com.help.pit.entity.AllUsersDTO;
 import com.help.pit.entity.User;
 import com.help.pit.utils.DonationStage;
 import com.help.pit.entity.Donation;
@@ -8,6 +9,7 @@ import com.help.pit.utils.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,6 +63,11 @@ public class DonationServiceImpl extends BaseServiceImpl implements DonationServ
     }
 
     @Override
+    public Integer processDonation(@Param("status") DonationStage status, @Param("id") Long donationId, @Param("receiver_user") User receiverUser) {
+        return donationRepository.processDonation(status, donationId, receiverUser);
+    }
+
+    @Override
     public List<Donation> filterByName(String name) {
         return donationRepository.findByNameAndIsDeletedFalse(name);
     }
@@ -83,5 +90,21 @@ public class DonationServiceImpl extends BaseServiceImpl implements DonationServ
     @Override
     public List<Donation> findByUser(User user) {
         return donationRepository.findByUserAndIsDeletedFalseOrderById(user);
+    }
+
+    @Override
+    public AllUsersDTO findUsersByDonationId(Long id) {
+        return donationRepository.findUsersByDonationId(id);
+    }
+
+    @Transactional
+    @Override
+    public Integer updateUserLiked(Long donationId, Set<User> userLiked) {
+        return donationRepository.updateUserLiked(donationId, userLiked);
+    }
+
+    @Override
+    public Set<User> getUserLiked(Long donationId) {
+        return donationRepository.getUserLiked(donationId);
     }
 }
