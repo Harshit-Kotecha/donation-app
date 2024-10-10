@@ -5,6 +5,7 @@ import com.help.pit.entity.AllUsersDTO;
 import com.help.pit.entity.User;
 import com.help.pit.utils.DonationStage;
 import com.help.pit.entity.Donation;
+import com.help.pit.utils.IntermediateDonationStage;
 import com.help.pit.utils.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -106,5 +107,10 @@ public class DonationServiceImpl extends BaseServiceImpl implements DonationServ
     @Override
     public Set<User> getUserLiked(Long donationId) {
         return donationRepository.getUserLiked(donationId);
+    }
+
+    @Override
+    public Integer updateInterDonationStatus(IntermediateDonationStage intermediateStatus, Long id) {
+        return donationRepository.updateInterDonationStatus(intermediateStatus, id);
     }
 }

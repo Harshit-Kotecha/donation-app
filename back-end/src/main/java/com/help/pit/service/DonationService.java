@@ -4,6 +4,7 @@ import com.help.pit.entity.AllUsersDTO;
 import com.help.pit.entity.User;
 import com.help.pit.utils.DonationStage;
 import com.help.pit.entity.Donation;
+import com.help.pit.utils.IntermediateDonationStage;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.repository.query.Param;
 
@@ -40,4 +41,6 @@ public interface DonationService extends BaseService{
     Integer updateUserLiked(@Param("id") Long donationId, @Param("userLiked") Set<User> userLiked);
 
     Set<User> getUserLiked(@Param("id") Long donationId);
+
+    Integer updateInterDonationStatus(@Param("status") IntermediateDonationStage intermediateStatus, @Param("id") Long id);
 }

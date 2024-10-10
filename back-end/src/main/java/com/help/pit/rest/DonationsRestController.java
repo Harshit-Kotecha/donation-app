@@ -7,12 +7,9 @@ import com.help.pit.dao.DonationRepository;
 import com.help.pit.dao.LikeRepository;
 import com.help.pit.service.LikeService;
 import com.help.pit.service.UserService;
-import com.help.pit.utils.DonationStage;
+import com.help.pit.utils.*;
 import com.help.pit.entity.*;
 import com.help.pit.service.DonationService;
-import com.help.pit.utils.DonationUtils;
-import com.help.pit.utils.ResourceNotFoundException;
-import com.help.pit.utils.SnGMapper;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -187,11 +184,17 @@ public class DonationsRestController {
     public BaseResponse<UserDTO> receiveDonation(@RequestHeader("Authorization") String authToken, @PathVariable(name = "id") Long id) throws BadRequestException {
         AllUsersDTO usersDTO = donationService.findUsersByDonationId(id);
 
+        if(usersDTO.getDonationStatus() == DonationStage.closed) {
+            throw new BadRequestException("This donation is already closed");
+        }
         if (usersDTO.getReceiverUser() != null) {
             throw new BadRequestException("A receiver has already been assigned for this donation.");
         }
 
         User user = getUser(authToken);
+        if(user == usersDTO.getCreaterUser()) {
+            throw new BadRequestException("You can't receive your own donation");
+        }
         Integer result = donationService.processDonation(DonationStage.processing, id, user);
         if (result == 0) {
             throw new BadRequestException("This donation doesn't exist!");
@@ -209,7 +212,7 @@ public class DonationsRestController {
         if (usersDTO.getReceiverUser() == null) {
             throw new BadRequestException("A receiver must be assigned first for this donation to be closed.");
         }
-        if (usersDTO.getDonationStage() == DonationStage.closed) {
+        if (usersDTO.getDonationStatus() == DonationStage.closed) {
             throw new BadRequestException("This donation is already closed!");
         }
 
@@ -219,9 +222,15 @@ public class DonationsRestController {
         }
 
         DonationStage donationStage = getDonationStage(usersDTO, currUser);
+        Integer result;
+        if(donationStage == null) {
+            IntermediateDonationStage intermediateDonationStage = currUser == usersDTO.getCreaterUser() ? IntermediateDonationStage.closed_by_donor : IntermediateDonationStage.closed_by_receiver;
+            result = donationService.updateInterDonationStatus(intermediateDonationStage, id);
+        } else {
+            result = donationService.updateDonationStatus(donationStage, id);
+        }
         String msg = donationStage == DonationStage.closed ? "Congratulations for completing this donation" : "This donation is marked as closed by you.";
 
-        Integer result = donationService.updateDonationStatus(donationStage, id);
         if (result == 0) {
             throw new BadRequestException("This donation doesn't exist!");
         }
@@ -231,14 +240,14 @@ public class DonationsRestController {
     private static DonationStage getDonationStage(AllUsersDTO usersDTO, User currUser) throws NoPermissionException {
         DonationStage donationStage;
 
-        if (usersDTO.getDonationStage() == DonationStage.closed_by_receiver) {
+        if (usersDTO.getIntermediateStatus() == IntermediateDonationStage.closed_by_receiver) {
             // Now donor should close this
             if (currUser == usersDTO.getCreaterUser()) {
                 donationStage = DonationStage.closed;
             } else {
                 throw new NoPermissionException("The donor must also close this donation");
             }
-        } else if (usersDTO.getDonationStage() == DonationStage.closed_by_donor) {
+        } else if (usersDTO.getIntermediateStatus() == IntermediateDonationStage.closed_by_donor) {
             // Now receiver should close this
             if (currUser == usersDTO.getReceiverUser()) {
                 donationStage = DonationStage.closed;
@@ -246,7 +255,7 @@ public class DonationsRestController {
                 throw new NoPermissionException("The receiver must also close this donation");
             }
         } else {
-            donationStage = currUser == usersDTO.getCreaterUser() ? DonationStage.closed_by_donor : DonationStage.closed_by_receiver;
+            donationStage = null;
         }
         return donationStage;
     }

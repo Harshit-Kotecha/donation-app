@@ -4,10 +4,8 @@ import com.help.pit.entity.AllUsersDTO;
 import com.help.pit.entity.Donation;
 import com.help.pit.entity.User;
 import com.help.pit.utils.DonationStage;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import com.help.pit.utils.IntermediateDonationStage;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +21,11 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSp
     @Modifying
     @Query("UPDATE Donation SET status = :status WHERE id = :id")
     Integer updateDonationStatus(@Param("status") DonationStage status, @Param("id") Long id);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Donation SET intermediateStatus = :status WHERE id = :id")
+    Integer updateInterDonationStatus(@Param("status") IntermediateDonationStage intermediateStatus, @Param("id") Long id);
 
     @Transactional
     @Modifying
@@ -53,10 +56,11 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSp
 
     List<Donation> findByUserAndIsDeletedFalseOrderById(User user);
 
-    @Query("SELECT new com.help.pit.entity.AllUsersDTO(d.receiverUser, d.user, d.status) " +
+    @EntityGraph(attributePaths = {"receiverUser", "user"}, type = EntityGraph.EntityGraphType.LOAD)
+    @Query("SELECT new com.help.pit.entity.AllUsersDTO(d.receiverUser, d.user, d.intermediateStatus, d.status) " +
             "FROM Donation d " +
-            "JOIN FETCH d.receiverUser " +  // Eagerly load receiverUser
-            "JOIN FETCH d.user " +  // Eagerly load user
+            "LEFT JOIN d.receiverUser ru " +  // LEFT JOIN for receiverUser
+            "JOIN d.user u " +               // Regular JOIN for user
             "WHERE d.id = :id")
     AllUsersDTO findUsersByDonationId(@Param("id") Long id);
 

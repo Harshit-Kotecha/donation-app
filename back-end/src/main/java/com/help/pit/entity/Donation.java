@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.help.pit.utils.DonationStage;
+import com.help.pit.utils.IntermediateDonationStage;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -23,6 +24,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@NamedEntityGraph(name = "Donation.users", attributeNodes = {@NamedAttributeNode("receiverUser"), @NamedAttributeNode("user")})
 public class Donation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,6 +57,12 @@ public class Donation {
     @Column(name = "status", columnDefinition = "donation_stages default 'open'")
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private DonationStage status = DonationStage.open;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "intermediate_status")
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @JsonIgnore
+    private IntermediateDonationStage intermediateStatus;
 
     @Column(name = "images")
     private List<String> images;
