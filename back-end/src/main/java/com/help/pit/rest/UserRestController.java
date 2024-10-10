@@ -3,6 +3,7 @@ package com.help.pit.rest;
 import com.help.pit.entity.*;
 import com.help.pit.service.UserService;
 import com.help.pit.utils.ResourceNotFoundException;
+import com.help.pit.utils.SngConstants;
 import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = SngConstants.origins)
 public class UserRestController {
 
     @Autowired

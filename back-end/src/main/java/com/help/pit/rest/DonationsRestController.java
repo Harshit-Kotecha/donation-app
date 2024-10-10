@@ -29,7 +29,7 @@ import java.math.BigInteger;
 import java.util.*;
 
 @Slf4j
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = SngConstants.origins)
 @RestController
 @RequestMapping("/api/")
 @AllArgsConstructor
@@ -260,7 +260,7 @@ public class DonationsRestController {
         return donationStage;
     }
 
-    User getUser(String authToken) {
+    private User getUser(String authToken) {
         Integer id = donationService.extractUserId(authToken);
         return userService.findById(id);
     }

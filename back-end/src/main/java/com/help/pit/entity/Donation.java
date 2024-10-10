@@ -11,6 +11,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
+import org.hibernate.type.descriptor.jdbc.TinyIntJdbcType;
 
 import java.math.BigInteger;
 import java.time.OffsetDateTime;
@@ -130,10 +131,6 @@ public class Donation {
     @JoinColumn(name = "receiver_user_id", referencedColumnName = "id")
     @JsonIgnore
     private User receiverUser;
-
-    @JsonIgnore
-    @Column(name = "has_receiver_closed_donation")
-    private Boolean hasReceiverClosedThisDonation;
 
     @Transient
     @JsonProperty("has_user_liked")
