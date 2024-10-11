@@ -45,4 +45,6 @@ public interface DonationService extends BaseService{
     Set<User> getUserLiked(@Param("id") Long donationId);
 
     Integer updateInterDonationStatus(@Param("status") IntermediateDonationStage intermediateStatus, @Param("id") Long id);
+
+    List<Donation> findByReceiverUser(User user);
 }

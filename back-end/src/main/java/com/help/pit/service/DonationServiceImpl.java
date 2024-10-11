@@ -118,4 +118,9 @@ public class DonationServiceImpl extends BaseServiceImpl implements DonationServ
     public Integer updateInterDonationStatus(IntermediateDonationStage intermediateStatus, Long id) {
         return donationRepository.updateInterDonationStatus(intermediateStatus, id);
     }
+
+    @Override
+    public List<Donation> findByReceiverUser(User user) {
+        return donationRepository.findByReceiverUser(user);
+    }
 }

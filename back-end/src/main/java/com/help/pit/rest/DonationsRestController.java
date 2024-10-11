@@ -135,24 +135,6 @@ public class DonationsRestController {
 
     }
 
-//    @PatchMapping("/donation/update/{id}")
-//    public BaseResponse<String> updateDonationStatus(@PathVariable(name = "id") Long id, @RequestParam(name = "status") DonationStage status) {
-//
-//        if (status == null || status.toString().isEmpty()) {
-//            return new FailureResponse<>("A valid status is required", HttpStatus.BAD_REQUEST.value());
-//        }
-//
-//        // Check whether this user exist or not
-//        // donationService.findById(id);
-//
-//        Integer result = donationService.updateDonationStatus(status, id);
-//        if (result == 0) {
-//            return new FailureResponse<>("Donation not found", 400);
-//        }
-//
-//        return new SuccessResponse<>(DonationUtils.getDonationMsg(status));
-//    }
-
     @DeleteMapping("/donations/{id}")
     public BaseResponse<String> deleteById(@RequestHeader("Authorization") String token, @PathVariable(name = "id") Long id) throws NoPermissionException, BadRequestException {
         Donation donation = donationService.findById(id);
@@ -252,6 +234,13 @@ public class DonationsRestController {
             throw new BadRequestException("This donation doesn't exist!");
         }
         return new SuccessResponse<>(msg);
+    }
+
+    @GetMapping("/donations/processing")
+    public BaseResponse<List<Donation>> donationReceiving(@RequestHeader("Authorization") String authToken) {
+        User user = getUser(authToken);
+
+        return new SuccessResponse<>(donationService.findByReceiverUser(user));
     }
 
     private static DonationStage getDonationStage(AllUsersDTO usersDTO, User currUser) throws NoPermissionException {

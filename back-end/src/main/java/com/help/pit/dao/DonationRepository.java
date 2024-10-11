@@ -72,4 +72,6 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSp
 
     @Query("SELECT userLiked FROM Donation WHERE id = :id")
     Set<User> getUserLiked(@Param("id") Long donationId);
+
+    List<Donation> findByReceiverUser(User user);
 }
