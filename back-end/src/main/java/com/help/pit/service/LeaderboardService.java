@@ -2,11 +2,13 @@ package com.help.pit.service;
 
 import com.help.pit.dao.LeaderboardRepository;
 import com.help.pit.entity.Leaderboard;
+import com.help.pit.entity.LeaderboardDTO;
 import com.help.pit.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,11 +27,15 @@ public class LeaderboardService extends BaseServiceImpl {
     }
 
     @Transactional
-    public Integer updateScore(Integer score, Long id) {
+    public Integer updateScore(Integer score, Integer id) {
         return leaderboardRepository.updateScore(score, id);
     }
 
     public Leaderboard findByUser(User user) {
         return leaderboardRepository.findByUser(user);
+    }
+
+    public List<LeaderboardDTO> getAll() {
+        return leaderboardRepository.getAll();
     }
 }

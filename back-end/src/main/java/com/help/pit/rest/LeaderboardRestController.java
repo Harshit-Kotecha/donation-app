@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -28,6 +29,11 @@ public class LeaderboardRestController {
     @Autowired
     private LeaderboardService leaderboardService;
 
+    @GetMapping("/leaderboards")
+    public BaseResponse<List<LeaderboardDTO>> getAll() {
+        return new SuccessResponse<>(leaderboardService.getAll());
+    }
+
     @PostMapping("/leaderboards")
     public BaseResponse<Map<String, Integer>> leaderboard(@Valid @RequestBody LeaderboardPostRequestDTO leaderboardPostRequestDTO) throws BadRequestException {
         User user = userService.findById(leaderboardPostRequestDTO.getId());
@@ -37,7 +43,7 @@ public class LeaderboardRestController {
 
         Leaderboard leaderboard = leaderboardService.findByUser(user);
 
-        if(leaderboard == null) {
+        if (leaderboard == null) {
             leaderboard = new Leaderboard();
             leaderboard.setUser(user);
             leaderboard.setScore(score);
@@ -46,7 +52,7 @@ public class LeaderboardRestController {
             Integer oldScore = leaderboard.getScore();
             score += oldScore;
             Integer result = leaderboardService.updateScore(score, leaderboard.getId());
-            if(result == 0) {
+            if (result == 0) {
                 throw new BadRequestException("Leaderboard not found");
             }
         }
@@ -54,7 +60,7 @@ public class LeaderboardRestController {
         Map<String, Integer> mp = new HashMap<>();
         mp.put("score", score);
 
-       return new SuccessResponse<>( mp,"Thanks for giving the ratings!");
+        return new SuccessResponse<>(mp, "Thanks for giving the ratings!");
     }
 
     private Integer getAdditionalScore(Integer ratings) {
