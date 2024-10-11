@@ -5,6 +5,8 @@ import com.help.pit.entity.Donation;
 import com.help.pit.entity.User;
 import com.help.pit.utils.DonationStage;
 import com.help.pit.utils.IntermediateDonationStage;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -37,7 +39,7 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSp
     Optional<Donation> findByIdAndIsDeletedFalse(Long id);
 
     @Query("FROM Donation WHERE isDeleted = FALSE AND (LOWER(name) LIKE %:search_key% OR LOWER(category) LIKE %:search_key% OR LOWER(description) LIKE %:search_key% OR LOWER(region) LIKE %:search_key% OR LOWER(district) LIKE %:search_key% OR LOWER(state) LIKE %:search_key% OR LOWER(address) LIKE %:search_key% OR LOWER(description) LIKE %:search_key%)")
-    List<Donation> findDonations(@Param("search_key") String searchKey);
+    Page<Donation> findDonations(@Param("search_key") String searchKey, Pageable pageable);
 
     @Query("SELECT DISTINCT(category) FROM Donation WHERE isDeleted = false")
     List<String> getAllCategories();
@@ -54,7 +56,7 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSp
             """)
     Integer softDeleteDonation(@Param("user_id") Integer userId, @Param("id") Long donationId);
 
-    List<Donation> findByUserAndIsDeletedFalseOrderById(User user);
+    Page<Donation> findByUserAndIsDeletedFalseOrderById(User user, Pageable pageable);
 
     @EntityGraph(attributePaths = {"receiverUser", "user"}, type = EntityGraph.EntityGraphType.LOAD)
     @Query("SELECT new com.help.pit.entity.AllUsersDTO(d.receiverUser, d.user, d.intermediateStatus, d.status) " +

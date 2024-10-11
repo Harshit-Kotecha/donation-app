@@ -2,19 +2,24 @@ package com.help.pit.service;
 
 import com.help.pit.dao.DonationRepository;
 import com.help.pit.entity.AllUsersDTO;
+import com.help.pit.entity.Donation;
 import com.help.pit.entity.User;
 import com.help.pit.utils.DonationStage;
-import com.help.pit.entity.Donation;
 import com.help.pit.utils.IntermediateDonationStage;
 import com.help.pit.utils.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -24,8 +29,8 @@ public class DonationServiceImpl extends BaseServiceImpl implements DonationServ
     private DonationRepository donationRepository;
 
     @Override
-    public List<Donation> findAll(Specification<Donation> specification) {
-        return (List<Donation>) donationRepository.findAll(specification);
+    public Page<Donation> findAll(Specification<Donation> specification, Pageable pageable) {
+        return donationRepository.findAll(specification, pageable);
     }
 
     @Override
@@ -79,8 +84,8 @@ public class DonationServiceImpl extends BaseServiceImpl implements DonationServ
     }
 
     @Override
-    public List<Donation> findDonations(String searchKey) {
-        return donationRepository.findDonations(searchKey);
+    public Page<Donation> findDonations(String searchKey, Pageable pageable) {
+        return donationRepository.findDonations(searchKey, pageable);
     }
 
     @Override
@@ -89,8 +94,8 @@ public class DonationServiceImpl extends BaseServiceImpl implements DonationServ
     }
 
     @Override
-    public List<Donation> findByUser(User user) {
-        return donationRepository.findByUserAndIsDeletedFalseOrderById(user);
+    public Page<Donation> findByUser(User user, Pageable pageable) {
+        return donationRepository.findByUserAndIsDeletedFalseOrderById(user, pageable);
     }
 
     @Override

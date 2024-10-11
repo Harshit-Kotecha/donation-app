@@ -3,30 +3,35 @@ package com.help.pit.rest;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.help.pit.dao.DonationRepository;
-import com.help.pit.dao.LikeRepository;
-import com.help.pit.service.LikeService;
+import com.help.pit.entity.AllUsersDTO;
+import com.help.pit.entity.Donation;
+import com.help.pit.entity.User;
+import com.help.pit.entity.UserDTO;
+import com.help.pit.models.BaseResponse;
+import com.help.pit.models.PaginationResponse;
+import com.help.pit.models.SuccessResponse;
+import com.help.pit.service.DonationService;
 import com.help.pit.service.UserService;
 import com.help.pit.utils.*;
-import com.help.pit.entity.*;
-import com.help.pit.service.DonationService;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 
 import javax.naming.NoPermissionException;
-import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @CrossOrigin(origins = SngConstants.origins)
@@ -42,7 +47,12 @@ public class DonationsRestController {
     private SnGMapper sngMapper;
 
     @GetMapping("/donations")
-    public BaseResponse<List<Donation>> findAll(@RequestParam(name = "search_key", required = false) String searchKey, @RequestParam(name = "category", required = false) String category, @RequestParam(name = "status", required = false) String status) {
+    public BaseResponse<List<Donation>> findAll(@RequestParam(name = "search_key", required = false) String searchKey,
+                                                @RequestParam(name = "category", required = false) String category,
+                                                @RequestParam(name = "status", required = false) String status,
+                                                @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+                                                @RequestParam(name = "page_size", required = false, defaultValue = "10") Integer pageSize
+    ) {
 
         SimpleBeanPropertyFilter simpleBeanPropertyFilter =
                 SimpleBeanPropertyFilter.serializeAllExcept("hasUserLiked");
@@ -50,9 +60,11 @@ public class DonationsRestController {
         FilterProvider filterProvider = new SimpleFilterProvider()
                 .addFilter("userFilter", simpleBeanPropertyFilter);
 
+        Pageable pageable = PageRequest.of(page, pageSize);
+
         if (searchKey != null && !searchKey.trim().isEmpty()) {
-//            result = donationService.findDonations(searchKey.trim().toLowerCase());
-            return new SuccessResponse<>(donationService.findDonations(searchKey.trim().toLowerCase()));
+            Page<Donation> donationPage = donationService.findDonations(searchKey.trim().toLowerCase(), pageable);
+            return new PaginationResponse<>(donationPage.getTotalPages(), pageSize, donationPage.getTotalElements(), donationPage.getContent());
         }
 
         Specification<Donation> specification = (root, query, cb) -> {
@@ -83,8 +95,9 @@ public class DonationsRestController {
 //        mappingJacksonValue.setFilters(filterProvider);
 
 //        return mappingJacksonValue;
-        return new SuccessResponse<>(donationService.findAll(specification));
 
+        Page<Donation> donationPage = donationService.findAll(specification, pageable);
+        return new PaginationResponse<>(donationPage.getTotalPages(), pageSize, donationPage.getTotalElements(), donationPage.getContent());
     }
 
     @GetMapping("/donations/{id}")
@@ -154,11 +167,15 @@ public class DonationsRestController {
     }
 
     @GetMapping("/my-donations")
-    public BaseResponse<List<Donation>> getMyDonations(@RequestHeader("Authorization") String token) {
+    public BaseResponse<List<Donation>> getMyDonations(@RequestHeader("Authorization") String token,
+                                                       @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+                                                       @RequestParam(name = "page_size", required = false, defaultValue = "10") Integer pageSize) {
         Integer id = donationService.extractUserId(token);
         User user = userService.findById(id);
 
-        return new SuccessResponse<>(donationService.findByUser(user));
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Donation> donationPage = donationService.findByUser(user, pageable);
+        return new PaginationResponse<>(donationPage.getTotalPages(), pageSize, donationPage.getTotalElements(), donationPage.getContent());
     }
 
     @PatchMapping("/donation/like/{id}")
@@ -184,7 +201,7 @@ public class DonationsRestController {
     public BaseResponse<UserDTO> receiveDonation(@RequestHeader("Authorization") String authToken, @PathVariable(name = "id") Long id) throws BadRequestException {
         AllUsersDTO usersDTO = donationService.findUsersByDonationId(id);
 
-        if(usersDTO.getDonationStatus() == DonationStage.closed) {
+        if (usersDTO.getDonationStatus() == DonationStage.closed) {
             throw new BadRequestException("This donation is already closed");
         }
         if (usersDTO.getReceiverUser() != null) {
@@ -192,7 +209,7 @@ public class DonationsRestController {
         }
 
         User user = getUser(authToken);
-        if(user == usersDTO.getCreaterUser()) {
+        if (user == usersDTO.getCreaterUser()) {
             throw new BadRequestException("You can't receive your own donation");
         }
         Integer result = donationService.processDonation(DonationStage.processing, id, user);
@@ -223,7 +240,7 @@ public class DonationsRestController {
 
         DonationStage donationStage = getDonationStage(usersDTO, currUser);
         Integer result;
-        if(donationStage == null) {
+        if (donationStage == null) {
             IntermediateDonationStage intermediateDonationStage = currUser == usersDTO.getCreaterUser() ? IntermediateDonationStage.closed_by_donor : IntermediateDonationStage.closed_by_receiver;
             result = donationService.updateInterDonationStatus(intermediateDonationStage, id);
         } else {

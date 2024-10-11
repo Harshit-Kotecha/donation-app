@@ -5,6 +5,8 @@ import com.help.pit.entity.User;
 import com.help.pit.utils.DonationStage;
 import com.help.pit.entity.Donation;
 import com.help.pit.utils.IntermediateDonationStage;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.repository.query.Param;
 
@@ -12,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface DonationService extends BaseService{
-    List<Donation> findAll(Specification<Donation> specification);
+    Page<Donation> findAll(Specification<Donation> specification, Pageable pageable);
 
     List<Donation> findAll();
 
@@ -30,11 +32,11 @@ public interface DonationService extends BaseService{
 
     List<String> getAllCategories();
 
-    List<Donation> findDonations(@Param("search_key") String searchKey);
+    Page<Donation> findDonations(String searchKey, Pageable pageable);
 
     Integer softDeleteDonation(@Param("user_id") Integer userId, @Param("id") Long id);
 
-    List<Donation> findByUser(User user);
+    Page<Donation> findByUser(User user, Pageable pageable);
 
     AllUsersDTO findUsersByDonationId(@Param("id") Long id);
 

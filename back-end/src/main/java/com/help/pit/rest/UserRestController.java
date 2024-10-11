@@ -1,13 +1,14 @@
 package com.help.pit.rest;
 
 import com.help.pit.entity.*;
+import com.help.pit.models.BaseResponse;
+import com.help.pit.models.SuccessResponse;
 import com.help.pit.service.UserService;
 import com.help.pit.utils.ResourceNotFoundException;
 import com.help.pit.utils.SngConstants;
 import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 

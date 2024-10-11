@@ -1,6 +1,4 @@
-package com.help.pit.entity;
-
-import org.springframework.http.HttpStatus;
+package com.help.pit.models;
 
 public class FailureResponse<T> extends BaseResponse<T> {
 

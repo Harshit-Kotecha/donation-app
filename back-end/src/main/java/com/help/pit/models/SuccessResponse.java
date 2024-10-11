@@ -1,4 +1,4 @@
-package com.help.pit.entity;
+package com.help.pit.models;
 
 import org.springframework.http.HttpStatus;
 

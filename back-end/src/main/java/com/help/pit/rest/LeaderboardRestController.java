@@ -1,6 +1,8 @@
 package com.help.pit.rest;
 
 import com.help.pit.entity.*;
+import com.help.pit.models.BaseResponse;
+import com.help.pit.models.SuccessResponse;
 import com.help.pit.service.LeaderboardService;
 import com.help.pit.service.UserService;
 import com.help.pit.utils.SngConstants;
