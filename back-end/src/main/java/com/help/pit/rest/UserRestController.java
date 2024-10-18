@@ -5,6 +5,7 @@ import com.help.pit.models.BaseResponse;
 import com.help.pit.models.SuccessResponse;
 import com.help.pit.service.DonationService;
 import com.help.pit.service.LeaderboardService;
+import com.help.pit.service.LikeService;
 import com.help.pit.service.UserService;
 import com.help.pit.utils.ResourceNotFoundException;
 import com.help.pit.utils.SngConstants;
@@ -30,6 +31,9 @@ public class UserRestController {
 
     @Autowired
     private LeaderboardService leaderboardService;
+
+    @Autowired
+    private LikeService likeService;
 
     @PostMapping("/register")
     public BaseResponse<User> register(@Valid @RequestBody User user) throws BadRequestException {
@@ -75,6 +79,7 @@ public class UserRestController {
         User user = getUser(token);
         donationService.deleteDonationsByUser(user);
         leaderboardService.deleteByUser(user);
+        likeService.deleteLikesByUser(user.getId());
         userService.deleteById(user.getId());
         return new SuccessResponse<>("User deleted successfully!");
     }

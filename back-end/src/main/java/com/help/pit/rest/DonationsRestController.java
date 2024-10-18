@@ -188,6 +188,10 @@ public class DonationsRestController {
     public BaseResponse<UserDTO> receiveDonation(@RequestHeader("Authorization") String authToken, @PathVariable(name = "id") Long id) throws BadRequestException {
         AllUsersDTO usersDTO = donationService.findUsersByDonationId(id);
 
+        if(usersDTO == null) {
+            throw new BadRequestException("This donation is either deleted or doesn't exists");
+        }
+
         if (usersDTO.getDonationStatus() == DonationStage.closed) {
             throw new BadRequestException("This donation is already closed");
         }
@@ -212,6 +216,10 @@ public class DonationsRestController {
     @PatchMapping("/donation/close/{id}")
     public BaseResponse<String> closeDonation(@RequestHeader("Authorization") String authToken, @PathVariable(name = "id") Long id) throws BadRequestException, NoPermissionException {
         AllUsersDTO usersDTO = donationService.findUsersByDonationId(id);
+
+        if(usersDTO == null) {
+            throw new BadRequestException("This donation is either deleted or doesn't exists");
+        }
 
         if (usersDTO.getReceiverUser() == null) {
             throw new BadRequestException("A receiver must be assigned first for this donation to be closed.");

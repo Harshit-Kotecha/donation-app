@@ -47,6 +47,10 @@ public class LikeService extends BaseServiceImpl {
         return likeRepository.countLikes(id);
     }
 
+    public void deleteLikesByUser(Integer id) {
+        likeRepository.deleteByUserId(id);
+    }
+
     private Optional<Likes> getUserLiked(Likes likes) {
         Specification<Likes> specification = ((root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();

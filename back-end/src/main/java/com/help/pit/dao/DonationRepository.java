@@ -49,7 +49,8 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSp
     @Query("""
             UPDATE Donation
             SET
-            	isDeleted = TRUE
+            	isDeleted = TRUE,
+            	receiverUser = null
             WHERE
             	id = :id
             	AND user.id = :user_id
@@ -63,7 +64,7 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSp
             "FROM Donation d " +
             "LEFT JOIN d.receiverUser ru " +  // LEFT JOIN for receiverUser
             "JOIN d.user u " +               // Regular JOIN for user
-            "WHERE d.id = :id")
+            "WHERE d.id = :id AND d.isDeleted = false")
     AllUsersDTO findUsersByDonationId(@Param("id") Long id);
 
 
@@ -81,8 +82,13 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSp
     @Modifying
     @Transactional
     @Query("""
-            UPDATE Donation d SET d.receiverUser = null, d.status = :stage
+            UPDATE Donation d
+                SET d.receiverUser = null,
+                    d.intermediateStatus = null,
+                    d.status = :stage
             WHERE
+                d.isDeleted = false
+            AND
             	d.receiverUser = :user
             AND
                 d.status != :closed
@@ -93,5 +99,6 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSp
 
     @Modifying
     @Transactional
+    @Query("DELETE FROM Donation WHERE user = :user")
     void deleteAllByUser(User user);
 }

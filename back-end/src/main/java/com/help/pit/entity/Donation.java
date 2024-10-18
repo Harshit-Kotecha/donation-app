@@ -122,7 +122,7 @@ public class Donation {
     @JsonIgnore
     private Boolean isDeleted = false;
 
-    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", updatable = false, nullable = false)
     @JsonIgnore
     private User user;
