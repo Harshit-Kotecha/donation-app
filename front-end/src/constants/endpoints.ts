@@ -8,4 +8,7 @@ export const endpoints = {
   myDonations: '/api/my-donations',
   delete: '/api/donations',
   like: '/api/donation/like',
+  receiving: '/api/donations/processing',
+  profile: '/user/my-profile',
+  leaderboard: '/api/leaderboards',
 };

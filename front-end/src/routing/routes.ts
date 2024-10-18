@@ -6,4 +6,5 @@ export const routes = {
   about: '/about',
   myDonations: '/my-donations',
   myProfile: '/my-profile',
+  leaderboard: '/leaderboard',
 };

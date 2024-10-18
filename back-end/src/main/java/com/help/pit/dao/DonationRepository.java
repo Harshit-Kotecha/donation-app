@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSpecificationExecutor<Donation> {
@@ -68,7 +67,7 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSp
     AllUsersDTO findUsersByDonationId(@Param("id") Long id);
 
 
-    List<Donation> findByReceiverUser(User user);
+    List<Donation> findAllByReceiverUserAndStatus(User user, DonationStage stage);
 
     @Modifying
     @Transactional

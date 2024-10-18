@@ -22,7 +22,7 @@ export interface FilterProps {
   handleSubmit: () => void;
 }
 
-export default function Filters({
+export default function FiltersDialog({
   categories,
   status,
   open,

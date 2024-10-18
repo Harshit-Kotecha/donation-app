@@ -2,8 +2,8 @@ import img from '@assets/donation-app.jpg';
 import filter from '@assets/filter.svg';
 import search from '@assets/search.svg';
 import Banner from '@components/molecules/Banner';
+import FiltersDialog from '@components/molecules/FiltersDialog';
 import PrimarySearchAppBar from '@components/molecules/MyAppBar';
-import Filters from '@components/molecules/dialog';
 import DonationsView from '@components/organisms/DonationsView';
 import { ThemeProvider } from '@emotion/react';
 import useAppTheme from '@hooks/useTheme';
@@ -170,7 +170,7 @@ export default function HomePage() {
           className="w-[28px] h-[28px] ml-4 hover:cursor-pointer"
         />
       </div>
-      <Filters
+      <FiltersDialog
         categories={categories}
         status={['open', 'closed']}
         open={filterOpen}

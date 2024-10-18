@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Slf4j
 @Service
@@ -109,7 +108,7 @@ public class DonationServiceImpl extends BaseServiceImpl implements DonationServ
 
     @Override
     public List<Donation> findByReceiverUser(User user) {
-        return donationRepository.findByReceiverUser(user);
+        return donationRepository.findAllByReceiverUserAndStatus(user, DonationStage.processing);
     }
 
     @Override

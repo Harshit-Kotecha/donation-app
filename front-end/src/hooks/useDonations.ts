@@ -1,5 +1,5 @@
 import { Donation } from '@interfaces/donation';
-import { update } from '@redux/donationSlice';
+import { update } from '@redux/rdx-donation-slice';
 import { endpoints } from 'constants/endpoints';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';

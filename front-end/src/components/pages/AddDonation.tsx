@@ -1,3 +1,4 @@
+import charityAnimation from '@assets/charity.json';
 import AlertMsg from '@components/atoms/AlertMsg';
 import Button from '@components/atoms/Button';
 import DonationQuote from '@components/atoms/DonationQuote';
@@ -16,6 +17,7 @@ import {
 import { routes } from '@routing/routes';
 import { convertToISOFormat } from '@utils/utils';
 import { endpoints } from 'constants/endpoints';
+import Lottie from 'lottie-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { get, post } from 'services/network/api-service';
@@ -311,6 +313,11 @@ export default function AddDonation() {
             subtitle="Consider making a donation today!"
           />
           {alertMsg ? <AlertMsg msg={alertMsg} /> : <></>}
+          <Lottie
+            className={`max-w-[200px] py-0 mx-auto mb-[-30px] mt-[-10px]`}
+            animationData={charityAnimation}
+            loop={true}
+          />
           <Box
             className="w-full max-w-[700px]"
             component="form"

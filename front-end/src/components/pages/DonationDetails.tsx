@@ -16,12 +16,12 @@ import { routes } from '@routing/routes';
 import { formatDateTime, getExpiryTime } from '@utils/utils';
 import { endpoints } from 'constants/endpoints';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { deleteReq, get, patch } from 'services/network/api-service';
 
-interface DonationProp {
-  donation: Donation;
-}
+// interface DonationProp {
+//   donation: Donation;
+// }
 
 interface BtnAttributes {
   title: string;
@@ -30,7 +30,7 @@ interface BtnAttributes {
 }
 
 export default function DonationDetails() {
-  const { state } = useLocation();
+  // const { state } = useLocation();
   const { id } = useParams();
   const [alertMsg, setAlertMsg] = useState<string | null>(null);
   const [donationStatus, setDonationStatus] = useState(DonationStatus.OPEN);
@@ -53,13 +53,9 @@ export default function DonationDetails() {
       }
     };
 
-    if (state) {
-      const { donation: tmpDonation }: DonationProp = state;
-      setDonation(tmpDonation);
-      setDonationStatus(tmpDonation.status);
-    } else if (id) {
-      fetchData(parseInt(id));
-    }
+    // if (id) {
+    fetchData(parseInt(id));
+    // }
   }, []);
 
   const getBtnAttributes = (status?: string) => {
@@ -176,6 +172,7 @@ export default function DonationDetails() {
 
   const onLike = async (id: number) => {
     await patch({ url: `${endpoints.like}/${id}`, callback });
+    window.location.reload();
   };
 
   return (

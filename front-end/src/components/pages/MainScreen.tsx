@@ -3,12 +3,12 @@ import { ThemeProvider } from '@emotion/react';
 import useAppTheme from '@hooks/useTheme';
 import { Backdrop, CircularProgress } from '@mui/material';
 
-export default function MainScreen({ children, isLoading }) {
+export default function MainScreen({ children, isLoading, className = '' }) {
   const theme = useAppTheme();
 
   return (
     <ThemeProvider theme={theme}>
-      <div className="w-full bg-background-dark">
+      <div className={`w-full bg-background-dark ${className}`}>
         <MyAppBar />
         {isLoading ? (
           <Backdrop

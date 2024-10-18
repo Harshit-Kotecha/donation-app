@@ -1,24 +1,28 @@
-import { cookiesKeys } from "constants/cookies-keys";
+import { cookiesKeys } from 'constants/cookies-keys';
 
 export const isUserLoggedIn = () => {
-  const accessToken = getCookie("accessToken");
+  const accessToken = getCookie('accessToken');
   return accessToken ? true : false;
 };
 
 export function getCookie(name: string): string {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts?.pop()?.split(";").shift();
+  if (parts.length === 2) return parts?.pop()?.split(';').shift();
 }
 
 export const setAccessTokenInCookie = (token: string) => {
-  const now = new Date();
-  const time = now.getTime();
-  const expireTime = time + 1000 * 36000;
-  now.setTime(expireTime);
+  // All cookies expire as per the cookie specification. Maximum value you can set is:
+  //  2^31 - 1 = 2147483647 = 2038-01-19 04:14:07
+  // It's equal to the below number.
+
   document.cookie = `${
     cookiesKeys.accessToken
-  }=${token};expires=${now.toUTCString()};path=/`;
+  }=${token};expires=${2147483647};path=/`;
+};
+
+export const deleteCookie = (name: string) => {
+  document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 };
 
 interface ICookieParams {
@@ -31,7 +35,7 @@ export const setCookie = ({
   key,
   value,
   expires = null,
-  path = "/",
+  path = '/',
 }: ICookieParams) => {
   document.cookie = `${key}=${value};expires=${expires};path=${path}`;
 };

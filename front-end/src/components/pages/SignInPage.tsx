@@ -43,7 +43,6 @@ const Card = styled(MuiCard)(({ theme }) => ({
 }));
 
 const SignUpContainer = styled(Stack)(({ theme }) => ({
-  height: 'auto',
   backgroundImage:
     'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
   backgroundRepeat: 'no-repeat',
@@ -151,11 +150,11 @@ export default function SignInPage() {
     <ThemeProvider theme={SignUpTheme || defaultTheme}>
       <CssBaseline />
       <SignUpContainer
+        className="h-full px-4 "
         direction="column"
         justifyContent="space-between"
-        width="100vw"
       >
-        <SignUpHeader isSignInPage={true} />
+        <SignUpHeader />
         <Stack
           sx={{
             justifyContent: 'center',
@@ -167,7 +166,7 @@ export default function SignInPage() {
             <Typography
               component="h1"
               variant="h4"
-              sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
+              // sx={{ fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
             >
               Sign In
             </Typography>

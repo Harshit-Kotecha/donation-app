@@ -38,7 +38,6 @@ const Card = styled(MuiCard)(({ theme }) => ({
 
 const SignUpContainer = styled(Stack)(({ theme }) => ({
   width: '100vw',
-  height: 'auto',
   backgroundImage:
     'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
   backgroundRepeat: 'no-repeat',
@@ -177,12 +176,17 @@ export default function SignUpPage() {
   return (
     <ThemeProvider theme={theme}>
       {/* <CssBaseline /> */}
-      <SignUpContainer direction="column" justifyContent="space-between">
-        <SignUpHeader isSignInPage={false} />
+      <SignUpContainer
+        className="h-full px-4 "
+        direction="column"
+        justifyContent="space-between"
+      >
+        <SignUpHeader />
         <Stack
           sx={{
             justifyContent: 'center',
             height: '100%',
+            alignContent: 'center',
           }}
         >
           <Card variant="outlined">

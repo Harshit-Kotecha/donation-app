@@ -1,3 +1,5 @@
+import aboutAnimation from '@assets/about.json';
+import monkeyAnimation from '@assets/monkey.json';
 import Button from '@components/atoms/Button';
 import Description from '@components/atoms/Description';
 import Heading from '@components/atoms/Heading';
@@ -12,6 +14,7 @@ import {
   ThemeProvider,
 } from '@mui/material';
 import { appConstants } from 'constants/app-constants';
+import Lottie from 'lottie-react';
 import { useState } from 'react';
 
 export default function AboutPage() {
@@ -85,7 +88,17 @@ export default function AboutPage() {
     <ThemeProvider theme={theme}>
       <MyAppBar />
       <PageContainer>
+        <Lottie
+          className={`md:w-6/12 py-0 mx-auto mt-[-20px]`}
+          animationData={monkeyAnimation}
+          loop={true}
+        />
         <Description text={appDescription} />
+        <Lottie
+          className={`md:w-6/12 py-0 mx-auto my-[-5%]`}
+          animationData={aboutAnimation}
+          loop={true}
+        />
         <div className="flex items-center flex-col-reverse sm:gap-8 sm:flex-row">
           <div className="flex-1 mt-4 sm:mt-8 w-full sm:w-6/12">
             <Box

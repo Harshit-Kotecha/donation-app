@@ -1,15 +1,9 @@
+import LogoBanner from '@components/molecules/LogoBanner';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import { routes } from '@routing/routes';
-import { appConstants } from 'constants/app-constants';
-import { useNavigate } from 'react-router-dom';
-
-export default function SignUpHeader({ isSignInPage }) {
-  const appName = appConstants.appName;
-  const navigate = useNavigate();
+export default function SignUpHeader() {
+  // const appName = appConstants.appName;
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -20,22 +14,25 @@ export default function SignUpHeader({ isSignInPage }) {
           textAlign: 'center',
         }}
       >
-        <Toolbar>
-          <Typography
+        <Toolbar className="justify-center">
+          {/* <Typography
             variant="h6"
             component="div"
             sx={{ flexGrow: 1, fontWeight: 'bold', fontStyle: 'italic' }}
           >
             {appName}
-          </Typography>
-          <Button
-            color="inherit"
-            onClick={() =>
-              navigate(isSignInPage ? routes.signup : routes.signin)
-            }
-          >
-            {isSignInPage ? 'Sign Up' : 'Sign In'}
-          </Button>
+          </Typography> */}
+          <LogoBanner />
+          {/* <div className="border border-white rounded-lg">
+            <Button
+              color="inherit"
+              onClick={() =>
+                navigate(isSignInPage ? routes.signup : routes.signin)
+              }
+            >
+              {isSignInPage ? 'SIGN UP' : 'SIGN IN'}
+            </Button>
+          </div> */}
         </Toolbar>
       </AppBar>
     </Box>
