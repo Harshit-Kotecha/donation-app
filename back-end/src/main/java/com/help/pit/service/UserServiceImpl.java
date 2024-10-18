@@ -59,6 +59,11 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     }
 
     @Override
+    public void deleteById(Integer id) {
+        userRepository.deleteById(id);
+    }
+
+    @Override
     public SecurityTokens verifyAndGenerateToken(User user) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 

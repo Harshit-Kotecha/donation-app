@@ -19,4 +19,6 @@ public interface UserService extends BaseService {
     UserDTO getUserById(Integer id);
 
     Integer getUserId(String username);
+
+    void deleteById(Integer id);
 }

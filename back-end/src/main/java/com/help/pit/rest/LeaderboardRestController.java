@@ -34,7 +34,7 @@ public class LeaderboardRestController {
         return new SuccessResponse<>(leaderboardService.getAll());
     }
 
-    @PostMapping("/leaderboards")
+    @PostMapping("/ratings")
     public BaseResponse<Map<String, Integer>> leaderboard(@Valid @RequestBody LeaderboardPostRequestDTO leaderboardPostRequestDTO) throws BadRequestException {
         User user = userService.findById(leaderboardPostRequestDTO.getId());
 

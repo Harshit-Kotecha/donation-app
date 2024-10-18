@@ -66,12 +66,32 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSp
             "WHERE d.id = :id")
     AllUsersDTO findUsersByDonationId(@Param("id") Long id);
 
-    @Modifying
-    @Query("UPDATE Donation d SET d.userLiked = :userLiked WHERE d.id = :id")
-    Integer updateUserLiked(@Param("id") Long donationId, @Param("userLiked") Set<User> userLiked);
-
-    @Query("SELECT userLiked FROM Donation WHERE id = :id")
-    Set<User> getUserLiked(@Param("id") Long donationId);
 
     List<Donation> findByReceiverUser(User user);
+
+    @Modifying
+    @Transactional
+    @Query("""
+            DELETE FROM Donation d
+            WHERE
+            	d.user = :user
+            """)
+    void deleteDonationsByUser(User user);
+
+    @Modifying
+    @Transactional
+    @Query("""
+            UPDATE Donation d SET d.receiverUser = null, d.status = :stage
+            WHERE
+            	d.receiverUser = :user
+            AND
+                d.status != :closed
+            """)
+    void updateReceiverUser(User user, DonationStage stage, DonationStage closed);
+
+    List<Donation> findByUser(User user);
+
+    @Modifying
+    @Transactional
+    void deleteAllByUser(User user);
 }

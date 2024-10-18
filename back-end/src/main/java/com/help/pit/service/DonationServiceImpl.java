@@ -10,7 +10,6 @@ import com.help.pit.utils.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.repository.query.Param;
@@ -103,17 +102,6 @@ public class DonationServiceImpl extends BaseServiceImpl implements DonationServ
         return donationRepository.findUsersByDonationId(id);
     }
 
-    @Transactional
-    @Override
-    public Integer updateUserLiked(Long donationId, Set<User> userLiked) {
-        return donationRepository.updateUserLiked(donationId, userLiked);
-    }
-
-    @Override
-    public Set<User> getUserLiked(Long donationId) {
-        return donationRepository.getUserLiked(donationId);
-    }
-
     @Override
     public Integer updateInterDonationStatus(IntermediateDonationStage intermediateStatus, Long id) {
         return donationRepository.updateInterDonationStatus(intermediateStatus, id);
@@ -122,5 +110,11 @@ public class DonationServiceImpl extends BaseServiceImpl implements DonationServ
     @Override
     public List<Donation> findByReceiverUser(User user) {
         return donationRepository.findByReceiverUser(user);
+    }
+
+    @Override
+    public void deleteDonationsByUser(User user) {
+        donationRepository.deleteAllByUser(user);
+        donationRepository.updateReceiverUser(user, DonationStage.open, DonationStage.closed);
     }
 }

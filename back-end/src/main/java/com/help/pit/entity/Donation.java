@@ -135,17 +135,4 @@ public class Donation {
     @Transient
     @JsonProperty("has_user_liked")
     private Boolean hasUserLiked;
-
-    @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_donation", joinColumns = {@JoinColumn(name = "fk_donation")}, inverseJoinColumns = {@JoinColumn(name = "fk_user")})
-    private Set<User> userLiked = new HashSet<>();
-
-    public Integer getLikes() {
-        return this.userLiked.size();
-    }
-
-    public Boolean getHasUserLiked(User currUser) {
-        return userLiked.contains(currUser);
-    }
 }

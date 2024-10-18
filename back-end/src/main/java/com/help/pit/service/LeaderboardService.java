@@ -38,4 +38,8 @@ public class LeaderboardService extends BaseServiceImpl {
     public List<LeaderboardDTO> getAll() {
         return leaderboardRepository.getAll();
     }
+
+    public void deleteByUser(User user) {
+        leaderboardRepository.deleteByUser(user);
+    }
 }

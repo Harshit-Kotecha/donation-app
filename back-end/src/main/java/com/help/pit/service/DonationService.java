@@ -40,11 +40,9 @@ public interface DonationService extends BaseService{
 
     AllUsersDTO findUsersByDonationId(@Param("id") Long id);
 
-    Integer updateUserLiked(@Param("id") Long donationId, @Param("userLiked") Set<User> userLiked);
-
-    Set<User> getUserLiked(@Param("id") Long donationId);
-
     Integer updateInterDonationStatus(@Param("status") IntermediateDonationStage intermediateStatus, @Param("id") Long id);
 
     List<Donation> findByReceiverUser(User user);
+
+    void deleteDonationsByUser(User user);
 }

@@ -3,14 +3,12 @@ package com.help.pit.rest;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.help.pit.entity.AllUsersDTO;
-import com.help.pit.entity.Donation;
-import com.help.pit.entity.User;
-import com.help.pit.entity.UserDTO;
+import com.help.pit.entity.*;
 import com.help.pit.models.BaseResponse;
 import com.help.pit.models.PaginationResponse;
 import com.help.pit.models.SuccessResponse;
 import com.help.pit.service.DonationService;
+import com.help.pit.service.LikeService;
 import com.help.pit.service.UserService;
 import com.help.pit.utils.*;
 import jakarta.persistence.criteria.Predicate;
@@ -39,9 +37,14 @@ import java.util.Set;
 @RequestMapping("/api/")
 @AllArgsConstructor
 public class DonationsRestController {
+    @Autowired
     private DonationService donationService;
 
+    @Autowired
     private UserService userService;
+
+    @Autowired
+    private LikeService likeService;
 
     @Autowired
     private SnGMapper sngMapper;
@@ -101,8 +104,15 @@ public class DonationsRestController {
     }
 
     @GetMapping("/donations/{id}")
-    public BaseResponse<Donation> findById(@PathVariable(name = "id") Long id) {
-        return new SuccessResponse<>(donationService.findById(id));
+    public BaseResponse<Donation> findById(@PathVariable(name = "id") Long id, @RequestHeader("Authorization") String authToken) {
+        Donation donation = donationService.findById(id);
+        donation.setLikes(likeService.likesCount(id));
+
+        Likes likes = new Likes();
+        likes.setDonationId(id);
+        likes.setUserId(getUser(authToken).getId());
+        donation.setHasUserLiked(likeService.hasUserLiked(likes));
+        return new SuccessResponse<>(donation);
     }
 
     @GetMapping("/donations/categories")
@@ -163,18 +173,13 @@ public class DonationsRestController {
     @PatchMapping("/donation/like/{id}")
     public BaseResponse<String> likeDonation(@PathVariable(name = "id") Long id, @RequestHeader("Authorization") String authToken) {
         User user = getUser(authToken);
-        Set<User> userLiked = donationService.getUserLiked(id);
-        String msg;
 
-        if (userLiked.contains(user)) {
-            userLiked.remove(user);
-            msg = "Donation disliked successfully!";
-        } else {
-            userLiked.add(user);
-            msg = "Donation liked successfully";
-        }
+        Likes likes = new Likes();
+        likes.setDonationId(id);
+        likes.setUserId(user.getId());
 
-        donationService.updateUserLiked(id, userLiked);
+        String msg = likeService.updateLikes(likes);
+
         return new SuccessResponse<>(msg);
     }
 
