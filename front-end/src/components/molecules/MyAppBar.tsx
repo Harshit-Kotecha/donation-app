@@ -57,7 +57,7 @@ export default function MyAppBar() {
               {showMenuMode ? (
                 <div className="flex flex-row gap-4 items-center">
                   <img
-                    className="w-6"
+                    className="w-6 hover:cursor-pointer"
                     src={trophy}
                     onClick={() => {
                       navigate(routes.leaderboard);
@@ -68,7 +68,7 @@ export default function MyAppBar() {
                       src={menu}
                       ref={ref}
                       onClick={handleClick}
-                      className="w-6 h-6"
+                      className="w-6 h-6 hover:cursor-pointer"
                     />
                     <BasicMenu
                       open={isMenuOpen}
