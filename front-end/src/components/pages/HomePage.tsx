@@ -19,8 +19,15 @@ import '@styles/style.css';
 import { debounce } from '@utils/utils';
 import { endpoints } from 'constants/endpoints';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { get } from 'services/network/api-service';
 import { getCategories } from 'services/network/donation-api-services';
+
+interface PaginationProp {
+  pageSize: number;
+  page: number;
+  totalPages: number;
+}
 
 export default function HomePage() {
   const theme = useAppTheme();
@@ -31,6 +38,13 @@ export default function HomePage() {
   const [categories, setCategories] = useState<string[]>([]);
   const [alertMsg, setAlertMsg] = useState<string | null>(null);
   const queryRef = useRef('');
+
+  const paginationRef: PaginationProp = {
+    page: 0,
+    pageSize: 10,
+    totalPages: 1,
+  };
+  const pageRef = useRef<PaginationProp>(paginationRef);
 
   const controllerRef = useRef(new AbortController());
 
@@ -114,12 +128,24 @@ export default function HomePage() {
       const queryText = queryRef.current;
       const foundDonations = await get({
         url: endpoints.donations,
-        queryParams: queryText && { search_key: queryText },
+        queryParams: {
+          page: pageRef.current.page,
+          page_size: pageRef.current.pageSize,
+          ...[queryText && { search_key: queryText }],
+        },
         abortController: controllerRef.current,
         callback,
       });
-      console.log(foundDonations, 'inside effect');
-      setDonations(foundDonations.data);
+      if (pageRef.current.page == 0) {
+        setDonations(foundDonations.data);
+      } else {
+        setDonations((prev) => {
+          prev.push(foundDonations.data);
+          return prev;
+        });
+      }
+      pageRef.current.totalPages = foundDonations['total_pages'];
+      pageRef.current.page++;
     } catch (error) {
       console.error(error, '-----home page');
     } finally {
@@ -180,7 +206,20 @@ export default function HomePage() {
         handleClose={handleClose}
         handleSubmit={handleSubmit}
       />
-      <DonationsView donations={donations} />
+      <InfiniteScroll
+        dataLength={donations.length} //This is important field to render the next data
+        next={fetchData}
+        // hasMore={pageRef.current.page < pageRef.current.totalPages}
+        hasMore={false}
+        loader={<h4>Loading...</h4>}
+        endMessage={
+          <p style={{ textAlign: 'center' }}>
+            <b>Yay! You have seen it all</b>
+          </p>
+        }
+      >
+        <DonationsView donations={donations} />
+      </InfiniteScroll>
     </ThemeProvider>
   );
 }
