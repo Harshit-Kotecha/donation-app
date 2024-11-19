@@ -155,6 +155,7 @@ export default function SignUpPage() {
           password,
         },
         callback: callback,
+        authRequired: false,
       });
       console.log(user, '-----------user');
       if (user == null) {

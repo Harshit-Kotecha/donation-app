@@ -132,6 +132,7 @@ export default function SignInPage() {
         url: endpoints.login,
         payload: { email, password },
         callback: callback,
+        authRequired: false,
       });
 
       if (user == null) {

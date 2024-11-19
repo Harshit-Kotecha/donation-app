@@ -1,4 +1,6 @@
-FROM openjdk:17-jdk-alpine
-MAINTAINER harshit
-COPY target/docker-java-jar-0.0.1-SNAPSHOT.jar app.jar
+FROM amazoncorretto:17
+EXPOSE 8098
+LABEL org.opencontainers.image.authors="harshitkotecha2000@gmail.com"
+ARG JAR_FILE=target/pit-0.0.1-SNAPSHOT.jar
+ADD ${JAR_FILE} app.jar
 ENTRYPOINT ["java", "-jar", "/app.jar"]
