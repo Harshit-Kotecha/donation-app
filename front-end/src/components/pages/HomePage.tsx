@@ -41,7 +41,7 @@ export default function HomePage() {
 
   const paginationRef: PaginationProp = {
     page: 0,
-    pageSize: 10,
+    pageSize: 4,
     totalPages: 1,
   };
   const pageRef = useRef<PaginationProp>(paginationRef);
@@ -108,6 +108,8 @@ export default function HomePage() {
     }
 
     queryRef.current = query;
+    pageRef.current.page = 0;
+    pageRef.current.totalPages = 1;
     searchFun();
   };
 
@@ -123,27 +125,34 @@ export default function HomePage() {
 
   const fetchData = async () => {
     try {
+      if (pageRef.current.page >= pageRef.current.totalPages) return;
+
       setIsLoading(true);
 
-      const queryText = queryRef.current;
+      const queryParams = {
+        page: pageRef.current.page,
+        page_size: pageRef.current.pageSize,
+      };
+      if (queryRef.current) {
+        queryParams['search_key'] = queryRef.current;
+      }
       const foundDonations = await get({
         url: endpoints.donations,
-        queryParams: {
-          page: pageRef.current.page,
-          page_size: pageRef.current.pageSize,
-          ...[queryText && { search_key: queryText }],
-        },
+        queryParams,
         abortController: controllerRef.current,
         callback,
       });
       if (pageRef.current.page == 0) {
         setDonations(foundDonations.data);
       } else {
-        setDonations((prev) => {
-          prev.push(foundDonations.data);
-          return prev;
-        });
+        donations.push(...foundDonations.data);
+        setDonations(donations);
+        // setDonations((prev) => {
+        //   prev.push(...foundDonations.data);
+        //   return prev;
+        // });
       }
+      // controllerRef.current.abort();
       pageRef.current.totalPages = foundDonations['total_pages'];
       pageRef.current.page++;
     } catch (error) {
@@ -159,6 +168,8 @@ export default function HomePage() {
     fetchData();
     fetchCategories();
   }, []);
+
+  console.log(donations.length, 'total donations');
 
   return (
     <ThemeProvider theme={theme}>
@@ -209,11 +220,17 @@ export default function HomePage() {
       <InfiniteScroll
         dataLength={donations.length} //This is important field to render the next data
         next={fetchData}
-        // hasMore={pageRef.current.page < pageRef.current.totalPages}
-        hasMore={false}
-        loader={<h4>Loading...</h4>}
+        hasMore={pageRef.current.page < pageRef.current.totalPages}
+        loader={
+          <h4 style={{ textAlign: 'center', paddingTop: '12px' }}>
+            Loading...
+          </h4>
+        }
         endMessage={
-          <p style={{ textAlign: 'center' }}>
+          <p
+            className="bg-background-dark"
+            style={{ textAlign: 'center', padding: '12px 0 24px 0' }}
+          >
             <b>Yay! You have seen it all</b>
           </p>
         }
