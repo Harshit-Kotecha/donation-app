@@ -41,7 +41,7 @@ export default function HomePage() {
 
   const paginationRef: PaginationProp = {
     page: 0,
-    pageSize: 4,
+    pageSize: 10,
     totalPages: 1,
   };
   const pageRef = useRef<PaginationProp>(paginationRef);
@@ -152,7 +152,6 @@ export default function HomePage() {
         //   return prev;
         // });
       }
-      // controllerRef.current.abort();
       pageRef.current.totalPages = foundDonations['total_pages'];
       pageRef.current.page++;
     } catch (error) {
@@ -168,8 +167,6 @@ export default function HomePage() {
     fetchData();
     fetchCategories();
   }, []);
-
-  console.log(donations.length, 'total donations');
 
   return (
     <ThemeProvider theme={theme}>

@@ -60,7 +60,7 @@ export default function DonationCard({ donation }: DonationCardProps) {
         <CardHeader
           avatar={
             <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-              {donation.id || donation.name.substring(0, 1).toUpperCase()}
+              {donation.name.substring(0, 1).toUpperCase()}
             </Avatar>
           }
           action={<Chip label={donation.status} color={color} size="small" />}
