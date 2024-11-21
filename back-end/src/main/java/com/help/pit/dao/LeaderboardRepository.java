@@ -2,10 +2,8 @@ package com.help.pit.dao;
 
 import com.help.pit.entity.Leaderboard;
 import com.help.pit.entity.LeaderboardDTO;
-import com.help.pit.entity.Likes;
 import com.help.pit.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

@@ -16,6 +16,9 @@ services:
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
 
+#    ports:
+#      - "8081:8080"
+
 
   db:
     image: postgres
@@ -25,5 +28,5 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=donations
 
-    ports:
-      - "5432:5432"
+#    ports:
+#      - "5432:5432"
