@@ -1,33 +1,48 @@
-version: '3.8'
+
+version: "3.8"
 
 services:
-  app:
-    image: 'sng-psql-docker'
-    build:
-      context: .
-    container_name: app
-    depends_on:
-      - db
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/donations
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-
-    ports:
-      - "8081:8080"
-
-
-  db:
+  postgresdb:
     image: postgres
-    container_name: db
-    restart: always
+    restart: unless-stopped
+    env_file: ./.env
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=donations
-
+      - POSTGRES_USER=$POSTGRESDB_USER
+      - POSTGRES_PASSWORD=$POSTGRESDB_ROOT_PASSWORD
+      - POSTGRES_DB=$POSTGRESDB_DATABASE
     ports:
-      - "5432:5432"
+      - $POSTGRESDB_LOCAL_PORT:$POSTGRESDB_DOCKER_PORT
+    volumes:
+      - db:/var/lib/postgres
+    networks:
+      - sng-network
+
+  app:
+    depends_on:
+      - postgresdb
+    build: ./
+    restart: on-failure
+    env_file: ./.env
+    ports:
+      - $SPRING_LOCAL_PORT:$SPRING_DOCKER_PORT
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        "spring.datasource.url"  : "jdbc:postgresql://postgresdb:$POSTGRESDB_DOCKER_PORT/$POSTGRESDB_DATABASE",
+        "spring.datasource.username" : "$POSTGRESDB_USER",
+        "spring.datasource.password" : "$POSTGRESDB_ROOT_PASSWORD",
+        "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.PostgreSQLDialect",
+        "spring.jpa.hibernate.ddl-auto" : "update"
+      }'
+    volumes:
+      - .m2:/root/.m2
+    stdin_open: true
+    tty: true
+    networks:
+      - sng-network
+
+volumes:
+  db:
+
+networks:
+  sng-network:
+    driver: bridge
