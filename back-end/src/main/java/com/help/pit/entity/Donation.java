@@ -55,7 +55,7 @@ public class Donation {
     private String category;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", columnDefinition = "donation_stages default 'open'")
+    @Column(name = "status")
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private DonationStage status = DonationStage.open;
 
