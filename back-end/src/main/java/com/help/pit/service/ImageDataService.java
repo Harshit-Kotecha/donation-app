@@ -30,11 +30,11 @@ public class ImageDataService {
         return ResponseEntity.ok("Image uploaded");
     }
 
-    public ImageData getInfoByImageByName(String name) throws BadRequestException {
-        Optional<ImageData> dbImage = imageDataRepository.findByName(name);
+    public ImageData getInfoByImageByName(Long id) throws BadRequestException {
+        Optional<ImageData> dbImage = imageDataRepository.findById(id);
 
         if(dbImage.isEmpty()) {
-            throw new BadRequestException("Image not found by name" + name);
+            throw new BadRequestException("Image not found by name" + id);
         }
 
         return ImageData.builder()
@@ -44,11 +44,11 @@ public class ImageDataService {
                 .build();
     }
 
-    public byte[] getImage(String name) throws BadRequestException {
-        Optional<ImageData> imageData = imageDataRepository.findByName(name);
+    public byte[] getImageByName(Long id) throws BadRequestException {
+        Optional<ImageData> imageData = imageDataRepository.findById(id);
 
         if(imageData.isEmpty()) {
-            throw new BadRequestException("Image not found by name" + name);
+            throw new BadRequestException("Image not found by name " + id);
         }
 
         return ImageUtil.decompressImage(imageData.get().getImageData());
